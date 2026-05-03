@@ -6,8 +6,9 @@ public class StudentDTO {
     private String nameStudent;
     private String emailStudent;
     private String phoneStudent;
-    private String carreraStudent;
+    private String carreraName;
     private boolean statusStudent;
+    private boolean libraryAccessStudent;
 
     public StudentDTO() {}
 
@@ -21,9 +22,11 @@ public class StudentDTO {
     public void setEmailStudent(String emailStudent) { this.emailStudent = emailStudent; }
     public String getPhoneStudent() { return phoneStudent; }
     public void setPhoneStudent(String phoneStudent) { this.phoneStudent = phoneStudent; }
-    public String getCarreraStudent() { return carreraStudent; }
-    public void setCarreraStudent(String carreraStudent) { this.carreraStudent = carreraStudent; }
+    public String getCarreraName() { return carreraName; }
+    public void setCarreraName(String carreraName) { this.carreraName = carreraName; }
     public boolean isStatusStudent() { return statusStudent; }
     public void setStatusStudent(boolean statusStudent) { this.statusStudent = statusStudent; }
+    public boolean isLibraryAccessStudent() { return libraryAccessStudent; }
+    public void setLibraryAccessStudent(boolean libraryAccessStudent) { this.libraryAccessStudent = libraryAccessStudent; }
 }
 

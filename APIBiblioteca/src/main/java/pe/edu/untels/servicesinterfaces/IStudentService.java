@@ -14,5 +14,8 @@ public interface IStudentService {
     Optional<StudentDTO> getStudentByCodigo(String codigoStudent);
     StudentDTO updateStudent(int idStudent, StudentDTO studentDTO);
     void deleteStudent(int idStudent);
+    List<StudentDTO> searchStudentByName(String nameStudent);
+    List<StudentDTO> filterStudentByCarrera(int idCarrera);
+    List<StudentDTO> filterStudentByStatus(boolean status);
 }
 

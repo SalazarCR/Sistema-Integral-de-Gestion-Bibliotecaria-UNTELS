@@ -5,7 +5,7 @@ public class StudentRegisterDTO {
     private String nameStudent;
     private String emailStudent;
     private String phoneStudent;
-    private String carreraStudent;
+    private int idCarrera;
     private String usernameUser;
     private String passwordUser;
 
@@ -19,8 +19,8 @@ public class StudentRegisterDTO {
     public void setEmailStudent(String emailStudent) { this.emailStudent = emailStudent; }
     public String getPhoneStudent() { return phoneStudent; }
     public void setPhoneStudent(String phoneStudent) { this.phoneStudent = phoneStudent; }
-    public String getCarreraStudent() { return carreraStudent; }
-    public void setCarreraStudent(String carreraStudent) { this.carreraStudent = carreraStudent; }
+    public int getIdCarrera() { return idCarrera; }
+    public void setIdCarrera(int idCarrera) { this.idCarrera = idCarrera; }
     public String getUsernameUser() { return usernameUser; }
     public void setUsernameUser(String usernameUser) { this.usernameUser = usernameUser; }
     public String getPasswordUser() { return passwordUser; }

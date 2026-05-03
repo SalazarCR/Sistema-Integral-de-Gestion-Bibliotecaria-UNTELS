@@ -5,9 +5,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import pe.edu.untels.dtos.StudentDTO;
 import pe.edu.untels.dtos.StudentRegisterDTO;
+import pe.edu.untels.entities.Carrera;
 import pe.edu.untels.entities.Role;
 import pe.edu.untels.entities.Student;
 import pe.edu.untels.entities.User;
+import pe.edu.untels.repositories.ICarreraRepository;
 import pe.edu.untels.repositories.IRoleRepository;
 import pe.edu.untels.repositories.IStudentRepository;
 import pe.edu.untels.repositories.IUserRepository;
@@ -26,6 +28,8 @@ public class StudentServiceImplement implements IStudentService {
     @Autowired
     private IRoleRepository roleRepository;
     @Autowired
+    private ICarreraRepository carreraRepository;
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     private StudentDTO mapToDTO(Student student) {
@@ -35,8 +39,9 @@ public class StudentServiceImplement implements IStudentService {
         dto.setNameStudent(student.getNameStudent());
         dto.setEmailStudent(student.getEmailStudent());
         dto.setPhoneStudent(student.getPhoneStudent());
-        dto.setCarreraStudent(student.getCarreraStudent());
+        dto.setCarreraName(student.getCarrera().getNameCarrera());
         dto.setStatusStudent(student.isStatusStudent());
+        dto.setLibraryAccessStudent(student.isLibraryAccessStudent());
         return dto;
     }
 
@@ -48,6 +53,9 @@ public class StudentServiceImplement implements IStudentService {
         if (userRepository.existsByUsernameUser(studentRegisterDTO.getUsernameUser())) {
             throw new RuntimeException("El usuario ya existe");
         }
+
+        Carrera carrera = carreraRepository.findById(studentRegisterDTO.getIdCarrera())
+                .orElseThrow(() -> new RuntimeException("Carrera no encontrada"));
 
         Role roleEstudiante = roleRepository.findByNameRole("Estudiante").orElseThrow(() -> new RuntimeException("Rol no encontrado"));
 
@@ -65,8 +73,9 @@ public class StudentServiceImplement implements IStudentService {
         newStudent.setNameStudent(studentRegisterDTO.getNameStudent());
         newStudent.setEmailStudent(studentRegisterDTO.getEmailStudent());
         newStudent.setPhoneStudent(studentRegisterDTO.getPhoneStudent());
-        newStudent.setCarreraStudent(studentRegisterDTO.getCarreraStudent());
+        newStudent.setCarrera(carrera);
         newStudent.setStatusStudent(true);
+        newStudent.setLibraryAccessStudent(true);
         newStudent.setDateRegisterStudent(LocalDate.now());
         newStudent.setUser(savedUser);
 
@@ -99,19 +108,39 @@ public class StudentServiceImplement implements IStudentService {
     }
 
     @Override
+    public List<StudentDTO> searchStudentByName(String nameStudent) {
+        List<Student> students = studentRepository.findByNameStudentContainingIgnoreCase(nameStudent);
+        return students.stream().map(this::mapToDTO).toList();
+    }
+
+    @Override
+    public List<StudentDTO> filterStudentByCarrera(int idCarrera) {
+        Carrera carrera = carreraRepository.findById(idCarrera)
+                .orElseThrow(() -> new RuntimeException("Carrera no encontrada"));
+        List<Student> students = studentRepository.findByCarrera(carrera);
+        return students.stream().map(this::mapToDTO).toList();
+    }
+
+    @Override
+    public List<StudentDTO> filterStudentByStatus(boolean status) {
+        List<Student> students = studentRepository.findByStatusStudent(status);
+        return students.stream().map(this::mapToDTO).toList();
+    }
+
+    @Override
     public StudentDTO updateStudent(int idStudent, StudentDTO studentDTO) {
         Optional<Student> studentOpt = studentRepository.findById(idStudent);
         if (studentOpt.isEmpty()) {
             throw new RuntimeException("Estudiante no encontrado");
         }
-        
+
         Student student = studentOpt.get();
         student.setNameStudent(studentDTO.getNameStudent());
         student.setEmailStudent(studentDTO.getEmailStudent());
         student.setPhoneStudent(studentDTO.getPhoneStudent());
-        student.setCarreraStudent(studentDTO.getCarreraStudent());
         student.setStatusStudent(studentDTO.isStatusStudent());
-        
+        student.setLibraryAccessStudent(studentDTO.isLibraryAccessStudent());
+
         Student updatedStudent = studentRepository.save(student);
         return mapToDTO(updatedStudent);
     }
@@ -121,6 +150,10 @@ public class StudentServiceImplement implements IStudentService {
         studentRepository.deleteById(idStudent);
     }
 }
+
+
+
+
 
 
 

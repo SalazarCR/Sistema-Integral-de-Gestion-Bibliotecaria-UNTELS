@@ -89,5 +89,35 @@ public class StudentController {
             return ResponseEntity.status(500).body("Error: " + e.getMessage());
         }
     }
+
+    @GetMapping("/buscar/nombre")
+    public ResponseEntity<?> searchStudentByName(@RequestParam String nombre) {
+        try {
+            var students = studentService.searchStudentByName(nombre);
+            return ResponseEntity.ok(students);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/filtrar/carrera/{idCarrera}")
+    public ResponseEntity<?> filterStudentByCarrera(@PathVariable int idCarrera) {
+        try {
+            var students = studentService.filterStudentByCarrera(idCarrera);
+            return ResponseEntity.ok(students);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/filtrar/estado/{status}")
+    public ResponseEntity<?> filterStudentByStatus(@PathVariable boolean status) {
+        try {
+            var students = studentService.filterStudentByStatus(status);
+            return ResponseEntity.ok(students);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error: " + e.getMessage());
+        }
+    }
 }
 

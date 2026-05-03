@@ -22,14 +22,18 @@ public class Student {
     @Column(name = "phoneStudent", length = 20)
     private String phoneStudent;
 
-    @Column(name = "carreraStudent", length = 100, nullable = false)
-    private String carreraStudent;
-
     @Column(name = "statusStudent", nullable = false)
     private boolean statusStudent;
 
+    @Column(name = "libraryAccessStudent", nullable = false)
+    private boolean libraryAccessStudent;
+
     @Column(name = "dateRegisterStudent", nullable = false)
     private LocalDate dateRegisterStudent;
+
+    @ManyToOne
+    @JoinColumn(name = "idCarrera", nullable = false)
+    private Carrera carrera;
 
     @OneToOne
     @JoinColumn(name = "idUser", nullable = false)
@@ -37,14 +41,15 @@ public class Student {
 
     public Student() {}
 
-    public Student(String codigoStudent, String nameStudent, String emailStudent, String phoneStudent, String carreraStudent, boolean statusStudent, LocalDate dateRegisterStudent, User user) {
+    public Student(String codigoStudent, String nameStudent, String emailStudent, String phoneStudent, boolean statusStudent, LocalDate dateRegisterStudent, Carrera carrera, User user) {
         this.codigoStudent = codigoStudent;
         this.nameStudent = nameStudent;
         this.emailStudent = emailStudent;
         this.phoneStudent = phoneStudent;
-        this.carreraStudent = carreraStudent;
         this.statusStudent = statusStudent;
+        this.libraryAccessStudent = true;
         this.dateRegisterStudent = dateRegisterStudent;
+        this.carrera = carrera;
         this.user = user;
     }
 
@@ -58,12 +63,14 @@ public class Student {
     public void setEmailStudent(String emailStudent) { this.emailStudent = emailStudent; }
     public String getPhoneStudent() { return phoneStudent; }
     public void setPhoneStudent(String phoneStudent) { this.phoneStudent = phoneStudent; }
-    public String getCarreraStudent() { return carreraStudent; }
-    public void setCarreraStudent(String carreraStudent) { this.carreraStudent = carreraStudent; }
     public boolean isStatusStudent() { return statusStudent; }
     public void setStatusStudent(boolean statusStudent) { this.statusStudent = statusStudent; }
+    public boolean isLibraryAccessStudent() { return libraryAccessStudent; }
+    public void setLibraryAccessStudent(boolean libraryAccessStudent) { this.libraryAccessStudent = libraryAccessStudent; }
     public LocalDate getDateRegisterStudent() { return dateRegisterStudent; }
     public void setDateRegisterStudent(LocalDate dateRegisterStudent) { this.dateRegisterStudent = dateRegisterStudent; }
+    public Carrera getCarrera() { return carrera; }
+    public void setCarrera(Carrera carrera) { this.carrera = carrera; }
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
 }
