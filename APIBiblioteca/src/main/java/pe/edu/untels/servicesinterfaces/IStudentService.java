@@ -12,7 +12,7 @@ public interface IStudentService {
     List<StudentDTO> listActiveStudents();
     Optional<StudentDTO> getStudentById(int idStudent);
     Optional<StudentDTO> getStudentByCodigo(String codigoStudent);
-    Student updateStudent(Student student);
+    StudentDTO updateStudent(int idStudent, StudentDTO studentDTO);
     void deleteStudent(int idStudent);
 }
 

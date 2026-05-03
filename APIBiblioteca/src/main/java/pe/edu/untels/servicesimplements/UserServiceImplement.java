@@ -1,6 +1,7 @@
 package pe.edu.untels.servicesimplements;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import pe.edu.untels.dtos.LoginRequestDTO;
 import pe.edu.untels.dtos.LoginResponseDTO;
@@ -15,12 +16,15 @@ public class UserServiceImplement implements IUserService {
     @Autowired
     private IUserRepository userRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
     public LoginResponseDTO login(LoginRequestDTO loginRequestDTO) {
         Optional<User> userOpt = userRepository.findByUsernameUser(loginRequestDTO.getUsernameUser());
-        if (userOpt.isPresent() && userOpt.get().getPasswordUser().equals(loginRequestDTO.getPasswordUser())) {
+        if (userOpt.isPresent()) {
             User user = userOpt.get();
-            if (user.isStatusUser()) {
+            if (user.isStatusUser() && passwordEncoder.matches(loginRequestDTO.getPasswordUser(), user.getPasswordUser())) {
                 return new LoginResponseDTO(user.getIdUser(), user.getUsernameUser(), user.getEmailUser(), user.getRole().getNameRole(), user.isStatusUser());
             }
         }
@@ -32,6 +36,8 @@ public class UserServiceImplement implements IUserService {
         if (userRepository.existsByUsernameUser(user.getUsernameUser())) {
             throw new RuntimeException("El usuario ya existe");
         }
+        // Encriptar la contraseña antes de guardar
+        user.setPasswordUser(passwordEncoder.encode(user.getPasswordUser()));
         return userRepository.save(user);
     }
 
@@ -61,4 +67,7 @@ public class UserServiceImplement implements IUserService {
         return userOpt.isPresent() && userOpt.get().isStatusUser();
     }
 }
+
+
+
 

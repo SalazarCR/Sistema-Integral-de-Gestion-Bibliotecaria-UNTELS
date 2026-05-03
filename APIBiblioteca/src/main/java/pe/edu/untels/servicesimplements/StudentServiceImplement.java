@@ -1,6 +1,7 @@
 package pe.edu.untels.servicesimplements;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import pe.edu.untels.dtos.StudentDTO;
 import pe.edu.untels.dtos.StudentRegisterDTO;
@@ -24,6 +25,8 @@ public class StudentServiceImplement implements IStudentService {
     private IUserRepository userRepository;
     @Autowired
     private IRoleRepository roleRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     private StudentDTO mapToDTO(Student student) {
         StudentDTO dto = new StudentDTO();
@@ -50,7 +53,7 @@ public class StudentServiceImplement implements IStudentService {
 
         User newUser = new User();
         newUser.setUsernameUser(studentRegisterDTO.getUsernameUser());
-        newUser.setPasswordUser(studentRegisterDTO.getPasswordUser());
+        newUser.setPasswordUser(passwordEncoder.encode(studentRegisterDTO.getPasswordUser()));
         newUser.setEmailUser(studentRegisterDTO.getEmailStudent());
         newUser.setStatusUser(true);
         newUser.setDateRegisterUser(LocalDateTime.now());
@@ -96,8 +99,21 @@ public class StudentServiceImplement implements IStudentService {
     }
 
     @Override
-    public Student updateStudent(Student student) {
-        return studentRepository.save(student);
+    public StudentDTO updateStudent(int idStudent, StudentDTO studentDTO) {
+        Optional<Student> studentOpt = studentRepository.findById(idStudent);
+        if (studentOpt.isEmpty()) {
+            throw new RuntimeException("Estudiante no encontrado");
+        }
+        
+        Student student = studentOpt.get();
+        student.setNameStudent(studentDTO.getNameStudent());
+        student.setEmailStudent(studentDTO.getEmailStudent());
+        student.setPhoneStudent(studentDTO.getPhoneStudent());
+        student.setCarreraStudent(studentDTO.getCarreraStudent());
+        student.setStatusStudent(studentDTO.isStatusStudent());
+        
+        Student updatedStudent = studentRepository.save(student);
+        return mapToDTO(updatedStudent);
     }
 
     @Override
@@ -105,6 +121,9 @@ public class StudentServiceImplement implements IStudentService {
         studentRepository.deleteById(idStudent);
     }
 }
+
+
+
 
 
 

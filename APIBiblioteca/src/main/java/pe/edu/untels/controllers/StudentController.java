@@ -69,5 +69,25 @@ public class StudentController {
             return ResponseEntity.status(500).body("Error: " + e.getMessage());
         }
     }
+
+    @PutMapping("/{idStudent}")
+    public ResponseEntity<?> updateStudent(@PathVariable int idStudent, @RequestBody StudentDTO studentDTO) {
+        try {
+            StudentDTO updatedStudent = studentService.updateStudent(idStudent, studentDTO);
+            return ResponseEntity.ok(updatedStudent);
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body("Error: " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{idStudent}")
+    public ResponseEntity<?> deleteStudent(@PathVariable int idStudent) {
+        try {
+            studentService.deleteStudent(idStudent);
+            return ResponseEntity.ok("Estudiante eliminado correctamente");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error: " + e.getMessage());
+        }
+    }
 }
 
