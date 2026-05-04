@@ -6,6 +6,8 @@ import pe.edu.untels.entities.Bibliotecario;
 import pe.edu.untels.repositories.IBibliotecarioRepository;
 import pe.edu.untels.servicesinterfaces.IBibliotecarioService;
 
+import java.util.List;
+
 @Service
 public class BibliotecarioServiceImpl implements IBibliotecarioService {
 
@@ -16,5 +18,10 @@ public class BibliotecarioServiceImpl implements IBibliotecarioService {
     public Bibliotecario registrar(Bibliotecario b) {
         b.setActivo(true);
         return repository.save(b);
+    }
+
+    @Override
+    public List<Bibliotecario> listar() {
+        return repository.findByActivoTrue();
     }
 }
