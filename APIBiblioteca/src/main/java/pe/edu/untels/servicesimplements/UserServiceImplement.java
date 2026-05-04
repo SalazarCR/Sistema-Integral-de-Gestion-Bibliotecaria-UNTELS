@@ -21,14 +21,13 @@ public class UserServiceImplement implements IUserService {
 
     @Override
     public LoginResponseDTO login(LoginRequestDTO loginRequestDTO) {
-        // Buscar por username o por email, lo que venga en el request
         Optional<User> userOpt = Optional.empty();
 
-        if (loginRequestDTO.getUsernameUser() != null && !loginRequestDTO.getUsernameUser().isBlank()) {
-            userOpt = userRepository.findByUsernameUser(loginRequestDTO.getUsernameUser());
+        if (loginRequestDTO.getUsername() != null && !loginRequestDTO.getUsername().isBlank()) {
+            userOpt = userRepository.findByUsernameUser(loginRequestDTO.getUsername());
         }
-        if (userOpt.isEmpty() && loginRequestDTO.getEmailUser() != null && !loginRequestDTO.getEmailUser().isBlank()) {
-            userOpt = userRepository.findByEmailUser(loginRequestDTO.getEmailUser());
+        if (userOpt.isEmpty() && loginRequestDTO.getEmail() != null && !loginRequestDTO.getEmail().isBlank()) {
+            userOpt = userRepository.findByEmailUser(loginRequestDTO.getEmail());
         }
 
         if (userOpt.isEmpty()) {
@@ -37,12 +36,12 @@ public class UserServiceImplement implements IUserService {
 
         User user = userOpt.get();
 
-        if (!loginRequestDTO.getPasswordUser().equals(user.getPasswordUser())) {
+        if (!loginRequestDTO.getPassword().equals(user.getPasswordUser())) {
             throw new RuntimeException("Credenciales inválidas");
         }
 
         if (!user.isStatusUser()) {
-            throw new RuntimeException("Usuario deshabilitado");
+            throw new RuntimeException("Acceso restringido: usuario deshabilitado");
         }
 
         return LoginResponseDTO.ok(

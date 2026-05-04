@@ -1,18 +1,18 @@
 package pe.edu.untels.dtos;
 
 public class LoginRequestDTO {
-    private String usernameUser;
-    private String emailUser;
-    private String passwordUser;
+    private String username;
+    private String email;
+    private String password;
 
     public LoginRequestDTO() {}
 
-    public String getUsernameUser() { return usernameUser; }
-    public void setUsernameUser(String usernameUser) { this.usernameUser = usernameUser; }
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
 
-    public String getEmailUser() { return emailUser; }
-    public void setEmailUser(String emailUser) { this.emailUser = emailUser; }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
-    public String getPasswordUser() { return passwordUser; }
-    public void setPasswordUser(String passwordUser) { this.passwordUser = passwordUser; }
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
 }
