@@ -32,4 +32,11 @@ public class BibliotecarioServiceImpl implements IBibliotecarioService {
         existente.setCorreo(b.getCorreo());
         return repository.save(existente);
     }
+
+    @Override
+    public void deshabilitar(Long id) {
+        Bibliotecario b = repository.findById(id).orElseThrow();
+        b.setActivo(false);
+        repository.save(b);
+    }
 }

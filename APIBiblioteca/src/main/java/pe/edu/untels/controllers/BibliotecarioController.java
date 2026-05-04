@@ -28,4 +28,9 @@ public class BibliotecarioController {
     public Bibliotecario editar(@PathVariable Long id, @RequestBody Bibliotecario b) {
         return service.editar(id, b);
     }
+
+    @DeleteMapping("/{id}")
+    public void eliminar(@PathVariable Long id) {
+        service.deshabilitar(id);
+    }
 }

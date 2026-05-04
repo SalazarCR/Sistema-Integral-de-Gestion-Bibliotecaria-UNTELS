@@ -8,4 +8,5 @@ public interface IBibliotecarioService {
     Bibliotecario registrar(Bibliotecario b);
     List<Bibliotecario> listar();
     Bibliotecario editar(Long id, Bibliotecario b);
+    void deshabilitar(Long id);
 }
