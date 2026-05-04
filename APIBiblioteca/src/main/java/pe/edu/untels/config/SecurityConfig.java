@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -25,41 +25,51 @@ public class SecurityConfig {
     }
 
     @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
     public DaoAuthenticationProvider authProvider() {
+
         PasswordEncoder encoder = passwordEncoder();
+
         log.info(">>> [CONFIG] PasswordEncoder creado: {}", encoder.getClass().getSimpleName());
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService);
+
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+
+        provider.setUserDetailsService(userDetailsService);
         provider.setPasswordEncoder(encoder);
+
         return provider;
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
         http
                 .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"))
-            .authenticationProvider(authProvider())
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/login", "/api/auth/login").permitAll()
-                .anyRequest().authenticated()
-            )
-            .formLogin(form -> form
-                .permitAll()
-                .successHandler((request, response, authentication) -> {
-                    String username = authentication.getName();
-                    String roles = authentication.getAuthorities().toString();
-                    log.info(">>> [LOGIN] ✅ AUTENTICACIÓN EXITOSA — usuario: '{}' — roles: {}", username, roles);
-                    response.sendRedirect("/swagger-ui.html");
-                })
-                .failureHandler((request, response, exception) -> {
-                    log.warn(">>> [LOGIN] ❌ AUTENTICACIÓN FALLIDA — motivo: {}", exception.getMessage());
-                    response.sendRedirect("/login?error");
-                })
-            );
-        return http.build();
-    }
+                .authenticationProvider(authProvider())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/login", "/api/auth/login").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .formLogin(form -> form
+                        .permitAll()
+                        .successHandler((request, response, authentication) -> {
+                            String username = authentication.getName();
+                            String roles = authentication.getAuthorities().toString();
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return NoOpPasswordEncoder.getInstance();
+                            log.info(">>> [LOGIN] ✅ EXITOSO — usuario: '{}' — roles: {}", username, roles);
+
+                            response.sendRedirect("/swagger-ui.html");
+                        })
+                        .failureHandler((request, response, exception) -> {
+                            log.warn(">>> [LOGIN] ❌ FALLIDO — motivo: {}", exception.getMessage());
+                            response.sendRedirect("/login?error");
+                        })
+                );
+
+        return http.build();
     }
 }
