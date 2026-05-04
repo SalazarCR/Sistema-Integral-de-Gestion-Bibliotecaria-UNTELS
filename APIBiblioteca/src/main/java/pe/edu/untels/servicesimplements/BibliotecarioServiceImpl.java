@@ -24,4 +24,12 @@ public class BibliotecarioServiceImpl implements IBibliotecarioService {
     public List<Bibliotecario> listar() {
         return repository.findByActivoTrue();
     }
+
+    @Override
+    public Bibliotecario editar(Long id, Bibliotecario b) {
+        Bibliotecario existente = repository.findById(id).orElseThrow();
+        existente.setNombre(b.getNombre());
+        existente.setCorreo(b.getCorreo());
+        return repository.save(existente);
+    }
 }

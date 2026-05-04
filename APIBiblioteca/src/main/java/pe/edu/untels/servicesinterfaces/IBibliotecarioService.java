@@ -7,4 +7,5 @@ import java.util.List;
 public interface IBibliotecarioService {
     Bibliotecario registrar(Bibliotecario b);
     List<Bibliotecario> listar();
+    Bibliotecario editar(Long id, Bibliotecario b);
 }

@@ -23,4 +23,9 @@ public class BibliotecarioController {
     public List<Bibliotecario> listar() {
         return service.listar();
     }
+
+    @PutMapping("/{id}")
+    public Bibliotecario editar(@PathVariable Long id, @RequestBody Bibliotecario b) {
+        return service.editar(id, b);
+    }
 }
