@@ -66,6 +66,17 @@ public class UserServiceImplement implements IUserService {
         Optional<User> userOpt = userRepository.findById(idUser);
         return userOpt.isPresent() && userOpt.get().isStatusUser();
     }
+
+    @Override
+    public User toggleUserStatus(int idUser) {
+        Optional<User> userOpt = userRepository.findById(idUser);
+        if (userOpt.isEmpty()) {
+            throw new RuntimeException("Usuario no encontrado");
+        }
+        User user = userOpt.get();
+        user.setStatusUser(!user.isStatusUser());
+        return userRepository.save(user);
+    }
 }
 
 

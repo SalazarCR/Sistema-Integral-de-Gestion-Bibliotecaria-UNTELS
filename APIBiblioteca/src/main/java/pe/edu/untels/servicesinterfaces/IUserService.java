@@ -14,5 +14,6 @@ public interface IUserService {
     void deleteUser(int idUser);
     List<User> listUsers();
     boolean isUserActive(int idUser);
+    User toggleUserStatus(int idUser);
 }
 
