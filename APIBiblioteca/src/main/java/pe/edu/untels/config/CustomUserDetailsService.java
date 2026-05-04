@@ -43,6 +43,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         log.info(">>> [LOGIN] password_user equals '1234': {}", "1234".equals(storedPassword));
 
         return new org.springframework.security.core.userdetails.User(
+<<<<<<< HEAD
             user.getUsernameUser(),
             storedPassword,
             user.isStatusUser(),
@@ -53,3 +54,16 @@ public class CustomUserDetailsService implements UserDetailsService {
         );
     }
 }
+=======
+                user.getUsernameUser(),
+                storedPassword,
+                user.isStatusUser(),
+                true,
+                true,
+                true,
+                List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().getNameRole()))
+        );
+    }
+}
+
+>>>>>>> origin/nipper

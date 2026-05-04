@@ -1,53 +1,61 @@
 -- Script SQL para insertar datos iniciales en la BD
 -- Ejecutar en pgAdmin en la base de datos: bdbiblioteca
 
--- Insertar Roles
-INSERT INTO "Role" (id_role, name_role) VALUES
-(1, 'Admin'),
-(2, 'Bibliotecario'),
-(3, 'Estudiante')
-ON CONFLICT DO NOTHING;
+-- 🔑 1. INSERTAR ROLES
+INSERT INTO role (id_role, name_role, description_role) VALUES
+(1, 'Admin', NULL),
+(2, 'Bibliotecario', NULL),
+(3, 'Estudiante', NULL);
 
--- Insertar Usuarios Admin (contraseña: admin123 encriptada con BCrypt)
--- Para cambiar contraseña: usar un encodificador online o bcrypt en Java
-INSERT INTO "User" (id_user, username_user, password_user, email_user, status_user, date_register_user, id_role) VALUES
-(1, 'admin', '$2a$10$JwKk.LuZnZfBj4kVyS8x9OlxlN6p7Klr2kKlQpQvQkQlKbVxK9FVK', 'admin@untels.edu.pe', true, NOW(), 1)
-ON CONFLICT DO NOTHING;
+-- 🏫 2. INSERTAR CARRERAS
+INSERT INTO carrera (id_carrera, status_carrera, name_carrera, description_carrera) VALUES
+(2, true, 'Ingeniería de Sistemas', NULL),
+(3, true, 'Ingeniería Civil', NULL),
+(4, true, 'Administración', NULL);
 
--- Insertar Usuario Bibliotecario
-INSERT INTO "User" (id_user, username_user, password_user, email_user, status_user, date_register_user, id_role) VALUES
-(2, 'bibliotecario', '$2a$10$JwKk.LuZnZfBj4kVyS8x9OlxlN6p7Klr2kKlQpQvQkQlKbVxK9FVK', 'biblio@untels.edu.pe', true, NOW(), 2)
-ON CONFLICT DO NOTHING;
+-- 👤 3. INSERTAR USUARIOS (LOGIN)
+INSERT INTO "user" (
+   id_user,
+   id_role,
+   status_user,
+   date_register_user,
+   username_user,
+   email_user,
+   password_user
+) VALUES
+(1, 2, true, '2026-05-03 21:00:00', 'bibliotecario1', 'bibliotecario1@untels.edu.pe', '1234'),
+(2, 3, true, '2026-05-03 21:00:00', 'juan.perez', 'juan.perez@untels.edu.pe', '1234'),
+(3, 3, true, '2026-05-03 21:00:00', 'maria.lopez', 'maria.lopez@untels.edu.pe', '1234'),
+(4, 3, true, '2026-05-03 21:00:00', 'carlos.garcia', 'carlos.garcia@untels.edu.pe', '1234'),
+(5, 1, true, '2026-05-04 00:09:32', 'admin', 'admin@untels.edu.pe', '1234');
 
--- Insertar Carreras
-INSERT INTO "Carrera" (id_carrera, name_carrera) VALUES
-(1, 'Ingeniería de Sistemas'),
-(2, 'Ingeniería Civil'),
-(3, 'Administración de Empresas'),
-(4, 'Contabilidad')
-ON CONFLICT DO NOTHING;
+-- 🎓 4. INSERTAR ESTUDIANTES
+INSERT INTO student (
+   id_student,
+   id_user,
+   id_carrera,
+   date_register_student,
+   library_access_student,
+   status_student,
+   codigo_student,
+   phone_student,
+   email_student,
+   name_student
+) VALUES
+(3, 2, 2, '2026-05-03', true, true, 'EST2024001', '987654321', 'juan.perez@untels.edu.pe', 'Juan Perez Gonzales'),
+(4, 3, 3, '2026-05-03', true, true, 'EST2024002', '987654322', 'maria.lopez@untels.edu.pe', 'Maria Lopez Martinez'),
+(5, 4, 2, '2026-05-03', false, false, 'EST2024003', '987654323', 'carlos.garcia@untels.edu.pe', 'Carlos Garcia Rodriguez');
 
--- Insertar Estudiantes Ejemplo (usuario_id 3, 4, 5)
-INSERT INTO "User" (id_user, username_user, password_user, email_user, status_user, date_register_user, id_role) VALUES
-(3, 'estudiante1', '$2a$10$JwKk.LuZnZfBj4kVyS8x9OlxlN6p7Klr2kKlQpQvQkQlKbVxK9FVK', 'estudiante1@untels.edu.pe', true, NOW(), 3),
-(4, 'estudiante2', '$2a$10$JwKk.LuZnZfBj4kVyS8x9OlxlN6p7Klr2kKlQpQvQkQlKbVxK9FVK', 'estudiante2@untels.edu.pe', true, NOW(), 3),
-(5, 'estudiante3', '$2a$10$JwKk.LuZnZfBj4kVyS8x9OlxlN6p7Klr2kKlQpQvQkQlKbVxK9FVK', 'estudiante3@untels.edu.pe', false, NOW(), 3)
-ON CONFLICT DO NOTHING;
-
--- Insertar Estudiantes en la tabla Student
-INSERT INTO "Student" (id_student, codigo_student, name_student, email_student, phone_student, status_student, library_access_student, date_register_student, id_carrera, id_user) VALUES
-(1, 'EST2024001', 'Juan Perez Garcia', 'juan.perez@untels.edu.pe', '987654321', true, true, NOW()::date, 1, 3),
-(2, 'EST2024002', 'Maria Martinez Lopez', 'maria.martinez@untels.edu.pe', '987654322', true, true, NOW()::date, 2, 4),
-(3, 'EST2024003', 'Carlos Rodriguez Flores', 'carlos.rodriguez@untels.edu.pe', '987654323', false, false, NOW()::date, 1, 5)
-ON CONFLICT DO NOTHING;
-
--- Verificar que los datos fueron insertados
+-- ✅ VERIFICAR QUE LOS DATOS FUERON INSERTADOS
 SELECT 'ROLES INSERTADOS:' as Mensaje;
-SELECT * FROM "Role" LIMIT 5;
+SELECT * FROM role;
+
+SELECT 'CARRERAS INSERTADAS:' as Mensaje;
+SELECT * FROM carrera;
 
 SELECT 'USUARIOS INSERTADOS:' as Mensaje;
-SELECT id_user, username_user, email_user, status_user FROM "User" LIMIT 10;
+SELECT id_user, username_user, email_user, status_user, id_role FROM "user";
 
 SELECT 'ESTUDIANTES INSERTADOS:' as Mensaje;
-SELECT id_student, codigo_student, name_student, status_student, library_access_student FROM "Student" LIMIT 5;
+SELECT id_student, codigo_student, name_student, status_student, library_access_student FROM student;
 

@@ -48,6 +48,8 @@ public class LoginResponseDTO {
     public String getRol() { return rol; }
     public void setRol(String rol) { this.rol = rol; }
 
+    public String getRole() { return rol; }
+
     public String getEstadoAcceso() { return estadoAcceso; }
     public void setEstadoAcceso(String estadoAcceso) { this.estadoAcceso = estadoAcceso; }
 }
