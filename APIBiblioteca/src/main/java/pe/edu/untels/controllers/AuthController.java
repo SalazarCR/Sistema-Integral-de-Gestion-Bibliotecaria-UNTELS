@@ -5,6 +5,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pe.edu.untels.dtos.LoginRequestDTO;
 import pe.edu.untels.dtos.LoginResponseDTO;
+import pe.edu.untels.dtos.StatusResponseDTO;
+import pe.edu.untels.dtos.ToggleResponseDTO;
 import pe.edu.untels.entities.User;
 import pe.edu.untels.servicesinterfaces.IUserService;
 
@@ -14,7 +16,15 @@ public class AuthController {
     @Autowired
     private IUserService userService;
 
-    // ...existing code...
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO loginRequestDTO) {
+        try {
+            LoginResponseDTO response = userService.login(loginRequestDTO);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(401).body(LoginResponseDTO.error(e.getMessage()));
+        }
+    }
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(@RequestParam int idUser) {
