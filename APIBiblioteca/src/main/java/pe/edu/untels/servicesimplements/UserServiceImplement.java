@@ -1,62 +1,52 @@
+package pe.edu.untels.servicesimplements;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import pe.edu.untels.dtos.LoginRequestDTO;
+import pe.edu.untels.dtos.LoginResponseDTO;
+import pe.edu.untels.entities.User;
+import pe.edu.untels.repositories.IUserRepository;
+import pe.edu.untels.servicesinterfaces.IUserService;
+
+import java.util.List;
+import java.util.Optional;
+
 @Service
 public class UserServiceImplement implements IUserService {
 
     @Autowired
     private IUserRepository userRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
     @Override
-    public LoginResponseDTO login(LoginRequestDTO loginRequestDTO) {
+    public LoginResponseDTO login(LoginRequestDTO dto) {
 
-        Optional<User> userOpt = Optional.empty();
-
-        // buscar por username
-        if (loginRequestDTO.getUsername() != null && !loginRequestDTO.getUsername().isBlank()) {
-            userOpt = userRepository.findByUsernameUser(loginRequestDTO.getUsername());
-        }
+        Optional<User> userOpt =
+                userRepository.findByUsernameUser(dto.getUsername());
 
         if (userOpt.isEmpty()) {
-            throw new RuntimeException("Credenciales inválidas");
+            throw new RuntimeException("Usuario no encontrado");
         }
 
         User user = userOpt.get();
 
-        // 🔥 CORRECTO: usar PasswordEncoder
-        if (!passwordEncoder.matches(loginRequestDTO.getPassword(), user.getPasswordUser())) {
-            throw new RuntimeException("Credenciales inválidas");
+        if (!user.getPasswordUser().equals(dto.getPassword())) {
+            throw new RuntimeException("Contraseña incorrecta");
         }
 
-        // usuario activo
         if (!user.isStatusUser()) {
-            throw new RuntimeException("Acceso restringido: usuario deshabilitado");
+            throw new RuntimeException("Usuario deshabilitado");
         }
-
-        String roleName = (user.getRole() != null)
-                ? user.getRole().getNameRole()
-                : "SIN_ROL";
 
         return LoginResponseDTO.ok(
                 user.getIdUser(),
                 user.getUsernameUser(),
                 user.getEmailUser(),
-                roleName
+                user.getRole().getNameRole()
         );
     }
 
     @Override
     public User createUser(User user) {
-
-        if (userRepository.existsByUsernameUser(user.getUsernameUser())) {
-            throw new RuntimeException("El usuario ya existe");
-        }
-
-        // 🔥 encriptar contraseña
-        user.setPasswordUser(passwordEncoder.encode(user.getPasswordUser()));
-
-        user.setStatusUser(true); // por defecto activo
-
         return userRepository.save(user);
     }
 
@@ -87,15 +77,12 @@ public class UserServiceImplement implements IUserService {
                 .orElse(false);
     }
 
-    // 🔥 TOGGLE (YA ESTÁ BIEN PERO LO DEJAMOS LIMPIO)
     @Override
     public User toggleUserStatus(int idUser) {
-
         User user = userRepository.findById(idUser)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         user.setStatusUser(!user.isStatusUser());
-
         return userRepository.save(user);
     }
 }

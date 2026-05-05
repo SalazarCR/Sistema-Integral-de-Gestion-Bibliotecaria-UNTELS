@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistema Bibliotecario UNTELS</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #1e2d45;
+    --accent: #3b82f6;
+    --accent2: #06b6d4;
+    --accent3: #8b5cf6;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --text: #e2e8f0;
+    --text2: #94a3b8;
+    --text3: #475569;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Sora',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; overflow-x:hidden; }
+
+  /* ── SCREENS ── */
+  .screen { display:none; min-height:100vh; }
+  .screen.active { display:flex; }
+
+  /* ── LOGIN ── */
+  #login-screen {
+    background: var(--bg);
+    align-items:center; justify-content:center;
+    position:relative; overflow:hidden;
+  }
+  .login-bg {
+    position:absolute; inset:0;
+    background: radial-gradient(ellipse 80% 60% at 20% 40%, rgba(59,130,246,0.12) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 50% at 80% 70%, rgba(139,92,246,0.10) 0%, transparent 55%),
+                radial-gradient(ellipse 50% 40% at 60% 10%, rgba(6,182,212,0.08) 0%, transparent 50%);
+  }
+  .login-grid {
+    position:absolute; inset:0;
+    background-image: linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  .login-card {
+    position:relative; z-index:2;
+    background: rgba(17,24,39,0.85);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 48px 44px;
+    width: 420px;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 0 60px rgba(59,130,246,0.08), 0 40px 80px rgba(0,0,0,0.5);
+    animation: cardIn 0.7s cubic-bezier(0.16,1,0.3,1);
+  }
+  @keyframes cardIn { from { opacity:0; transform:translateY(30px) scale(0.97); } to { opacity:1; transform:translateY(0) scale(1); } }
+  .login-logo {
+    display:flex; align-items:center; gap:12px; margin-bottom:36px;
+  }
+  .login-logo-icon {
+    width:44px; height:44px;
+    background: linear-gradient(135deg, var(--accent), var(--accent3));
+    border-radius:12px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:20px;
+  }
+  .login-logo-text h1 { font-size:16px; font-weight:700; letter-spacing:-0.3px; }
+  .login-logo-text p { font-size:11px; color:var(--text2); font-family:'JetBrains Mono',monospace; }
+  .login-title { font-size:24px; font-weight:700; margin-bottom:6px; letter-spacing:-0.5px; }
+  .login-sub { font-size:13px; color:var(--text2); margin-bottom:32px; }
+  .form-group { margin-bottom:18px; }
+  .form-group label { display:block; font-size:12px; font-weight:600; color:var(--text2); margin-bottom:8px; letter-spacing:0.5px; text-transform:uppercase; }
+  .form-group input {
+    width:100%; background:var(--surface2); border:1px solid var(--border);
+    border-radius:10px; padding:12px 16px; color:var(--text); font-family:'Sora',sans-serif;
+    font-size:14px; transition:border-color 0.2s, box-shadow 0.2s; outline:none;
+  }
+  .form-group input:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(59,130,246,0.12); }
+  .btn-login {
+    width:100%; padding:13px; border:none; border-radius:10px; cursor:pointer;
+    font-family:'Sora',sans-serif; font-size:14px; font-weight:600; letter-spacing:0.3px;
+    background: linear-gradient(135deg, var(--accent), var(--accent3));
+    color:#fff; margin-top:8px; transition:opacity 0.2s, transform 0.1s;
+    position:relative; overflow:hidden;
+  }
+  .btn-login:hover { opacity:0.9; transform:translateY(-1px); }
+  .btn-login:active { transform:translateY(0); }
+  .login-error { color:var(--danger); font-size:12px; margin-top:12px; text-align:center; display:none; }
+  .quick-users { margin-top:28px; padding-top:24px; border-top:1px solid var(--border); }
+  .quick-users p { font-size:11px; color:var(--text3); margin-bottom:12px; text-transform:uppercase; letter-spacing:0.5px; font-weight:600; }
+  .quick-btns { display:flex; gap:8px; flex-wrap:wrap; }
+  .quick-btn {
+    flex:1; min-width:80px; padding:8px 10px; border-radius:8px; border:1px solid var(--border);
+    background:var(--surface2); color:var(--text2); font-size:11px; font-family:'Sora',sans-serif;
+    cursor:pointer; transition:all 0.2s; text-align:center;
+  }
+  .quick-btn:hover { border-color:var(--accent); color:var(--accent); background:rgba(59,130,246,0.08); }
+  .quick-btn span { display:block; font-size:10px; color:var(--text3); margin-top:2px; }
+
+  /* ── APP SHELL ── */
+  #app-screen { flex-direction:column; }
+  .topbar {
+    height:60px; background:var(--surface); border-bottom:1px solid var(--border);
+    display:flex; align-items:center; padding:0 24px; gap:16px; position:sticky; top:0; z-index:100;
+  }
+  .topbar-logo { display:flex; align-items:center; gap:10px; margin-right:auto; }
+  .topbar-logo-icon { width:32px; height:32px; background:linear-gradient(135deg,var(--accent),var(--accent3)); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:14px; }
+  .topbar-logo h2 { font-size:14px; font-weight:700; }
+  .topbar-logo span { font-size:11px; color:var(--text2); font-family:'JetBrains Mono',monospace; }
+  .topbar-user { display:flex; align-items:center; gap:10px; }
+  .topbar-role { font-size:11px; font-family:'JetBrains Mono',monospace; padding:3px 10px; border-radius:20px; font-weight:500; }
+  .role-admin { background:rgba(139,92,246,0.15); color:#a78bfa; border:1px solid rgba(139,92,246,0.25); }
+  .role-biblio { background:rgba(6,182,212,0.12); color:#22d3ee; border:1px solid rgba(6,182,212,0.2); }
+  .role-student { background:rgba(16,185,129,0.12); color:#34d399; border:1px solid rgba(16,185,129,0.2); }
+  .topbar-name { font-size:13px; font-weight:600; }
+  .btn-logout { padding:7px 14px; border-radius:8px; border:1px solid var(--border); background:transparent; color:var(--text2); font-family:'Sora',sans-serif; font-size:12px; cursor:pointer; transition:all 0.2s; }
+  .btn-logout:hover { border-color:var(--danger); color:var(--danger); }
+
+  /* ── LAYOUT ── */
+  .app-body { display:flex; flex:1; overflow:hidden; height:calc(100vh - 60px); }
+  .sidebar {
+    width:220px; background:var(--surface); border-right:1px solid var(--border);
+    padding:20px 12px; display:flex; flex-direction:column; gap:4px; overflow-y:auto;
+    flex-shrink:0;
+  }
+  .sidebar-section { font-size:10px; color:var(--text3); text-transform:uppercase; letter-spacing:0.8px; font-weight:700; padding:12px 8px 6px; margin-top:8px; }
+  .sidebar-section:first-child { margin-top:0; }
+  .nav-item {
+    display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:8px;
+    cursor:pointer; font-size:13px; color:var(--text2); transition:all 0.15s; border:1px solid transparent;
+  }
+  .nav-item:hover { background:var(--surface2); color:var(--text); }
+  .nav-item.active { background:rgba(59,130,246,0.12); color:var(--accent); border-color:rgba(59,130,246,0.2); }
+  .nav-item .icon { font-size:15px; width:18px; text-align:center; }
+  .nav-item .badge { margin-left:auto; font-size:10px; background:var(--accent); color:#fff; border-radius:10px; padding:1px 7px; font-family:'JetBrains Mono',monospace; }
+
+  /* ── MAIN ── */
+  .main { flex:1; overflow-y:auto; padding:28px 32px; }
+  .page { display:none; animation: pageIn 0.3s ease; }
+  .page.active { display:block; }
+  @keyframes pageIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+  /* ── PAGE HEADER ── */
+  .page-header { margin-bottom:28px; }
+  .page-header h2 { font-size:22px; font-weight:700; letter-spacing:-0.5px; }
+  .page-header p { color:var(--text2); font-size:13px; margin-top:4px; }
+
+  /* ── STAT CARDS ── */
+  .stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px; margin-bottom:28px; }
+  .stat-card {
+    background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:20px;
+    position:relative; overflow:hidden; transition:border-color 0.2s;
+  }
+  .stat-card:hover { border-color:var(--accent); }
+  .stat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; }
+  .stat-card.blue::before { background:linear-gradient(90deg,var(--accent),var(--accent2)); }
+  .stat-card.purple::before { background:linear-gradient(90deg,var(--accent3),#ec4899); }
+  .stat-card.green::before { background:linear-gradient(90deg,var(--success),#34d399); }
+  .stat-card.yellow::before { background:linear-gradient(90deg,var(--warning),#fbbf24); }
+  .stat-icon { font-size:24px; margin-bottom:12px; }
+  .stat-num { font-size:30px; font-weight:700; font-family:'JetBrains Mono',monospace; letter-spacing:-1px; }
+  .stat-label { font-size:12px; color:var(--text2); margin-top:4px; }
+
+  /* ── TABLES ── */
+  .card { background:var(--surface); border:1px solid var(--border); border-radius:14px; overflow:hidden; margin-bottom:20px; }
+  .card-header { padding:18px 22px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+  .card-header h3 { font-size:14px; font-weight:600; }
+  .card-body { padding:0; }
+  table { width:100%; border-collapse:collapse; }
+  th { font-size:11px; text-transform:uppercase; letter-spacing:0.6px; color:var(--text3); font-weight:600; padding:12px 22px; text-align:left; border-bottom:1px solid var(--border); background:rgba(255,255,255,0.02); }
+  td { padding:13px 22px; font-size:13px; border-bottom:1px solid rgba(255,255,255,0.04); vertical-align:middle; }
+  tr:last-child td { border-bottom:none; }
+  tr:hover td { background:rgba(59,130,246,0.03); }
+  .badge { display:inline-flex; align-items:center; gap:4px; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; font-family:'JetBrains Mono',monospace; }
+  .badge-green { background:rgba(16,185,129,0.12); color:#34d399; border:1px solid rgba(16,185,129,0.2); }
+  .badge-red { background:rgba(239,68,68,0.12); color:#f87171; border:1px solid rgba(239,68,68,0.2); }
+  .badge-blue { background:rgba(59,130,246,0.12); color:#60a5fa; border:1px solid rgba(59,130,246,0.2); }
+  .badge-purple { background:rgba(139,92,246,0.12); color:#a78bfa; border:1px solid rgba(139,92,246,0.2); }
+  .badge-yellow { background:rgba(245,158,11,0.12); color:#fbbf24; border:1px solid rgba(245,158,11,0.2); }
+
+  /* ── BUTTONS ── */
+  .btn { display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border-radius:8px; border:none; cursor:pointer; font-family:'Sora',sans-serif; font-size:12px; font-weight:600; transition:all 0.15s; letter-spacing:0.2px; }
+  .btn-primary { background:var(--accent); color:#fff; }
+  .btn-primary:hover { background:#2563eb; }
+  .btn-sm { padding:5px 10px; font-size:11px; border-radius:6px; }
+  .btn-ghost { background:transparent; border:1px solid var(--border); color:var(--text2); }
+  .btn-ghost:hover { border-color:var(--accent); color:var(--accent); }
+  .btn-danger { background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.2); color:#f87171; }
+  .btn-danger:hover { background:var(--danger); color:#fff; }
+  .btn-success { background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.2); color:#34d399; }
+  .btn-success:hover { background:var(--success); color:#fff; }
+
+  /* ── SEARCH ── */
+  .search-bar { display:flex; gap:10px; margin-bottom:20px; }
+  .search-input { flex:1; background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:10px 16px; color:var(--text); font-family:'Sora',sans-serif; font-size:13px; outline:none; transition:border-color 0.2s; }
+  .search-input:focus { border-color:var(--accent); }
+  select.filter-select { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:10px 14px; color:var(--text2); font-family:'Sora',sans-serif; font-size:13px; outline:none; cursor:pointer; }
+
+  /* ── SPRINT BOARD ── */
+  .sprint-board { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; }
+  .sprint-col { background:var(--surface); border:1px solid var(--border); border-radius:14px; overflow:hidden; }
+  .sprint-col-header { padding:14px 18px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+  .sprint-col-header h4 { font-size:13px; font-weight:600; }
+  .sprint-tasks { padding:12px; display:flex; flex-direction:column; gap:8px; }
+  .task-card { background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:12px 14px; }
+  .task-card-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
+  .task-id { font-size:10px; font-family:'JetBrains Mono',monospace; color:var(--text3); }
+  .task-title { font-size:12px; font-weight:600; margin-bottom:4px; }
+  .task-desc { font-size:11px; color:var(--text2); }
+  .task-assignee { font-size:10px; color:var(--text3); margin-top:6px; display:flex; align-items:center; gap:4px; }
+
+  /* ── PROFILE ── */
+  .profile-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:28px; display:flex; gap:24px; align-items:flex-start; margin-bottom:20px; }
+  .profile-avatar { width:72px; height:72px; border-radius:50%; background:linear-gradient(135deg,var(--accent),var(--accent3)); display:flex; align-items:center; justify-content:center; font-size:28px; flex-shrink:0; }
+  .profile-info h3 { font-size:18px; font-weight:700; }
+  .profile-info p { color:var(--text2); font-size:13px; margin-top:4px; }
+  .profile-meta { display:flex; gap:12px; margin-top:12px; flex-wrap:wrap; }
+  .profile-tag { font-size:11px; font-family:'JetBrains Mono',monospace; padding:4px 12px; border-radius:20px; border:1px solid var(--border); color:var(--text2); }
+
+  /* ── BOOKS ── */
+  .books-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:16px; }
+  .book-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:hidden; transition:border-color 0.2s, transform 0.2s; }
+  .book-card:hover { border-color:var(--accent); transform:translateY(-2px); }
+  .book-cover { height:120px; display:flex; align-items:center; justify-content:center; font-size:40px; }
+  .book-cover.c1 { background:linear-gradient(135deg,rgba(59,130,246,0.2),rgba(139,92,246,0.2)); }
+  .book-cover.c2 { background:linear-gradient(135deg,rgba(6,182,212,0.2),rgba(16,185,129,0.2)); }
+  .book-cover.c3 { background:linear-gradient(135deg,rgba(245,158,11,0.2),rgba(239,68,68,0.2)); }
+  .book-cover.c4 { background:linear-gradient(135deg,rgba(139,92,246,0.2),rgba(236,72,153,0.2)); }
+  .book-info { padding:14px; }
+  .book-title { font-size:13px; font-weight:600; margin-bottom:4px; }
+  .book-author { font-size:11px; color:var(--text2); margin-bottom:8px; }
+
+  /* ── MODAL ── */
+  .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(4px); z-index:1000; display:none; align-items:center; justify-content:center; }
+  .modal-overlay.open { display:flex; }
+  .modal { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:28px; width:480px; max-width:95vw; animation: cardIn 0.3s; }
+  .modal-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; }
+  .modal-header h3 { font-size:16px; font-weight:700; }
+  .modal-close { background:none; border:none; color:var(--text2); cursor:pointer; font-size:18px; }
+  .form-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .form-field { margin-bottom:16px; }
+  .form-field label { display:block; font-size:11px; font-weight:600; color:var(--text2); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.5px; }
+  .form-field input, .form-field select { width:100%; background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:10px 14px; color:var(--text); font-family:'Sora',sans-serif; font-size:13px; outline:none; }
+  .form-field input:focus, .form-field select:focus { border-color:var(--accent); }
+  .modal-footer { display:flex; gap:10px; justify-content:flex-end; margin-top:20px; }
+
+  /* ── TOAST ── */
+  .toast { position:fixed; bottom:24px; right:24px; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:14px 20px; display:flex; align-items:center; gap:10px; font-size:13px; z-index:2000; animation: toastIn 0.3s; box-shadow:0 20px 40px rgba(0,0,0,0.4); }
+  @keyframes toastIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+
+  /* ── EMPTY ── */
+  .empty { text-align:center; padding:60px 20px; color:var(--text3); }
+  .empty .emoji { font-size:40px; margin-bottom:12px; }
+  .empty p { font-size:14px; }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width:6px; }
+  ::-webkit-scrollbar-track { background:transparent; }
+  ::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════ LOGIN ══════════════ -->
+<div id="login-screen" class="screen active">
+  <div class="login-bg"></div>
+  <div class="login-grid"></div>
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-icon">📚</div>
+      <div class="login-logo-text">
+        <h1>UNTELS Library</h1>
+        <p>v1.0 — Sistema Integral</p>
+      </div>
+    </div>
+    <h2 class="login-title">Bienvenido</h2>
+    <p class="login-sub">Ingresa tus credenciales para continuar</p>
+    <div class="form-group">
+      <label>Usuario</label>
+      <input type="text" id="login-user" placeholder="usuario@untels.edu.pe" />
+    </div>
+    <div class="form-group">
+      <label>Contraseña</label>
+      <input type="password" id="login-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()" />
+    </div>
+    <button class="btn-login" onclick="doLogin()">Iniciar Sesión →</button>
+    <p class="login-error" id="login-err">❌ Usuario o contraseña incorrectos</p>
+    <div class="quick-users">
+      <p>Acceso rápido (demo)</p>
+      <div class="quick-btns">
+        <button class="quick-btn" onclick="quickLogin('admin','1234')">👑 Admin<span>admin</span></button>
+        <button class="quick-btn" onclick="quickLogin('bibliotecario1','1234')">📖 Biblio<span>bibliotecario1</span></button>
+        <button class="quick-btn" onclick="quickLogin('juan.perez','1234')">🎓 Estudiante<span>juan.perez</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ APP ══════════════ -->
+<div id="app-screen" class="screen">
+  <div class="topbar">
+    <div class="topbar-logo">
+      <div class="topbar-logo-icon">📚</div>
+      <div>
+        <h2>UNTELS Library</h2>
+        <span id="top-role-label"></span>
+      </div>
+    </div>
+    <div class="topbar-user">
+      <span class="topbar-role" id="top-role-badge"></span>
+      <span class="topbar-name" id="top-username"></span>
+      <button class="btn-logout" onclick="doLogout()">Salir</button>
+    </div>
+  </div>
+  <div class="app-body">
+    <nav class="sidebar" id="sidebar"></nav>
+    <main class="main" id="main-content"></main>
+  </div>
+</div>
+
+<!-- ══════════════ MODAL ══════════════ -->
+<div class="modal-overlay" id="modal">
+  <div class="modal" id="modal-inner"></div>
+</div>
+
+<script>
+// ── DATA ──
+const USERS = [
+  { id:1, username:'admin',         password:'1234', role:'Admin',         email:'admin@untels.edu.pe',          name:'Administrador UNTELS' },
+  { id:2, username:'bibliotecario1',password:'1234', role:'Bibliotecario', email:'bibliotecario1@untels.edu.pe', name:'Bibliotecario Principal' },
+  { id:3, username:'juan.perez',    password:'1234', role:'Estudiante',    email:'juan.perez@untels.edu.pe',     name:'Juan Perez Gonzales' },
+  { id:4, username:'maria.lopez',   password:'1234', role:'Estudiante',    email:'maria.lopez@untels.edu.pe',    name:'Maria Lopez Martinez' },
+  { id:5, username:'carlos.garcia', password:'1234', role:'Estudiante',    email:'carlos.garcia@untels.edu.pe',  name:'Carlos Garcia Rodriguez' },
+];
+
+let STUDENTS = [
+  { id:3, name:'Juan Perez Gonzales',    codigo:'EST2024001', carrera:'Ingeniería de Sistemas', phone:'987654321', email:'juan.perez@untels.edu.pe',     library_access:true,  status:true  },
+  { id:4, name:'Maria Lopez Martinez',   codigo:'EST2024002', carrera:'Ingeniería Civil',       phone:'987654322', email:'maria.lopez@untels.edu.pe',    library_access:true,  status:true  },
+  { id:5, name:'Carlos Garcia Rodriguez',codigo:'EST2024003', carrera:'Ingeniería de Sistemas', phone:'987654323', email:'carlos.garcia@untels.edu.pe',  library_access:false, status:false },
+];
+
+let BOOKS = [
+  { id:1, title:'Estructuras de Datos en Java', author:'Robert Lafore',     isbn:'978-0672324536', categoria:'Programación', tipo:'Físico',  stock:5,  disponible:true  },
+  { id:2, title:'Clean Code',                   author:'Robert C. Martin',  isbn:'978-0132350884', categoria:'Ingeniería',    tipo:'Virtual', stock:0,  disponible:true  },
+  { id:3, title:'El Quijote de la Mancha',       author:'Cervantes',         isbn:'978-8491050001', categoria:'Literatura',    tipo:'Físico',  stock:2,  disponible:true  },
+  { id:4, title:'Cálculo Diferencial',           author:'James Stewart',     isbn:'978-9706866066', categoria:'Matemáticas',   tipo:'Físico',  stock:0,  disponible:false },
+  { id:5, title:'Redes de Computadoras',         author:'Andrew Tanenbaum',  isbn:'978-9702606079', categoria:'Redes',         tipo:'Virtual', stock:0,  disponible:true  },
+];
+
+let ADMINS = [
+  { id:1, name:'Administrador UNTELS', username:'admin', email:'admin@untels.edu.pe', status:true },
+];
+
+let BIBLIOS = [
+  { id:1, name:'Bibliotecario Principal', username:'bibliotecario1', email:'bibliotecario1@untels.edu.pe', status:true },
+];
+
+const CARRERAS = ['Ingeniería de Sistemas','Ingeniería Civil','Administración'];
+
+const SPRINT_TASKS = {
+  'Sprint 1': [
+    { id:'HUF01', title:'Login Backend', desc:'Configurar autenticación', who:'Cesar', done:true },
+    { id:'HUF02', title:'Validar Credenciales', desc:'Verificar usuario y contraseña', who:'Cesar', done:true },
+    { id:'HUF03', title:'Logout', desc:'Implementar cierre de sesión', who:'Christopher', done:true },
+    { id:'HUF04', title:'Acceso Restringido', desc:'Validar permisos por rol', who:'Christopher', done:false },
+    { id:'HUF05', title:'LoginController', desc:'Crear controlador de login', who:'Cesar', done:true },
+    { id:'HUF06', title:'CRUD Admins', desc:'Gestión de administradores', who:'Jair', done:false },
+    { id:'HUF07', title:'Registrar Admin', desc:'Alta de administradores', who:'Jair', done:false },
+    { id:'HUF10', title:'CRUD Bibliotecarios', desc:'Gestión de bibliotecarios', who:'Curo', done:false },
+    { id:'HUF14', title:'Toggle usuarios', desc:'Activar/desactivar usuarios', who:'Nick', done:false },
+    { id:'HUF17', title:'Config Swagger', desc:'Documentar endpoints API', who:'Nipper', done:false },
+  ],
+  'Sprint 2': [
+    { id:'HUF18', title:'Entidad Estudiante', desc:'Crear modelo de estudiante', who:'Cesar', done:false },
+    { id:'HUF19', title:'Relacionar Carrera', desc:'Vincular carrera a estudiante', who:'Cesar', done:false },
+    { id:'HUF20', title:'CRUD Estudiantes', desc:'Gestión completa estudiantes', who:'Cesar', done:false },
+    { id:'HUF21', title:'Eliminar Estudiante', desc:'Baja lógica de estudiantes', who:'Christopher', done:false },
+    { id:'HUF22', title:'Buscar por Nombre', desc:'Filtrar estudiantes por nombre', who:'Christopher', done:false },
+    { id:'HUF24', title:'Filtrar por Carrera', desc:'Filtrado por carrera', who:'Jair', done:false },
+    { id:'HUF29', title:'Entidad Libro', desc:'Crear modelo de libro', who:'Curo', done:false },
+    { id:'HUF30', title:'CRUD Libros Físicos', desc:'Gestión libros físicos', who:'Curo', done:false },
+    { id:'HUF33', title:'Editar Libros', desc:'Actualizar info de libros', who:'Nick', done:false },
+    { id:'HUF38', title:'Filtrar por Categoría', desc:'Filtrado libros', who:'Nipper', done:false },
+  ]
+};
+
+// ── STATE ──
+let currentUser = null;
+let currentPage = null;
+
+// ── AUTH ──
+function doLogin() {
+  const u = document.getElementById('login-user').value.trim();
+  const p = document.getElementById('login-pass').value;
+  const user = USERS.find(x => (x.username === u || x.email === u) && x.password === p);
+  if (!user) { document.getElementById('login-err').style.display='block'; return; }
+  currentUser = user;
+  document.getElementById('login-err').style.display='none';
+  showApp();
+}
+function quickLogin(u, p) {
+  document.getElementById('login-user').value = u;
+  document.getElementById('login-pass').value = p;
+  doLogin();
+}
+function doLogout() {
+  currentUser = null;
+  document.getElementById('login-user').value='';
+  document.getElementById('login-pass').value='';
+  document.getElementById('login-screen').classList.add('active');
+  document.getElementById('app-screen').classList.remove('active');
+}
+
+function showApp() {
+  document.getElementById('login-screen').classList.remove('active');
+  document.getElementById('app-screen').classList.add('active');
+  const roleClass = { Admin:'role-admin', Bibliotecario:'role-biblio', Estudiante:'role-student' }[currentUser.role];
+  document.getElementById('top-role-badge').textContent = currentUser.role;
+  document.getElementById('top-role-badge').className = 'topbar-role ' + roleClass;
+  document.getElementById('top-username').textContent = currentUser.name;
+  document.getElementById('top-role-label').textContent = 'Sistema Integral de Gestión';
+  buildSidebar();
+  navigateTo(currentUser.role === 'Estudiante' ? 'my-profile' : 'dashboard');
+}
+
+// ── SIDEBAR ──
+const NAV = {
+  Admin: [
+    { section:'Principal' },
+    { id:'dashboard', icon:'🏠', label:'Dashboard' },
+    { id:'sprint-board', icon:'🚀', label:'Sprint Board', badge:'S1' },
+    { section:'Gestión' },
+    { id:'admins', icon:'👑', label:'Administradores' },
+    { id:'biblios', icon:'📖', label:'Bibliotecarios' },
+    { id:'students', icon:'🎓', label:'Estudiantes' },
+    { id:'books', icon:'📚', label:'Libros' },
+    { section:'Mi Cuenta' },
+    { id:'my-profile', icon:'👤', label:'Mi Perfil' },
+  ],
+  Bibliotecario: [
+    { section:'Principal' },
+    { id:'dashboard', icon:'🏠', label:'Dashboard' },
+    { section:'Gestión' },
+    { id:'students', icon:'🎓', label:'Estudiantes' },
+    { id:'books', icon:'📚', label:'Libros' },
+    { section:'Mi Cuenta' },
+    { id:'my-profile', icon:'👤', label:'Mi Perfil' },
+  ],
+  Estudiante: [
+    { section:'Mi Espacio' },
+    { id:'my-profile', icon:'👤', label:'Mi Perfil' },
+    { id:'books', icon:'📚', label:'Catálogo de Libros' },
+  ],
+};
+
+function buildSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  sidebar.innerHTML = '';
+  const items = NAV[currentUser.role] || [];
+  items.forEach(item => {
+    if (item.section) {
+      sidebar.innerHTML += `<div class="sidebar-section">${item.section}</div>`;
+    } else {
+      sidebar.innerHTML += `
+        <div class="nav-item" id="nav-${item.id}" onclick="navigateTo('${item.id}')">
+          <span class="icon">${item.icon}</span>
+          ${item.label}
+          ${item.badge ? `<span class="badge">${item.badge}</span>` : ''}
+        </div>`;
+    }
+  });
+}
+
+function navigateTo(page) {
+  currentPage = page;
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  const navEl = document.getElementById('nav-' + page);
+  if (navEl) navEl.classList.add('active');
+  const main = document.getElementById('main-content');
+  const pages = { dashboard, 'sprint-board': sprintBoard, admins, biblios, students, books, 'my-profile': myProfile };
+  if (pages[page]) main.innerHTML = pages[page]();
+  else main.innerHTML = '<div class="empty"><div class="emoji">🚧</div><p>Página en construcción</p></div>';
+}
+
+// ══════════════ PAGES ══════════════
+
+function dashboard() {
+  const role = currentUser.role;
+  const totalStudents = STUDENTS.length;
+  const activeStudents = STUDENTS.filter(s=>s.status).length;
+  const totalBooks = BOOKS.length;
+  const availableBooks = BOOKS.filter(b=>b.disponible).length;
+  return `
+  <div class="page active">
+    <div class="page-header">
+      <h2>Dashboard</h2>
+      <p>Bienvenido, ${currentUser.name} — ${new Date().toLocaleDateString('es-PE',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}</p>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card blue">
+        <div class="stat-icon">🎓</div>
+        <div class="stat-num">${totalStudents}</div>
+        <div class="stat-label">Total Estudiantes</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-icon">✅</div>
+        <div class="stat-num">${activeStudents}</div>
+        <div class="stat-label">Estudiantes Activos</div>
+      </div>
+      <div class="stat-card purple">
+        <div class="stat-icon">📚</div>
+        <div class="stat-num">${totalBooks}</div>
+        <div class="stat-label">Libros en Catálogo</div>
+      </div>
+      <div class="stat-card yellow">
+        <div class="stat-icon">📗</div>
+        <div class="stat-num">${availableBooks}</div>
+        <div class="stat-label">Libros Disponibles</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+      <div class="card">
+        <div class="card-header"><h3>Últimos Estudiantes</h3></div>
+        <div class="card-body">
+          <table>
+            <thead><tr><th>Nombre</th><th>Carrera</th><th>Estado</th></tr></thead>
+            <tbody>
+              ${STUDENTS.map(s=>`<tr>
+                <td>${s.name}</td>
+                <td style="color:var(--text2);font-size:12px">${s.carrera}</td>
+                <td><span class="badge ${s.status?'badge-green':'badge-red'}">${s.status?'Activo':'Bloqueado'}</span></td>
+              </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3>Progreso Sprint 1</h3></div>
+        <div class="card-body" style="padding:20px">
+          ${(() => {
+            const tasks = SPRINT_TASKS['Sprint 1'];
+            const done = tasks.filter(t=>t.done).length;
+            const pct = Math.round(done/tasks.length*100);
+            return `
+              <div style="display:flex;justify-content:space-between;margin-bottom:10px">
+                <span style="font-size:13px">Sprint 1 — Login & Usuarios</span>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--accent)">${pct}%</span>
+              </div>
+              <div style="background:var(--surface2);border-radius:6px;height:8px;overflow:hidden">
+                <div style="background:linear-gradient(90deg,var(--accent),var(--accent2));width:${pct}%;height:100%;border-radius:6px;transition:width 0.5s"></div>
+              </div>
+              <p style="font-size:12px;color:var(--text2);margin-top:12px">${done} de ${tasks.length} tareas completadas</p>
+              <div style="margin-top:16px;display:flex;flex-direction:column;gap:6px">
+                ${tasks.filter(t=>t.done).slice(0,4).map(t=>`
+                  <div style="display:flex;align-items:center;gap:8px;font-size:12px">
+                    <span style="color:var(--success)">✓</span>
+                    <span style="color:var(--text2)">${t.id}</span>
+                    <span>${t.title}</span>
+                  </div>`).join('')}
+              </div>`;
+          })()}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function sprintBoard() {
+  return `
+  <div class="page active">
+    <div class="page-header">
+      <h2>Sprint Board</h2>
+      <p>Semana 5 → Semana 7 · Sistema Integral de Gestión Bibliotecaria UNTELS</p>
+    </div>
+    ${Object.entries(SPRINT_TASKS).map(([sprint, tasks]) => `
+      <div style="margin-bottom:28px">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+          <h3 style="font-size:15px;font-weight:700">🚀 ${sprint}</h3>
+          <span class="badge badge-blue">${tasks.filter(t=>t.done).length}/${tasks.length} completadas</span>
+        </div>
+        <div class="sprint-board">
+          <div class="sprint-col">
+            <div class="sprint-col-header">
+              <h4>⏳ Pendiente</h4>
+              <span class="badge badge-yellow">${tasks.filter(t=>!t.done).length}</span>
+            </div>
+            <div class="sprint-tasks">
+              ${tasks.filter(t=>!t.done).map(t=>`
+                <div class="task-card">
+                  <div class="task-card-top">
+                    <span class="task-id">${t.id}</span>
+                    <span class="badge badge-yellow" style="font-size:9px">TODO</span>
+                  </div>
+                  <div class="task-title">${t.title}</div>
+                  <div class="task-desc">${t.desc}</div>
+                  <div class="task-assignee">👤 ${t.who}</div>
+                </div>`).join('')}
+            </div>
+          </div>
+          <div class="sprint-col">
+            <div class="sprint-col-header">
+              <h4>✅ Completado</h4>
+              <span class="badge badge-green">${tasks.filter(t=>t.done).length}</span>
+            </div>
+            <div class="sprint-tasks">
+              ${tasks.filter(t=>t.done).map(t=>`
+                <div class="task-card" style="opacity:0.75">
+                  <div class="task-card-top">
+                    <span class="task-id">${t.id}</span>
+                    <span class="badge badge-green" style="font-size:9px">DONE</span>
+                  </div>
+                  <div class="task-title" style="text-decoration:line-through;color:var(--text2)">${t.title}</div>
+                  <div class="task-desc">${t.desc}</div>
+                  <div class="task-assignee">👤 ${t.who}</div>
+                </div>`).join('')}
+            </div>
+          </div>
+        </div>
+      </div>`).join('')}
+  </div>`;
+}
+
+function admins() {
+  return `
+  <div class="page active">
+    <div class="page-header">
+      <h2>Administradores</h2>
+      <p>Gestión de cuentas administrativas del sistema</p>
+    </div>
+    <div class="search-bar">
+      <input class="search-input" placeholder="Buscar administrador..." oninput="filterAdmins(this.value)" id="admin-search" />
+      <button class="btn btn-primary" onclick="openAdminModal()">＋ Nuevo Admin</button>
+    </div>
+    <div class="card" id="admins-table">
+      ${renderAdminsTable()}
+    </div>
+  </div>`;
+}
+function renderAdminsTable(filter='') {
+  const filtered = ADMINS.filter(a=>a.name.toLowerCase().includes(filter.toLowerCase())||a.username.toLowerCase().includes(filter.toLowerCase()));
+  return `<div class="card-body"><table>
+    <thead><tr><th>Nombre</th><th>Usuario</th><th>Email</th><th>Estado</th><th>Acciones</th></tr></thead>
+    <tbody>
+      ${filtered.length ? filtered.map(a=>`<tr>
+        <td>${a.name}</td>
+        <td><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent)">${a.username}</span></td>
+        <td style="color:var(--text2);font-size:12px">${a.email}</td>
+        <td><span class="badge ${a.status?'badge-green':'badge-red'}">${a.status?'Activo':'Inactivo'}</span></td>
+        <td><div style="display:flex;gap:6px">
+          <button class="btn btn-sm btn-ghost" onclick="toggleAdminStatus(${a.id})">${a.status?'Deshabilitar':'Habilitar'}</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteAdmin(${a.id})">Eliminar</button>
+        </div></td>
+      </tr>`).join('') : '<tr><td colspan="5" style="text-align:center;color:var(--text3);padding:30px">Sin resultados</td></tr>'}
+    </tbody>
+  </table></div>`;
+}
+function filterAdmins(v) { document.getElementById('admins-table').innerHTML = renderAdminsTable(v); }
+function toggleAdminStatus(id) { const a = ADMINS.find(x=>x.id===id); if(a){a.status=!a.status; navigateTo('admins'); showToast(a.status?'✅ Admin habilitado':'🔒 Admin deshabilitado');} }
+function deleteAdmin(id) { if(confirm('¿Eliminar administrador?')){ADMINS=ADMINS.filter(x=>x.id!==id); navigateTo('admins'); showToast('🗑️ Admin eliminado');} }
+function openAdminModal() {
+  openModal(`
+    <div class="modal-header"><h3>Nuevo Administrador</h3><button class="modal-close" onclick="closeModal()">×</button></div>
+    <div class="form-row">
+      <div class="form-field"><label>Nombre</label><input id="m-name" placeholder="Nombre completo" /></div>
+      <div class="form-field"><label>Usuario</label><input id="m-user" placeholder="username" /></div>
+    </div>
+    <div class="form-field"><label>Email</label><input id="m-email" placeholder="email@untels.edu.pe" /></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveAdmin()">Guardar</button>
+    </div>`);
+}
+function saveAdmin() {
+  const name=document.getElementById('m-name').value;
+  const user=document.getElementById('m-user').value;
+  const email=document.getElementById('m-email').value;
+  if(!name||!user||!email){alert('Completa todos los campos');return;}
+  ADMINS.push({id:Date.now(),name,username:user,email,status:true});
+  closeModal(); navigateTo('admins'); showToast('✅ Admin registrado');
+}
+
+function biblios() {
+  return `
+  <div class="page active">
+    <div class="page-header">
+      <h2>Bibliotecarios</h2>
+      <p>Gestión del personal bibliotecario</p>
+    </div>
+    <div class="search-bar">
+      <input class="search-input" placeholder="Buscar bibliotecario..." oninput="filterBiblios(this.value)" id="biblio-search" />
+      <button class="btn btn-primary" onclick="openBiblioModal()">＋ Nuevo Bibliotecario</button>
+    </div>
+    <div class="card" id="biblios-table">${renderBibliosTable()}</div>
+  </div>`;
+}
+function renderBibliosTable(filter='') {
+  const f = BIBLIOS.filter(b=>b.name.toLowerCase().includes(filter.toLowerCase()));
+  return `<div class="card-body"><table>
+    <thead><tr><th>Nombre</th><th>Usuario</th><th>Email</th><th>Estado</th><th>Acciones</th></tr></thead>
+    <tbody>
+      ${f.map(b=>`<tr>
+        <td>${b.name}</td>
+        <td><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent2)">${b.username}</span></td>
+        <td style="color:var(--text2);font-size:12px">${b.email}</td>
+        <td><span class="badge ${b.status?'badge-green':'badge-red'}">${b.status?'Activo':'Inactivo'}</span></td>
+        <td><div style="display:flex;gap:6px">
+          <button class="btn btn-sm btn-ghost" onclick="toggleBiblioStatus(${b.id})">${b.status?'Deshabilitar':'Habilitar'}</button>
+        </div></td>
+      </tr>`).join('')}
+    </tbody>
+  </table></div>`;
+}
+function filterBiblios(v){document.getElementById('biblios-table').innerHTML=renderBibliosTable(v);}
+function toggleBiblioStatus(id){const b=BIBLIOS.find(x=>x.id===id);if(b){b.status=!b.status;navigateTo('biblios');showToast(b.status?'✅ Bibliotecario habilitado':'🔒 Deshabilitado');}}
+function openBiblioModal(){
+  openModal(`
+    <div class="modal-header"><h3>Nuevo Bibliotecario</h3><button class="modal-close" onclick="closeModal()">×</button></div>
+    <div class="form-row">
+      <div class="form-field"><label>Nombre</label><input id="m-name" placeholder="Nombre completo" /></div>
+      <div class="form-field"><label>Usuario</label><input id="m-user" placeholder="username" /></div>
+    </div>
+    <div class="form-field"><label>Email</label><input id="m-email" placeholder="email@untels.edu.pe" /></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveBiblio()">Guardar</button>
+    </div>`);
+}
+function saveBiblio(){
+  const name=document.getElementById('m-name').value;
+  const user=document.getElementById('m-user').value;
+  const email=document.getElementById('m-email').value;
+  if(!name||!user||!email){alert('Completa todos los campos');return;}
+  BIBLIOS.push({id:Date.now(),name,username:user,email,status:true});
+  closeModal();navigateTo('biblios');showToast('✅ Bibliotecario registrado');
+}
+
+function students() {
+  return `
+  <div class="page active">
+    <div class="page-header">
+      <h2>Estudiantes</h2>
+      <p>Gestión y control de acceso de estudiantes</p>
+    </div>
+    <div class="search-bar">
+      <input class="search-input" placeholder="Buscar por nombre o código..." oninput="filterStudents()" id="stu-search" />
+      <select class="filter-select" onchange="filterStudents()" id="stu-carrera">
+        <option value="">Todas las carreras</option>
+        ${CARRERAS.map(c=>`<option>${c}</option>`).join('')}
+      </select>
+      <select class="filter-select" onchange="filterStudents()" id="stu-status">
+        <option value="">Todos los estados</option>
+        <option value="activo">Activo</option>
+        <option value="bloqueado">Bloqueado</option>
+      </select>
+      ${currentUser.role==='Admin'?`<button class="btn btn-primary" onclick="openStudentModal()">＋ Nuevo Estudiante</button>`:''}
+    </div>
+    <div class="card" id="students-table">${renderStudentsTable()}</div>
+  </div>`;
+}
+function renderStudentsTable(filter='',carrera='',status='') {
+  let f = STUDENTS.filter(s=>{
+    const matchName = s.name.toLowerCase().includes(filter.toLowerCase()) || s.codigo.toLowerCase().includes(filter.toLowerCase());
+    const matchCarrera = !carrera || s.carrera===carrera;
+    const matchStatus = !status || (status==='activo'?s.status:!s.status);
+    return matchName && matchCarrera && matchStatus;
+  });
+  return `<div class="card-body"><table>
+    <thead><tr><th>Nombre</th><th>Código</th><th>Carrera</th><th>Acceso Bib.</th><th>Estado</th><th>Acciones</th></tr></thead>
+    <tbody>
+      ${f.map(s=>`<tr>
+        <td>${s.name}</td>
+        <td><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent)">${s.codigo}</span></td>
+        <td style="font-size:12px;color:var(--text2)">${s.carrera}</td>
+        <td><span class="badge ${s.library_access?'badge-green':'badge-red'}">${s.library_access?'Habilitado':'Restringido'}</span></td>
+        <td><span class="badge ${s.status?'badge-blue':'badge-red'}">${s.status?'Activo':'Bloqueado'}</span></td>
+        <td><div style="display:flex;gap:6px">
+          <button class="btn btn-sm btn-ghost" onclick="toggleStudentAccess(${s.id})">${s.library_access?'Restringir':'Habilitar'} Acceso</button>
+          <button class="btn btn-sm ${s.status?'btn-danger':'btn-success'}" onclick="toggleStudentStatus(${s.id})">${s.status?'Bloquear':'Activar'}</button>
+        </div></td>
+      </tr>`).join('')}
+    </tbody>
+  </table></div>`;
+}
+function filterStudents(){
+  const s=document.getElementById('stu-search')?.value||'';
+  const c=document.getElementById('stu-carrera')?.value||'';
+  const st=document.getElementById('stu-status')?.value||'';
+  document.getElementById('students-table').innerHTML=renderStudentsTable(s,c,st);
+}
+function toggleStudentAccess(id){const s=STUDENTS.find(x=>x.id===id);if(s){s.library_access=!s.library_access;filterStudents();showToast(s.library_access?'✅ Acceso habilitado':'🔒 Acceso restringido');}}
+function toggleStudentStatus(id){const s=STUDENTS.find(x=>x.id===id);if(s){s.status=!s.status;filterStudents();showToast(s.status?'✅ Estudiante activado':'🚫 Estudiante bloqueado');}}
+function openStudentModal(){
+  openModal(`
+    <div class="modal-header"><h3>Nuevo Estudiante</h3><button class="modal-close" onclick="closeModal()">×</button></div>
+    <div class="form-row">
+      <div class="form-field"><label>Nombre</label><input id="m-name" placeholder="Nombre completo" /></div>
+      <div class="form-field"><label>Código</label><input id="m-cod" placeholder="EST2024XXX" /></div>
+    </div>
+    <div class="form-row">
+      <div class="form-field"><label>Email</label><input id="m-email" placeholder="email@untels.edu.pe" /></div>
+      <div class="form-field"><label>Teléfono</label><input id="m-phone" placeholder="9XXXXXXXX" /></div>
+    </div>
+    <div class="form-field"><label>Carrera</label>
+      <select id="m-carrera">${CARRERAS.map(c=>`<option>${c}</option>`).join('')}</select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveStudent()">Registrar</button>
+    </div>`);
+}
+function saveStudent(){
+  const name=document.getElementById('m-name').value;
+  const cod=document.getElementById('m-cod').value;
+  const email=document.getElementById('m-email').value;
+  const phone=document.getElementById('m-phone').value;
+  const carrera=document.getElementById('m-carrera').value;
+  if(!name||!cod){alert('Completa nombre y código');return;}
+  STUDENTS.push({id:Date.now(),name,codigo:cod,carrera,phone,email,library_access:true,status:true});
+  closeModal();navigateTo('students');showToast('✅ Estudiante registrado');
+}
+
+function books() {
+  const isStudent = currentUser.role==='Estudiante';
+  return `
+  <div class="page active">
+    <div class="page-header">
+      <h2>${isStudent?'Catálogo de Libros':'Gestión de Libros'}</h2>
+      <p>${isStudent?'Consulta el catálogo y disponibilidad de libros':'Administra el inventario de libros físicos y virtuales'}</p>
+    </div>
+    <div class="search-bar">
+      <input class="search-input" placeholder="Buscar por título, autor o ISBN..." oninput="filterBooks()" id="book-search" />
+      <select class="filter-select" onchange="filterBooks()" id="book-cat">
+        <option value="">Todas las categorías</option>
+        <option>Programación</option><option>Ingeniería</option><option>Literatura</option>
+        <option>Matemáticas</option><option>Redes</option>
+      </select>
+      <select class="filter-select" onchange="filterBooks()" id="book-tipo">
+        <option value="">Físico y Virtual</option>
+        <option>Físico</option><option>Virtual</option>
+      </select>
+      ${!isStudent?`<button class="btn btn-primary" onclick="openBookModal()">＋ Nuevo Libro</button>`:''}
+    </div>
+    <div class="card">
+      <div class="card-body" id="books-table">${renderBooksTable()}</div>
+    </div>
+  </div>`;
+}
+function renderBooksTable(s='',cat='',tipo=''){
+  const isStudent=currentUser.role==='Estudiante';
+  let f=BOOKS.filter(b=>{
+    const ms=b.title.toLowerCase().includes(s.toLowerCase())||b.author.toLowerCase().includes(s.toLowerCase())||b.isbn.includes(s);
+    const mc=!cat||b.categoria===cat;
+    const mt=!tipo||b.tipo===tipo;
+    return ms&&mc&&mt;
+  });
+  return `<table>
+    <thead><tr><th>Título</th><th>Autor</th><th>ISBN</th><th>Categoría</th><th>Tipo</th><th>Stock</th><th>Disponible</th>${!isStudent?'<th>Acciones</th>':''}</tr></thead>
+    <tbody>
+      ${f.map(b=>`<tr>
+        <td style="font-weight:500">${b.title}</td>
+        <td style="color:var(--text2);font-size:12px">${b.author}</td>
+        <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text3)">${b.isbn}</td>
+        <td><span class="badge badge-blue">${b.categoria}</span></td>
+        <td><span class="badge ${b.tipo==='Físico'?'badge-yellow':'badge-purple'}">${b.tipo}</span></td>
+        <td style="font-family:'JetBrains Mono',monospace;text-align:center">${b.tipo==='Físico'?b.stock:'∞'}</td>
+        <td><span class="badge ${b.disponible?'badge-green':'badge-red'}">${b.disponible?'Sí':'No'}</span></td>
+        ${!isStudent?`<td><div style="display:flex;gap:6px">
+          <button class="btn btn-sm btn-ghost" onclick="editBook(${b.id})">Editar</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteBook(${b.id})">Eliminar</button>
+        </div></td>`:''}
+      </tr>`).join('')}
+    </tbody>
+  </table>`;
+}
+function filterBooks(){
+  const s=document.getElementById('book-search')?.value||'';
+  const c=document.getElementById('book-cat')?.value||'';
+  const t=document.getElementById('book-tipo')?.value||'';
+  document.getElementById('books-table').innerHTML=renderBooksTable(s,c,t);
+}
+function deleteBook(id){if(confirm('¿Eliminar libro?')){BOOKS=BOOKS.filter(b=>b.id!==id);filterBooks();showToast('🗑️ Libro eliminado');}}
+function openBookModal(book=null){
+  openModal(`
+    <div class="modal-header"><h3>${book?'Editar':'Nuevo'} Libro</h3><button class="modal-close" onclick="closeModal()">×</button></div>
+    <div class="form-row">
+      <div class="form-field"><label>Título</label><input id="m-title" value="${book?book.title:''}" placeholder="Título del libro" /></div>
+      <div class="form-field"><label>Autor</label><input id="m-author" value="${book?book.author:''}" placeholder="Nombre del autor" /></div>
+    </div>
+    <div class="form-row">
+      <div class="form-field"><label>ISBN</label><input id="m-isbn" value="${book?book.isbn:''}" placeholder="978-XXXXXXXXXX" /></div>
+      <div class="form-field"><label>Categoría</label>
+        <select id="m-cat">
+          ${['Programación','Ingeniería','Literatura','Matemáticas','Redes'].map(c=>`<option ${book&&book.categoria===c?'selected':''}>${c}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-field"><label>Tipo</label>
+        <select id="m-tipo">
+          <option ${book&&book.tipo==='Físico'?'selected':''}>Físico</option>
+          <option ${book&&book.tipo==='Virtual'?'selected':''}>Virtual</option>
+        </select>
+      </div>
+      <div class="form-field"><label>Stock</label><input id="m-stock" type="number" value="${book?book.stock:0}" placeholder="0" /></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveBook(${book?book.id:null})">${book?'Actualizar':'Registrar'}</button>
+    </div>`);
+}
+function editBook(id){const b=BOOKS.find(x=>x.id===id);if(b)openBookModal(b);}
+function saveBook(id){
+  const title=document.getElementById('m-title').value;
+  const author=document.getElementById('m-author').value;
+  const isbn=document.getElementById('m-isbn').value;
+  const cat=document.getElementById('m-cat').value;
+  const tipo=document.getElementById('m-tipo').value;
+  const stock=parseInt(document.getElementById('m-stock').value)||0;
+  if(!title||!author){alert('Completa título y autor');return;}
+  if(id){
+    const b=BOOKS.find(x=>x.id===id);
+    Object.assign(b,{title,author,isbn,categoria:cat,tipo,stock,disponible:stock>0||tipo==='Virtual'});
+    showToast('✅ Libro actualizado');
+  } else {
+    BOOKS.push({id:Date.now(),title,author,isbn,categoria:cat,tipo,stock,disponible:stock>0||tipo==='Virtual'});
+    showToast('✅ Libro registrado');
+  }
+  closeModal();navigateTo('books');
+}
+
+function myProfile() {
+  const u = currentUser;
+  const student = u.role==='Estudiante' ? STUDENTS.find(s=>s.email===u.email) : null;
+  return `
+  <div class="page active">
+    <div class="page-header"><h2>Mi Perfil</h2><p>Información de tu cuenta</p></div>
+    <div class="profile-card">
+      <div class="profile-avatar">${u.name.charAt(0)}</div>
+      <div class="profile-info">
+        <h3>${u.name}</h3>
+        <p>${u.email}</p>
+        <div class="profile-meta">
+          <span class="profile-tag">@${u.username}</span>
+          <span class="profile-tag topbar-role ${u.role==='Admin'?'role-admin':u.role==='Bibliotecario'?'role-biblio':'role-student'}">${u.role}</span>
+          ${student?`<span class="profile-tag">${student.codigo}</span>`:''}
+        </div>
+      </div>
+    </div>
+    ${student ? `
+    <div class="card">
+      <div class="card-header"><h3>Información Académica</h3></div>
+      <div style="padding:24px;display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div>
+          <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:var(--text3);margin-bottom:6px">Carrera</div>
+          <div style="font-size:14px;font-weight:500">${student.carrera}</div>
+        </div>
+        <div>
+          <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:var(--text3);margin-bottom:6px">Teléfono</div>
+          <div style="font-size:14px;font-family:'JetBrains Mono',monospace">${student.phone}</div>
+        </div>
+        <div>
+          <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:var(--text3);margin-bottom:6px">Estado</div>
+          <span class="badge ${student.status?'badge-green':'badge-red'}">${student.status?'Activo':'Bloqueado'}</span>
+        </div>
+        <div>
+          <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:var(--text3);margin-bottom:6px">Acceso Biblioteca</div>
+          <span class="badge ${student.library_access?'badge-green':'badge-red'}">${student.library_access?'Habilitado':'Restringido'}</span>
+        </div>
+      </div>
+    </div>` : ''}
+    <div class="card">
+      <div class="card-header"><h3>Seguridad</h3></div>
+      <div style="padding:20px">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <div style="font-size:13px;font-weight:600">Contraseña</div>
+            <div style="font-size:12px;color:var(--text2)">Última actualización: hoy</div>
+          </div>
+          <button class="btn btn-ghost" onclick="showToast('🔐 Función disponible en el backend')">Cambiar</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── MODAL ──
+function openModal(html){ document.getElementById('modal-inner').innerHTML=html; document.getElementById('modal').classList.add('open'); }
+function closeModal(){ document.getElementById('modal').classList.remove('open'); }
+document.getElementById('modal').addEventListener('click',e=>{ if(e.target===document.getElementById('modal'))closeModal(); });
+
+// ── TOAST ──
+function showToast(msg) {
+  const t=document.createElement('div');
+  t.className='toast'; t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),3000);
+}
+</script>
+</body>
+</html>
