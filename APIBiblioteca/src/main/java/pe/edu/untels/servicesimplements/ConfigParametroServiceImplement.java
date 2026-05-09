@@ -33,6 +33,14 @@ public class ConfigParametroServiceImplement implements IConfigParametroService 
     }
 
     @Override
+    public ConfigParametroDTO registrarStockMinimo(int stockMinimo) {
+        ConfigParametro config = obtenerOCrearConfig();
+        config.setStockMinimo(stockMinimo);
+        config.setFechaActualizacion(LocalDateTime.now());
+        return mapToDTO(configRepo.save(config));
+    }
+
+    @Override
     public ConfigParametroDTO obtenerConfiguracion() {
         return mapToDTO(obtenerOCrearConfig());
     }
