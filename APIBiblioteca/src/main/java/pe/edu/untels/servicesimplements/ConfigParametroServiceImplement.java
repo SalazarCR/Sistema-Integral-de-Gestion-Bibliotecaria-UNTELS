@@ -25,6 +25,14 @@ public class ConfigParametroServiceImplement implements IConfigParametroService 
     }
 
     @Override
+    public ConfigParametroDTO registrarDiasPrestamo(int diasPrestamo) {
+        ConfigParametro config = obtenerOCrearConfig();
+        config.setDiasPrestamo(diasPrestamo);
+        config.setFechaActualizacion(LocalDateTime.now());
+        return mapToDTO(configRepo.save(config));
+    }
+
+    @Override
     public ConfigParametroDTO obtenerConfiguracion() {
         return mapToDTO(obtenerOCrearConfig());
     }

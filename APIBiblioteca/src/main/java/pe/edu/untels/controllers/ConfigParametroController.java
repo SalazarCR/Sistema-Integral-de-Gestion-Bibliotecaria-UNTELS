@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pe.edu.untels.dtos.ConfigParametroDTO;
+import pe.edu.untels.dtos.DiasPrestamosRequestDTO;
 import pe.edu.untels.dtos.LimitePrestamosRequestDTO;
 import pe.edu.untels.servicesinterfaces.IConfigParametroService;
 
@@ -48,6 +49,22 @@ public class ConfigParametroController {
         } catch (Exception e) {
             log.error(">>> [CONFIG] Error al registrar límite de préstamos: {}", e.getMessage());
             return ResponseEntity.status(500).body(createErrorResponse("Error al registrar límite de préstamos", e.getMessage(), 500));
+        }
+    }
+
+    @PostMapping("/dias-prestamo")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> registrarDiasPrestamo(@RequestBody DiasPrestamosRequestDTO request) {
+        try {
+            log.info(">>> [CONFIG] Registrando días de préstamo: {}", request.getDiasPrestamo());
+            if (request.getDiasPrestamo() <= 0) {
+                return ResponseEntity.status(400).body(createErrorResponse("Los días de préstamo deben ser mayor a 0", "Valor inválido", 400));
+            }
+            ConfigParametroDTO config = configService.registrarDiasPrestamo(request.getDiasPrestamo());
+            return ResponseEntity.status(201).body(createResponse(true, "Días de préstamo registrados exitosamente", config, 201));
+        } catch (Exception e) {
+            log.error(">>> [CONFIG] Error al registrar días de préstamo: {}", e.getMessage());
+            return ResponseEntity.status(500).body(createErrorResponse("Error al registrar días de préstamo", e.getMessage(), 500));
         }
     }
 
