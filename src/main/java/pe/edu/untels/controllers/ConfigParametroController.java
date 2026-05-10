@@ -24,67 +24,141 @@ public class ConfigParametroController {
     @Autowired
     private IConfigParametroService configService;
 
+    // =========================
+    // OBTENER CONFIGURACIÓN
+    // =========================
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'BIBLIOTECARIO')")
     public ResponseEntity<?> obtenerConfiguracion() {
         try {
             log.info(">>> [CONFIG] Obteniendo configuración de parámetros");
+
             ConfigParametroDTO config = configService.obtenerConfiguracion();
-            return ResponseEntity.ok(createResponse(true, "Configuración obtenida exitosamente", config, 200));
+
+            return ResponseEntity.ok(
+                    createResponse(true, "Configuración obtenida exitosamente", config, 200)
+            );
+
         } catch (Exception e) {
             log.error(">>> [CONFIG] Error al obtener configuración: {}", e.getMessage());
-            return ResponseEntity.status(500).body(createErrorResponse("Error al obtener configuración", e.getMessage(), 500));
+
+            return ResponseEntity.status(500)
+                    .body(createErrorResponse("Error al obtener configuración", e.getMessage(), 500));
         }
     }
 
+    // =========================
+    // CONFIGURACIÓN ACTUAL (NUEVO)
+    // =========================
+    @GetMapping("/actual")
+    @PreAuthorize("hasAnyRole('ADMIN', 'BIBLIOTECARIO')")
+    public ResponseEntity<?> obtenerConfiguracionActual() {
+        try {
+            log.info(">>> [CONFIG] Obteniendo configuración actual");
+
+            ConfigParametroDTO config = configService.obtenerConfiguracion();
+
+            Map<String, Object> data = new HashMap<>();
+            data.put("configuracion", config);
+            data.put("estado", "ACTIVO");
+            data.put("version", "v1");
+
+            return ResponseEntity.ok(
+                    createResponse(true, "Configuración actual obtenida", data, 200)
+            );
+
+        } catch (Exception e) {
+            log.error(">>> [CONFIG] Error configuración actual: {}", e.getMessage());
+
+            return ResponseEntity.status(500)
+                    .body(createErrorResponse("Error al obtener configuración actual", e.getMessage(), 500));
+        }
+    }
+
+    // =========================
+    // LIMITE DE PRÉSTAMOS
+    // =========================
     @PostMapping("/limite-prestamos")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> registrarLimitePrestamos(@RequestBody LimitePrestamosRequestDTO request) {
         try {
             log.info(">>> [CONFIG] Registrando límite de préstamos: {}", request.getLimitePrestamos());
+
             if (request.getLimitePrestamos() <= 0) {
-                return ResponseEntity.status(400).body(createErrorResponse("El límite de préstamos debe ser mayor a 0", "Valor inválido", 400));
+                return ResponseEntity.status(400)
+                        .body(createErrorResponse("El límite de préstamos debe ser mayor a 0", "Valor inválido", 400));
             }
+
             ConfigParametroDTO config = configService.registrarLimitePrestamos(request.getLimitePrestamos());
-            return ResponseEntity.status(201).body(createResponse(true, "Límite de préstamos registrado exitosamente", config, 201));
+
+            return ResponseEntity.status(201)
+                    .body(createResponse(true, "Límite de préstamos registrado exitosamente", config, 201));
+
         } catch (Exception e) {
             log.error(">>> [CONFIG] Error al registrar límite de préstamos: {}", e.getMessage());
-            return ResponseEntity.status(500).body(createErrorResponse("Error al registrar límite de préstamos", e.getMessage(), 500));
+
+            return ResponseEntity.status(500)
+                    .body(createErrorResponse("Error al registrar límite de préstamos", e.getMessage(), 500));
         }
     }
 
+    // =========================
+    // DÍAS DE PRÉSTAMO
+    // =========================
     @PostMapping("/dias-prestamo")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> registrarDiasPrestamo(@RequestBody DiasPrestamosRequestDTO request) {
         try {
             log.info(">>> [CONFIG] Registrando días de préstamo: {}", request.getDiasPrestamo());
+
             if (request.getDiasPrestamo() <= 0) {
-                return ResponseEntity.status(400).body(createErrorResponse("Los días de préstamo deben ser mayor a 0", "Valor inválido", 400));
+                return ResponseEntity.status(400)
+                        .body(createErrorResponse("Los días de préstamo deben ser mayor a 0", "Valor inválido", 400));
             }
+
             ConfigParametroDTO config = configService.registrarDiasPrestamo(request.getDiasPrestamo());
-            return ResponseEntity.status(201).body(createResponse(true, "Días de préstamo registrados exitosamente", config, 201));
+
+            return ResponseEntity.status(201)
+                    .body(createResponse(true, "Días de préstamo registrados exitosamente", config, 201));
+
         } catch (Exception e) {
             log.error(">>> [CONFIG] Error al registrar días de préstamo: {}", e.getMessage());
-            return ResponseEntity.status(500).body(createErrorResponse("Error al registrar días de préstamo", e.getMessage(), 500));
+
+            return ResponseEntity.status(500)
+                    .body(createErrorResponse("Error al registrar días de préstamo", e.getMessage(), 500));
         }
     }
 
+    // =========================
+    // STOCK MÍNIMO
+    // =========================
     @PostMapping("/stock-minimo")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> registrarStockMinimo(@RequestBody StockMinimoRequestDTO request) {
         try {
             log.info(">>> [CONFIG] Registrando stock mínimo: {}", request.getStockMinimo());
+
             if (request.getStockMinimo() < 0) {
-                return ResponseEntity.status(400).body(createErrorResponse("El stock mínimo no puede ser negativo", "Valor inválido", 400));
+                return ResponseEntity.status(400)
+                        .body(createErrorResponse("El stock mínimo no puede ser negativo", "Valor inválido", 400));
             }
+
             ConfigParametroDTO config = configService.registrarStockMinimo(request.getStockMinimo());
-            return ResponseEntity.status(201).body(createResponse(true, "Stock mínimo registrado exitosamente", config, 201));
+
+            return ResponseEntity.status(201)
+                    .body(createResponse(true, "Stock mínimo registrado exitosamente", config, 201));
+
         } catch (Exception e) {
             log.error(">>> [CONFIG] Error al registrar stock mínimo: {}", e.getMessage());
-            return ResponseEntity.status(500).body(createErrorResponse("Error al registrar stock mínimo", e.getMessage(), 500));
+
+            return ResponseEntity.status(500)
+                    .body(createErrorResponse("Error al registrar stock mínimo", e.getMessage(), 500));
         }
     }
 
+    // =========================
+    // RESPUESTAS GENERICAS
+    // =========================
     private Map<String, Object> createResponse(boolean success, String message, Object data, int status) {
         Map<String, Object> response = new HashMap<>();
         response.put("success", success);
