@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UNTELS — Sistema Integral de Gestión Bibliotecaria</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#080c14; --s1:#0d1321; --s2:#111b2e; --s3:#162035;
+  --border:#1c2d45; --border2:#223350;
+  --accent:#2563eb; --accent-glow:rgba(37,99,235,0.25);
+  --cyan:#06b6d4; --purple:#7c3aed; --emerald:#059669;
+  --rose:#e11d48; --amber:#d97706; --sky:#0284c7;
+  --text:#dde4f0; --t2:#7a93b5; --t3:#3d5470; --t4:#243447;
+  --success:#10b981; --warning:#f59e0b; --danger:#ef4444;
+  --radius:12px; --radius-sm:8px; --radius-lg:16px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+
+/* SCREENS */
+.screen{display:none;min-height:100vh;}
+.screen.active{display:flex;}
+
+/* ═══════════════ LOGIN ═══════════════ */
+#login-screen{align-items:center;justify-content:center;position:relative;overflow:hidden;}
+.login-particles{position:absolute;inset:0;overflow:hidden;}
+.login-particles::before{content:'';position:absolute;width:600px;height:600px;background:radial-gradient(circle,rgba(37,99,235,0.08) 0%,transparent 70%);top:-100px;left:-200px;animation:pulse1 8s ease-in-out infinite;}
+.login-particles::after{content:'';position:absolute;width:500px;height:500px;background:radial-gradient(circle,rgba(124,58,237,0.07) 0%,transparent 70%);bottom:-100px;right:-100px;animation:pulse2 10s ease-in-out infinite;}
+@keyframes pulse1{0%,100%{transform:scale(1) translate(0,0);}50%{transform:scale(1.2) translate(30px,20px);}}
+@keyframes pulse2{0%,100%{transform:scale(1) translate(0,0);}50%{transform:scale(1.15) translate(-20px,-30px);}}
+.login-grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(37,99,235,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(37,99,235,0.03) 1px,transparent 1px);background-size:50px 50px;}
+.login-wrap{position:relative;z-index:2;display:flex;gap:0;width:900px;max-width:95vw;border-radius:24px;overflow:hidden;box-shadow:0 50px 100px rgba(0,0,0,0.6),0 0 0 1px var(--border);}
+.login-brand{flex:1;background:linear-gradient(145deg,#0d1829 0%,#0a1220 100%);padding:50px 44px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;}
+.login-brand::before{content:'📚';position:absolute;font-size:200px;opacity:0.04;bottom:-30px;right:-30px;transform:rotate(-15deg);}
+.brand-logo{display:flex;align-items:center;gap:14px;}
+.brand-icon{width:52px;height:52px;background:linear-gradient(135deg,var(--accent),var(--purple));border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 8px 24px rgba(37,99,235,0.3);}
+.brand-name h1{font-size:17px;font-weight:800;letter-spacing:-0.3px;}
+.brand-name p{font-size:11px;color:var(--t2);font-family:'JetBrains Mono',monospace;}
+.brand-features{display:flex;flex-direction:column;gap:14px;margin-top:auto;}
+.brand-feat{display:flex;align-items:center;gap:12px;font-size:13px;color:var(--t2);}
+.brand-feat-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.login-form-panel{flex:1;background:var(--s1);padding:50px 44px;}
+.login-form-panel h2{font-size:26px;font-weight:800;letter-spacing:-0.5px;margin-bottom:6px;}
+.login-form-panel p{color:var(--t2);font-size:13px;margin-bottom:34px;}
+.fgroup{margin-bottom:18px;}
+.fgroup label{display:block;font-size:11px;font-weight:700;color:var(--t2);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.6px;}
+.fgroup input{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:13px 16px;color:var(--text);font-family:'Outfit',sans-serif;font-size:14px;outline:none;transition:all .2s;}
+.fgroup input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow);}
+.btn-login-main{width:100%;padding:14px;border:none;border-radius:var(--radius-sm);background:linear-gradient(135deg,var(--accent) 0%,#1d4ed8 100%);color:#fff;font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:0.2px;margin-top:6px;}
+.btn-login-main:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(37,99,235,0.4);}
+.login-err{color:var(--danger);font-size:12px;margin-top:10px;text-align:center;display:none;padding:10px;background:rgba(239,68,68,0.08);border-radius:6px;border:1px solid rgba(239,68,68,0.2);}
+.quick-access{margin-top:28px;padding-top:24px;border-top:1px solid var(--border);}
+.quick-access p{font-size:11px;color:var(--t3);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.6px;font-weight:700;}
+.quick-row{display:flex;gap:8px;}
+.qbtn{flex:1;padding:10px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--s2);color:var(--t2);font-size:11px;font-family:'Outfit',sans-serif;cursor:pointer;transition:all .2s;text-align:center;line-height:1.5;}
+.qbtn:hover{border-color:var(--accent);color:var(--accent);background:rgba(37,99,235,0.06);}
+.qbtn b{display:block;font-size:13px;margin-bottom:2px;}
+
+/* ═══════════════ APP SHELL ═══════════════ */
+#app-screen{flex-direction:column;}
+.topbar{height:58px;background:var(--s1);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:14px;position:sticky;top:0;z-index:200;}
+.tb-logo{display:flex;align-items:center;gap:10px;}
+.tb-logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--accent),var(--purple));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.tb-logo-text{font-size:14px;font-weight:800;letter-spacing:-0.3px;}
+.tb-logo-text span{font-size:10px;color:var(--t2);font-family:'JetBrains Mono',monospace;display:block;font-weight:400;}
+.tb-spacer{flex:1;}
+.tb-notif{position:relative;width:36px;height:36px;border-radius:9px;border:1px solid var(--border);background:var(--s2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:border-color .2s;}
+.tb-notif:hover{border-color:var(--accent);}
+.notif-dot{position:absolute;top:6px;right:6px;width:8px;height:8px;background:var(--danger);border-radius:50%;border:2px solid var(--s1);}
+.tb-user{display:flex;align-items:center;gap:10px;}
+.tb-role-chip{font-size:10px;font-family:'JetBrains Mono',monospace;padding:3px 10px;border-radius:20px;font-weight:600;}
+.chip-admin{background:rgba(124,58,237,0.15);color:#a78bfa;border:1px solid rgba(124,58,237,0.25);}
+.chip-biblio{background:rgba(6,182,212,0.12);color:#22d3ee;border:1px solid rgba(6,182,212,0.2);}
+.chip-student{background:rgba(5,150,105,0.12);color:#34d399;border:1px solid rgba(5,150,105,0.2);}
+.tb-uname{font-size:13px;font-weight:600;}
+.btn-out{padding:7px 14px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--t2);font-family:'Outfit',sans-serif;font-size:12px;cursor:pointer;transition:all .2s;}
+.btn-out:hover{border-color:var(--danger);color:var(--danger);}
+
+/* LAYOUT */
+.app-body{display:flex;flex:1;height:calc(100vh - 58px);overflow:hidden;}
+.sidebar{width:228px;background:var(--s1);border-right:1px solid var(--border);padding:16px 10px;display:flex;flex-direction:column;gap:3px;overflow-y:auto;flex-shrink:0;}
+.nav-sec{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:1px;font-weight:700;padding:14px 10px 5px;margin-top:4px;}
+.nav-sec:first-child{margin-top:0;}
+.nitem{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;cursor:pointer;font-size:13px;color:var(--t2);transition:all .15s;border:1px solid transparent;position:relative;}
+.nitem:hover{background:var(--s2);color:var(--text);}
+.nitem.active{background:rgba(37,99,235,0.1);color:#60a5fa;border-color:rgba(37,99,235,0.18);}
+.nitem .ni{font-size:15px;width:20px;text-align:center;}
+.nitem .nb{margin-left:auto;font-size:9px;background:var(--danger);color:#fff;border-radius:10px;padding:1px 6px;font-family:'JetBrains Mono',monospace;font-weight:600;}
+.nitem .nbg{background:var(--accent);}
+.nitem .nbs{background:var(--emerald);}
+
+.main{flex:1;overflow-y:auto;padding:26px 30px;background:var(--bg);}
+.page{display:none;animation:pageIn .3s ease;}
+.page.active{display:block;}
+@keyframes pageIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+/* PAGE HEADER */
+.ph{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:26px;gap:16px;}
+.ph-left h2{font-size:22px;font-weight:800;letter-spacing:-0.5px;}
+.ph-left p{color:var(--t2);font-size:13px;margin-top:4px;}
+.ph-right{display:flex;gap:8px;align-items:center;flex-shrink:0;}
+
+/* STATS */
+.sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:14px;margin-bottom:24px;}
+.sc{background:var(--s1);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;position:relative;overflow:hidden;transition:border-color .2s,transform .2s;cursor:default;}
+.sc:hover{border-color:var(--accent);transform:translateY(-2px);}
+.sc::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.sc.blue::after{background:linear-gradient(90deg,var(--accent),var(--cyan));}
+.sc.purple::after{background:linear-gradient(90deg,var(--purple),#ec4899);}
+.sc.green::after{background:linear-gradient(90deg,var(--emerald),#34d399);}
+.sc.amber::after{background:linear-gradient(90deg,var(--amber),#fbbf24);}
+.sc.rose::after{background:linear-gradient(90deg,var(--rose),#f87171);}
+.sc.sky::after{background:linear-gradient(90deg,var(--sky),var(--cyan));}
+.sc-icon{font-size:22px;margin-bottom:10px;}
+.sc-num{font-size:32px;font-weight:800;font-family:'JetBrains Mono',monospace;letter-spacing:-2px;line-height:1;}
+.sc-label{font-size:12px;color:var(--t2);margin-top:6px;}
+.sc-delta{font-size:11px;margin-top:4px;}
+.sc-delta.up{color:var(--emerald);}
+.sc-delta.dn{color:var(--danger);}
+
+/* CARD */
+.card{background:var(--s1);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:18px;}
+.ch{padding:16px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.ch h3{font-size:14px;font-weight:700;}
+.ch-right{display:flex;gap:8px;align-items:center;}
+.cb{padding:0;}
+
+/* TABLE */
+table{width:100%;border-collapse:collapse;}
+th{font-size:10px;text-transform:uppercase;letter-spacing:.7px;color:var(--t3);font-weight:700;padding:11px 20px;text-align:left;border-bottom:1px solid var(--border);background:rgba(255,255,255,0.015);}
+td{padding:12px 20px;font-size:13px;border-bottom:1px solid rgba(255,255,255,0.035);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(37,99,235,0.025);}
+.mono{font-family:'JetBrains Mono',monospace;font-size:12px;}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;font-family:'JetBrains Mono',monospace;white-space:nowrap;}
+.bg-green{background:rgba(5,150,105,0.12);color:#34d399;border:1px solid rgba(5,150,105,0.2);}
+.bg-red{background:rgba(239,68,68,0.12);color:#f87171;border:1px solid rgba(239,68,68,0.2);}
+.bg-blue{background:rgba(37,99,235,0.12);color:#60a5fa;border:1px solid rgba(37,99,235,0.2);}
+.bg-purple{background:rgba(124,58,237,0.12);color:#a78bfa;border:1px solid rgba(124,58,237,0.2);}
+.bg-amber{background:rgba(217,119,6,0.12);color:#fbbf24;border:1px solid rgba(217,119,6,0.2);}
+.bg-rose{background:rgba(225,29,72,0.12);color:#fb7185;border:1px solid rgba(225,29,72,0.2);}
+.bg-cyan{background:rgba(6,182,212,0.12);color:#22d3ee;border:1px solid rgba(6,182,212,0.2);}
+.bg-gray{background:rgba(100,116,139,0.12);color:#94a3b8;border:1px solid rgba(100,116,139,0.2);}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius-sm);border:none;cursor:pointer;font-family:'Outfit',sans-serif;font-size:12px;font-weight:700;transition:all .15s;letter-spacing:.2px;white-space:nowrap;}
+.btn-primary{background:var(--accent);color:#fff;}
+.btn-primary:hover{background:#1d4ed8;}
+.btn-emerald{background:var(--emerald);color:#fff;}
+.btn-emerald:hover{background:#047857;}
+.btn-sm{padding:5px 11px;font-size:11px;border-radius:6px;}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--t2);}
+.btn-ghost:hover{border-color:var(--accent);color:#60a5fa;}
+.btn-danger{background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);color:#f87171;}
+.btn-danger:hover{background:var(--danger);color:#fff;border-color:var(--danger);}
+.btn-success{background:rgba(5,150,105,0.08);border:1px solid rgba(5,150,105,0.2);color:#34d399;}
+.btn-success:hover{background:var(--emerald);color:#fff;}
+.btn-amber{background:rgba(217,119,6,0.08);border:1px solid rgba(217,119,6,0.2);color:#fbbf24;}
+.btn-amber:hover{background:var(--amber);color:#fff;}
+.btn-purple{background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.2);color:#a78bfa;}
+.btn-purple:hover{background:var(--purple);color:#fff;}
+
+/* SEARCH BAR */
+.sbar{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;}
+.sinput{flex:1;min-width:180px;background:var(--s1);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 16px;color:var(--text);font-family:'Outfit',sans-serif;font-size:13px;outline:none;transition:border-color .2s;}
+.sinput:focus{border-color:var(--accent);}
+.sselect{background:var(--s1);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;color:var(--t2);font-family:'Outfit',sans-serif;font-size:13px;outline:none;cursor:pointer;}
+
+/* MODAL */
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px;}
+.modal-ov.open{display:flex;}
+.modal{background:var(--s1);border:1px solid var(--border2);border-radius:20px;padding:30px;width:520px;max-width:100%;max-height:90vh;overflow-y:auto;animation:pageIn .3s;}
+.mh{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+.mh h3{font-size:17px;font-weight:800;}
+.mclose{background:none;border:none;color:var(--t2);cursor:pointer;font-size:20px;line-height:1;padding:4px;}
+.ff{margin-bottom:16px;}
+.ff label{display:block;font-size:10px;font-weight:700;color:var(--t2);margin-bottom:7px;text-transform:uppercase;letter-spacing:.5px;}
+.ff input,.ff select,.ff textarea{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px 14px;color:var(--text);font-family:'Outfit',sans-serif;font-size:13px;outline:none;transition:border-color .2s;}
+.ff input:focus,.ff select:focus,.ff textarea:focus{border-color:var(--accent);}
+.ff textarea{resize:vertical;min-height:80px;}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.mfooter{display:flex;gap:10px;justify-content:flex-end;margin-top:22px;padding-top:18px;border-top:1px solid var(--border);}
+
+/* TOAST */
+.toast-wrap{position:fixed;bottom:24px;right:24px;z-index:2000;display:flex;flex-direction:column;gap:8px;}
+.toast{background:var(--s1);border:1px solid var(--border2);border-radius:12px;padding:13px 18px;font-size:13px;display:flex;align-items:center;gap:10px;box-shadow:0 20px 40px rgba(0,0,0,0.5);animation:toastIn .35s cubic-bezier(.16,1,.3,1);}
+@keyframes toastIn{from{opacity:0;transform:translateX(30px);}to{opacity:1;transform:translateX(0);}}
+
+/* PROGRESS BAR */
+.pbar-wrap{background:var(--s2);border-radius:6px;height:7px;overflow:hidden;}
+.pbar{height:100%;border-radius:6px;transition:width .6s ease;}
+.pbar-blue{background:linear-gradient(90deg,var(--accent),var(--cyan));}
+.pbar-green{background:linear-gradient(90deg,var(--emerald),#34d399);}
+.pbar-amber{background:linear-gradient(90deg,var(--amber),#fbbf24);}
+
+/* SPRINT BOARD */
+.sprint-tabs{display:flex;gap:6px;margin-bottom:20px;}
+.stab{padding:8px 20px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--t2);font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;}
+.stab.active{background:rgba(37,99,235,0.12);border-color:rgba(37,99,235,0.25);color:#60a5fa;}
+.sboard{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.scol{background:var(--s1);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+.scol-head{padding:13px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.scol-head h4{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
+.stasks{padding:10px;display:flex;flex-direction:column;gap:7px;min-height:60px;}
+.stask{background:var(--s2);border:1px solid var(--border);border-radius:9px;padding:11px 13px;transition:border-color .2s;}
+.stask:hover{border-color:var(--accent);}
+.stask-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;}
+.stask-id{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3);}
+.stask-title{font-size:12px;font-weight:700;margin-bottom:3px;}
+.stask-desc{font-size:11px;color:var(--t2);}
+.stask-foot{display:flex;align-items:center;justify-content:space-between;margin-top:7px;}
+.stask-who{font-size:10px;color:var(--t3);}
+
+/* LIBRARY DIGITAL */
+.books-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px;}
+.bcard{background:var(--s1);border:1px solid var(--border);border-radius:14px;overflow:hidden;cursor:pointer;transition:all .2s;}
+.bcard:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 12px 30px rgba(0,0,0,0.3);}
+.bcover{height:130px;display:flex;align-items:center;justify-content:center;font-size:50px;position:relative;}
+.bcover-tag{position:absolute;top:8px;right:8px;}
+.binfo{padding:14px;}
+.binfo h4{font-size:13px;font-weight:700;margin-bottom:3px;line-height:1.3;}
+.binfo p{font-size:11px;color:var(--t2);}
+.binfo .btags{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap;}
+
+/* READER */
+#reader-panel{position:fixed;inset:0;background:var(--bg);z-index:500;display:none;flex-direction:column;}
+#reader-panel.open{display:flex;}
+.reader-bar{height:54px;background:var(--s1);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:14px;}
+.reader-bar h3{font-size:14px;font-weight:700;flex:1;}
+.reader-body{flex:1;display:flex;overflow:hidden;}
+.reader-sidebar{width:220px;background:var(--s1);border-right:1px solid var(--border);padding:16px;overflow-y:auto;}
+.reader-sidebar h4{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--t3);font-weight:700;margin-bottom:12px;}
+.chapter-item{padding:9px 12px;border-radius:8px;cursor:pointer;font-size:12px;color:var(--t2);transition:all .15s;}
+.chapter-item:hover{background:var(--s2);color:var(--text);}
+.chapter-item.active{background:rgba(37,99,235,0.1);color:#60a5fa;}
+.reader-content{flex:1;overflow-y:auto;padding:50px;max-width:780px;margin:0 auto;}
+.reader-content h1{font-size:28px;font-weight:800;margin-bottom:8px;}
+.reader-content h2{font-size:20px;font-weight:700;margin:30px 0 14px;}
+.reader-content p{font-size:15px;line-height:1.85;color:var(--t2);margin-bottom:16px;}
+.reader-content .chapter-head{border-bottom:1px solid var(--border);padding-bottom:20px;margin-bottom:30px;}
+
+/* PROFILE */
+.profile-hero{background:linear-gradient(135deg,var(--s2) 0%,var(--s1) 100%);border:1px solid var(--border);border-radius:var(--radius-lg);padding:30px;display:flex;gap:24px;margin-bottom:18px;position:relative;overflow:hidden;}
+.profile-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--purple),var(--cyan));}
+.p-avatar{width:76px;height:76px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--purple));display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:800;flex-shrink:0;box-shadow:0 8px 24px rgba(37,99,235,0.3);}
+.p-info h3{font-size:20px;font-weight:800;}
+.p-info p{color:var(--t2);font-size:13px;margin-top:3px;}
+.p-chips{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
+.p-chip{font-size:11px;font-family:'JetBrains Mono',monospace;padding:4px 12px;border-radius:20px;border:1px solid var(--border);color:var(--t2);}
+.p-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px;}
+.p-field{background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;}
+.p-field label{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--t3);font-weight:700;display:block;margin-bottom:5px;}
+.p-field span{font-size:14px;font-weight:500;}
+
+/* SANCTIONS */
+.sanction-alert{background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.2);border-radius:14px;padding:20px 24px;margin-bottom:18px;display:flex;align-items:center;gap:16px;}
+.sa-icon{font-size:32px;flex-shrink:0;}
+.sa-text h4{font-size:15px;font-weight:700;color:#f87171;}
+.sa-text p{font-size:13px;color:var(--t2);margin-top:3px;}
+
+/* DASHBOARD ACTIVITY */
+.activity-list{display:flex;flex-direction:column;gap:0;}
+.act-item{display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid rgba(255,255,255,0.04);}
+.act-item:last-child{border-bottom:none;}
+.act-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.act-text{font-size:13px;flex:1;}
+.act-time{font-size:11px;color:var(--t3);font-family:'JetBrains Mono',monospace;}
+
+/* PAGINATION */
+.pagination{display:flex;align-items:center;justify-content:between;gap:6px;padding:14px 20px;border-top:1px solid var(--border);}
+.pag-btn{width:32px;height:32px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--t2);cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:12px;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.pag-btn:hover{border-color:var(--accent);color:#60a5fa;}
+.pag-btn.active{background:rgba(37,99,235,0.12);border-color:rgba(37,99,235,0.3);color:#60a5fa;}
+.pag-info{font-size:12px;color:var(--t2);margin-left:auto;}
+
+/* ALERT BOX */
+.alert{padding:14px 18px;border-radius:10px;font-size:13px;display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.alert-warn{background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);color:#fbbf24;}
+.alert-info{background:rgba(37,99,235,0.08);border:1px solid rgba(37,99,235,0.2);color:#60a5fa;}
+.alert-success{background:rgba(5,150,105,0.08);border:1px solid rgba(5,150,105,0.2);color:#34d399;}
+.alert-danger{background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);color:#f87171;}
+
+/* TOGGLE */
+.toggle{width:44px;height:24px;background:var(--border2);border-radius:12px;cursor:pointer;position:relative;transition:background .2s;flex-shrink:0;}
+.toggle.on{background:var(--emerald);}
+.toggle::after{content:'';position:absolute;width:18px;height:18px;background:#fff;border-radius:50%;top:3px;left:3px;transition:transform .2s;}
+.toggle.on::after{transform:translateX(20px);}
+
+/* CHART BARS (pure CSS) */
+.chart-row{display:flex;align-items:flex-end;gap:6px;height:100px;}
+.chart-bar-wrap{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;}
+.chart-bar{width:100%;border-radius:4px 4px 0 0;transition:height .5s ease;min-height:4px;}
+.chart-label{font-size:9px;color:var(--t3);font-family:'JetBrains Mono',monospace;}
+
+/* EMPTY */
+.empty{text-align:center;padding:60px 20px;}
+.empty-icon{font-size:44px;margin-bottom:12px;}
+.empty p{font-size:14px;color:var(--t2);}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .sboard{grid-template-columns:1fr;}
+  .login-brand{display:none;}
+  .frow{grid-template-columns:1fr;}
+  .sidebar{width:60px;}
+  .nitem span:not(.ni):not(.nb):not(.nbg):not(.nbs){display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════ LOGIN ═══════════ -->
+<div id="login-screen" class="screen active">
+  <div class="login-particles"></div>
+  <div class="login-grid-bg"></div>
+  <div class="login-wrap">
+    <div class="login-brand">
+      <div class="brand-logo">
+        <div class="brand-icon">📚</div>
+        <div class="brand-name">
+          <h1>UNTELS Library</h1>
+          <p>Sistema Integral v2.0</p>
+        </div>
+      </div>
+      <div style="margin-top:40px">
+        <h2 style="font-size:28px;font-weight:800;line-height:1.2;margin-bottom:14px">Gestión Bibliotecaria<br><span style="color:var(--t2)">Inteligente</span></h2>
+        <p style="font-size:13px;color:var(--t2);line-height:1.7">Plataforma completa para administradores, bibliotecarios y estudiantes de la UNTELS.</p>
+      </div>
+      <div class="brand-features">
+        <div class="brand-feat"><div class="brand-feat-icon" style="background:rgba(37,99,235,0.12)">🔐</div> Control de acceso por roles</div>
+        <div class="brand-feat"><div class="brand-feat-icon" style="background:rgba(124,58,237,0.12)">📖</div> Biblioteca digital integrada</div>
+        <div class="brand-feat"><div class="brand-feat-icon" style="background:rgba(5,150,105,0.12)">📊</div> Estadísticas en tiempo real</div>
+        <div class="brand-feat"><div class="brand-feat-icon" style="background:rgba(217,119,6,0.12)">🔔</div> Alertas de devolución y sanciones</div>
+      </div>
+    </div>
+    <div class="login-form-panel">
+      <h2>Iniciar Sesión</h2>
+      <p>Ingresa tus credenciales institucionales</p>
+      <div class="fgroup">
+        <label>Usuario o Email</label>
+        <input type="text" id="lu" placeholder="usuario o correo@untels.edu.pe" />
+      </div>
+      <div class="fgroup">
+        <label>Contraseña</label>
+        <input type="password" id="lp" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()" />
+      </div>
+      <button class="btn-login-main" onclick="doLogin()">Entrar al Sistema →</button>
+      <p class="login-err" id="lerr">❌ Credenciales incorrectas. Intenta de nuevo.</p>
+      <div class="quick-access">
+        <p>Acceso rápido (demo)</p>
+        <div class="quick-row">
+          <button class="qbtn" onclick="qlogin('admin','1234')"><b>👑 Admin</b>admin / 1234</button>
+          <button class="qbtn" onclick="qlogin('bibliotecario1','1234')"><b>📖 Biblio</b>biblio1 / 1234</button>
+          <button class="qbtn" onclick="qlogin('juan.perez','1234')"><b>🎓 Estudiante</b>juan.perez / 1234</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ APP ═══════════ -->
+<div id="app-screen" class="screen">
+  <div class="topbar">
+    <div class="tb-logo">
+      <div class="tb-logo-icon">📚</div>
+      <div class="tb-logo-text">UNTELS Library <span id="tbrole"></span></div>
+    </div>
+    <div class="tb-spacer"></div>
+    <div class="tb-notif" onclick="showToast('🔔 3 alertas de devolución pendientes','amber')">🔔<span class="notif-dot"></span></div>
+    <div class="tb-user">
+      <span class="tb-role-chip" id="tbrchip"></span>
+      <span class="tb-uname" id="tbuname"></span>
+      <button class="btn-out" onclick="doLogout()">Salir</button>
+    </div>
+  </div>
+  <div class="app-body">
+    <nav class="sidebar" id="sidebar"></nav>
+    <main class="main" id="main"></main>
+  </div>
+</div>
+
+<!-- READER PANEL -->
+<div id="reader-panel">
+  <div class="reader-bar">
+    <button class="btn btn-ghost btn-sm" onclick="closeReader()">← Volver</button>
+    <h3 id="reader-title">Título del libro</h3>
+    <span class="badge bg-cyan">Libro Virtual</span>
+  </div>
+  <div class="reader-body">
+    <div class="reader-sidebar">
+      <h4>Contenido</h4>
+      <div id="reader-chapters"></div>
+    </div>
+    <div class="reader-content" id="reader-content"></div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-ov" id="modal"><div class="modal" id="modal-inner"></div></div>
+
+<!-- TOASTS -->
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<script>
+// ═══════════════ DATA ═══════════════
+const USERS=[
+  {id:1,username:'admin',        pass:'1234',role:'Admin',       email:'admin@untels.edu.pe',         name:'Administrador UNTELS'},
+  {id:2,username:'bibliotecario1',pass:'1234',role:'Bibliotecario',email:'bibliotecario1@untels.edu.pe',name:'Cristhopher Salazar'},
+  {id:3,username:'juan.perez',   pass:'1234',role:'Estudiante',  email:'juan.perez@untels.edu.pe',    name:'Juan Pérez Gonzales'},
+  {id:4,username:'maria.lopez',  pass:'1234',role:'Estudiante',  email:'maria.lopez@untels.edu.pe',   name:'María López Martínez'},
+  {id:5,username:'carlos.garcia',pass:'1234',role:'Estudiante',  email:'carlos.garcia@untels.edu.pe', name:'Carlos García Rodríguez'},
+];
+let STUDENTS=[
+  {id:1,name:'Juan Pérez Gonzales',    codigo:'EST2024001',carrera:'Ingeniería de Sistemas',phone:'987654321',email:'juan.perez@untels.edu.pe',    library_access:true, status:true, sanctioned:false,sanction_days:0,date:'2026-05-03'},
+  {id:2,name:'María López Martínez',   codigo:'EST2024002',carrera:'Ingeniería Civil',      phone:'987654322',email:'maria.lopez@untels.edu.pe',   library_access:true, status:true, sanctioned:false,sanction_days:0,date:'2026-05-03'},
+  {id:3,name:'Carlos García Rodríguez',codigo:'EST2024003',carrera:'Ingeniería de Sistemas',phone:'987654323',email:'carlos.garcia@untels.edu.pe', library_access:false,status:false,sanctioned:true, sanction_days:7, date:'2026-05-03'},
+];
+let ADMINS=[
+  {id:1,name:'Administrador UNTELS',username:'admin',        email:'admin@untels.edu.pe',status:true},
+];
+let BIBLIOS=[
+  {id:1,name:'Cristhopher Salazar',  username:'bibliotecario1',email:'bibliotecario1@untels.edu.pe',status:true},
+];
+let BOOKS=[
+  {id:1,title:'Estructuras de Datos en Java',     author:'Robert Lafore',    isbn:'978-0672324536',cat:'Programación', tipo:'Fisico', stock:5, disponible:true, cover:'c1',emoji:'💾',desc:'Guía completa de estructuras de datos y algoritmos en Java con ejemplos prácticos.'},
+  {id:2,title:'Clean Code',                        author:'Robert C. Martin', isbn:'978-0132350884',cat:'Ingeniería',   tipo:'Virtual',stock:0, disponible:true, cover:'c2',emoji:'✨',desc:'Principios, patrones y prácticas para escribir código limpio y mantenible.'},
+  {id:3,title:'El Quijote de la Mancha',           author:'Cervantes',        isbn:'978-8491050001',cat:'Literatura',   tipo:'Fisico', stock:2, disponible:true, cover:'c3',emoji:'📜',desc:'Obra cumbre de la literatura española. Aventuras del ingenioso hidalgo Don Quijote.'},
+  {id:4,title:'Cálculo Diferencial',               author:'James Stewart',    isbn:'978-9706866066',cat:'Matemáticas',  tipo:'Fisico', stock:0, disponible:false,cover:'c4',emoji:'📐',desc:'Texto universitario de cálculo diferencial e integral con aplicaciones en ingeniería.'},
+  {id:5,title:'Redes de Computadoras',             author:'Andrew Tanenbaum', isbn:'978-9702606079',cat:'Redes',        tipo:'Virtual',stock:0, disponible:true, cover:'c2',emoji:'🌐',desc:'Fundamentos y protocolos de redes de computadoras. Referencia académica esencial.'},
+  {id:6,title:'Ingeniería de Software',            author:'Roger Pressman',   isbn:'978-0073375977',cat:'Ingeniería',   tipo:'Virtual',stock:0, disponible:true, cover:'c1',emoji:'⚙️',desc:'Procesos, métodos y herramientas de la ingeniería de software moderna.'},
+  {id:7,title:'Base de Datos con PostgreSQL',      author:'Bruce Momjian',    isbn:'978-0201702453',cat:'Programación', tipo:'Virtual',stock:0, disponible:true, cover:'c3',emoji:'🗄️',desc:'Guía práctica de PostgreSQL: diseño, consultas, rendimiento y administración.'},
+  {id:8,title:'Probabilidad y Estadística',        author:'Walpole & Myers',  isbn:'978-9702606062',cat:'Matemáticas',  tipo:'Fisico', stock:3, disponible:true, cover:'c4',emoji:'📊',desc:'Fundamentos de probabilidad y estadística para ingeniería y ciencias.'},
+];
+let LOANS=[
+  {id:1,student_id:1,student_name:'Juan Pérez Gonzales', book_id:1,book_title:'Estructuras de Datos en Java',date_loan:'2026-04-25',date_limit:'2026-05-09',date_return:null,status:'vigente'},
+  {id:2,student_id:2,student_name:'María López Martínez',book_id:3,book_title:'El Quijote de la Mancha',    date_loan:'2026-04-20',date_limit:'2026-05-04',date_return:null,status:'vencido'},
+  {id:3,student_id:3,student_name:'Carlos García Rodríguez',book_id:8,book_title:'Probabilidad y Estadística',date_loan:'2026-04-01',date_limit:'2026-04-15',date_return:'2026-04-15',status:'devuelto'},
+];
+const CARRERAS=['Ingeniería de Sistemas','Ingeniería Civil','Administración','Ingeniería Industrial'];
+const CATS=['Programación','Ingeniería','Literatura','Matemáticas','Redes'];
+const SPRINT_DATA={
+  'Sprint 1':{weeks:'Semana 5 → Semana 6',tasks:[
+    {id:'HUF14',title:'Toggle activar/desactivar usuarios',who:'Cesar',desc:'Implementar toggle de estado de acceso',done:true,prio:'High'},
+    {id:'HUF15',title:'Mostrar estado de acceso',who:'Cesar',desc:'Mostrar usuarios habilitados o bloqueados',done:true,prio:'High'},
+    {id:'HUF01',title:'Login según rol',who:'Christhopher',desc:'Configurar login backend',done:true,prio:'High'},
+    {id:'HUF02',title:'Validar credenciales',who:'Christhopher',desc:'Validar credenciales del sistema',done:true,prio:'High'},
+    {id:'HUF05',title:'Redireccionamiento por rol',who:'Christhopher',desc:'Retornar rol autenticado al frontend',done:true,prio:'Medium'},
+    {id:'HUF03',title:'Cierre de sesión seguro',who:'Jair',desc:'Implementar logout',done:false,prio:'Medium'},
+    {id:'HUF04',title:'Acceso restringido',who:'Jair',desc:'Validar permisos según rol',done:false,prio:'Medium'},
+    {id:'HUF16',title:'Gestionar permisos por rol',who:'Jair',desc:'Gestionar permisos ADMIN y BIBLIOTECARIO',done:false,prio:'High'},
+    {id:'HUF06',title:'Registrar administradores',who:'Curo',desc:'CRUD administradores',done:false,prio:'High'},
+    {id:'HUF07',title:'Visualizar administradores',who:'Curo',desc:'Listar administradores',done:false,prio:'Medium'},
+    {id:'HUF08',title:'Editar administradores',who:'Curo',desc:'Editar info de administradores',done:false,prio:'Medium'},
+    {id:'HUF09',title:'Deshabilitar administradores',who:'Curo',desc:'Eliminación lógica de admins',done:false,prio:'Medium'},
+    {id:'HUF10',title:'Registrar bibliotecarios',who:'Nick',desc:'CRUD bibliotecarios',done:false,prio:'High'},
+    {id:'HUF11',title:'Visualizar bibliotecarios',who:'Nick',desc:'Listar bibliotecarios',done:false,prio:'Medium'},
+    {id:'HUF12',title:'Editar bibliotecarios',who:'Nick',desc:'Editar info de bibliotecarios',done:false,prio:'Medium'},
+    {id:'HUF13',title:'Deshabilitar bibliotecarios',who:'Nick',desc:'Eliminación lógica',done:false,prio:'Medium'},
+    {id:'HUF17',title:'Config parámetros libros',who:'Nipper',desc:'Configurar Swagger y parámetros',done:false,prio:'Medium'},
+  ]},
+  'Sprint 2':{weeks:'Semana 6 → Semana 7',tasks:[
+    {id:'HUF18',title:'Registrar estudiantes',who:'Cesar',desc:'Crear entidad Estudiante + Carrera',done:false,prio:'High'},
+    {id:'HUF19',title:'Visualizar estudiantes',who:'Cesar',desc:'CRUD estudiantes + endpoints GET',done:false,prio:'High'},
+    {id:'HUF20',title:'Editar estudiantes',who:'Cesar',desc:'Endpoint PUT estudiantes',done:false,prio:'Medium'},
+    {id:'HUF21',title:'Eliminar estudiantes',who:'Christopher',desc:'Eliminación lógica',done:false,prio:'Medium'},
+    {id:'HUF22',title:'Buscar por nombre',who:'Christopher',desc:'Filtrado por nombre',done:false,prio:'Medium'},
+    {id:'HUF23',title:'Buscar por código',who:'Christopher',desc:'Filtrado por código universitario',done:false,prio:'Medium'},
+    {id:'HUF24',title:'Filtrar por carrera',who:'Jair',desc:'Filtrado de estudiantes por carrera',done:false,prio:'Medium'},
+    {id:'HUF25',title:'Filtrar por estado',who:'Jair',desc:'Mostrar habilitados / bloqueados',done:false,prio:'Medium'},
+    {id:'HUF26',title:'Mostrar estado estudiante',who:'Jair',desc:'Indicadores visuales de estado',done:false,prio:'High'},
+    {id:'HUF27',title:'Acceso habilitado/restringido',who:'Jair',desc:'Mostrar acceso biblioteca',done:false,prio:'High'},
+    {id:'HUF28',title:'Visualizar sancionados',who:'Jair',desc:'Listar estudiantes con sanción',done:false,prio:'High'},
+    {id:'HUF29',title:'Registrar libros físicos',who:'Curo',desc:'Entidad Libro + CRUD físicos',done:false,prio:'High'},
+    {id:'HUF30',title:'Registrar libros virtuales',who:'Curo',desc:'CRUD libros virtuales',done:false,prio:'High'},
+    {id:'HUF31',title:'Catálogo de libros',who:'Curo',desc:'Visualizar catálogo completo',done:false,prio:'High'},
+    {id:'HUF32',title:'Detalle de libro',who:'Curo',desc:'Vista de detalle de libro',done:false,prio:'High'},
+    {id:'HUF33',title:'Editar libros',who:'Nick',desc:'Editar información de libros',done:false,prio:'Medium'},
+    {id:'HUF34',title:'Eliminar libros',who:'Nick',desc:'Eliminar del catálogo',done:false,prio:'Medium'},
+    {id:'HUF35',title:'Buscar por título',who:'Nick',desc:'Búsqueda por título',done:false,prio:'High'},
+    {id:'HUF36',title:'Buscar por autor',who:'Nick',desc:'Búsqueda por autor',done:false,prio:'High'},
+    {id:'HUF37',title:'Buscar por ISBN',who:'Nick',desc:'Búsqueda por ISBN',done:false,prio:'High'},
+    {id:'HUF38',title:'Filtrar por categoría',who:'Nipper',desc:'Filtrado libros por categoría',done:false,prio:'Medium'},
+    {id:'HUF39',title:'Disponibilidad real',who:'Nipper',desc:'Mostrar disponibilidad en tiempo real',done:false,prio:'High'},
+    {id:'HUF40',title:'Stock físicos',who:'Nipper',desc:'Mostrar stock de libros físicos',done:false,prio:'High'},
+    {id:'HUF41',title:'Disponibilidad virtuales',who:'Nipper',desc:'Disponibilidad libros virtuales',done:false,prio:'Medium'},
+    {id:'HUF42',title:'Estado del libro',who:'Nipper',desc:'Disponible, prestado o vencido',done:false,prio:'Medium'},
+  ]},
+  'Sprint 3':{weeks:'Semana 7 → Semana 8',tasks:[
+    {id:'HUF43',title:'Registrar préstamos físicos',who:'Cesar',desc:'Registro de préstamos de libros físicos',done:false,prio:'High'},
+    {id:'HUF44',title:'Registrar préstamos virtuales',who:'Cesar',desc:'Registro acceso libros virtuales',done:false,prio:'High'},
+    {id:'HUF45',title:'Préstamos activos',who:'Cesar',desc:'Visualizar préstamos vigentes',done:false,prio:'High'},
+    {id:'HUF46',title:'Historial préstamos',who:'Christopher',desc:'Ver historial completo',done:false,prio:'Medium'},
+    {id:'HUF47',title:'Editar préstamo',who:'Christopher',desc:'Modificar datos del préstamo',done:false,prio:'Medium'},
+    {id:'HUF48',title:'Registrar devolución',who:'Christopher',desc:'Procesar devolución de libro',done:false,prio:'High'},
+    {id:'HUF49',title:'Validar disponibilidad',who:'Jair',desc:'Verificar antes de préstamo',done:false,prio:'High'},
+    {id:'HUF50',title:'Validar acceso estudiante',who:'Jair',desc:'Verificar acceso antes de préstamo',done:false,prio:'High'},
+    {id:'HUF51',title:'Fecha de préstamo',who:'Curo',desc:'Registrar fecha inicio',done:false,prio:'High'},
+    {id:'HUF52',title:'Fecha límite devolución',who:'Curo',desc:'Calcular fecha límite',done:false,prio:'High'},
+    {id:'HUF53',title:'Estado del préstamo',who:'Nick',desc:'Vigente, vencido o devuelto',done:false,prio:'High'},
+    {id:'HUF55',title:'Solicitud desde cuenta',who:'Nick',desc:'Estudiante solicita préstamo',done:false,prio:'High'},
+    {id:'HUF59',title:'Sanciones automáticas',who:'Nipper',desc:'Generar sanción por retraso',done:false,prio:'High'},
+    {id:'HUF60',title:'Calcular días retraso',who:'Nipper',desc:'Cálculo automático de días',done:false,prio:'High'},
+    {id:'HUF61',title:'Calcular días suspensión',who:'Nipper',desc:'Cálculo de suspensión',done:false,prio:'High'},
+    {id:'HUF65',title:'Bloquear acceso por sanción',who:'Nipper',desc:'Bloqueo total si sanción activa',done:false,prio:'High'},
+    {id:'HUF66',title:'Motivo de sanción',         who:'Nipper',   desc:'Mostrar motivo sanción',done:false,prio:'Medium'},
+    {id:'HUF67',title:'Días restantes',            who:'Nipper',   desc:'Mostrar días restantes',done:false,prio:'Medium'},
+    {id:'HUF68',title:'Indicadores visuales',      who:'Nipper',   desc:'Badges y colores de sanción',done:false,prio:'Medium'},
+    {id:'HUF69',title:'Acceso restringido sanción',who:'Nipper',   desc:'Mostrar restricción activa',done:false,prio:'Medium'},
+  ]},
+  'Sprint 4':{weeks:'Semana 8 → Semana 9',tasks:[
+    {id:'HUF70',title:'Estadísticas generales',    who:'Cesar',    desc:'Panel de estadísticas del sistema',done:false,prio:'Medium'},
+    {id:'HUF71',title:'Libros disponibles/prestados',who:'Cesar',  desc:'Estado libros en tiempo real',done:false,prio:'Medium'},
+    {id:'HUF72',title:'Actividad reciente',        who:'Cesar',    desc:'Mostrar actividad reciente del sistema',done:false,prio:'Medium'},
+    {id:'HUF73',title:'Alertas devoluciones',      who:'Cesar',    desc:'Alertas de vencimiento próximas',done:false,prio:'Medium'},
+    {id:'HUF74',title:'Notificaciones sanciones',  who:'Christopher',desc:'Mostrar notificaciones de sanciones',done:false,prio:'Medium'},
+    {id:'HUF75',title:'Generar reportes PDF',      who:'Christopher',desc:'Exportar PDF del sistema',done:false,prio:'Low'},
+    {id:'HUF76',title:'Exportar a Excel',          who:'Christopher',desc:'Exportar reportes Excel',done:false,prio:'Low'},
+    {id:'HUF77',title:'Navegación sidebar',        who:'Jair',     desc:'Sidebar de navegación',done:false,prio:'Low'},
+    {id:'HUF78',title:'Formularios modales',       who:'Jair',     desc:'Implementar formularios modales',done:false,prio:'Low'},
+    {id:'HUF79',title:'Badges e indicadores',      who:'Jair',     desc:'Indicadores visuales con badges',done:false,prio:'Low'},
+    {id:'HUF80',title:'Mensajes éxito/error',      who:'Curo',     desc:'Mensajes de retroalimentación',done:false,prio:'Low'},
+    {id:'HUF81',title:'Validar formularios',       who:'Curo',     desc:'Validación de datos en formularios',done:false,prio:'Low'},
+    {id:'HUF82',title:'Paginación en tablas',      who:'Nick',     desc:'Paginación en todas las tablas',done:false,prio:'Low'},
+    {id:'HUF83',title:'Interfaz responsive',       who:'Nipper',   desc:'Diseño responsive e intuitivo',done:false,prio:'Low'},
+  ]},
+};
+
+const BOOK_CONTENT={
+  2:{chapters:['Introducción al Código Limpio','Nombres con Significado','Funciones','Comentarios','Formato'],content:[
+    {title:'Introducción al Código Limpio',body:`<h1>Clean Code</h1><div class="chapter-head"><p style="color:var(--t2);font-style:italic">"El código limpio es elegante y eficiente." — Bjarne Stroustrup</p></div><h2>¿Qué es el código limpio?</h2><p>El código limpio se puede leer, y se puede mejorar por un desarrollador que no sea el autor original. Tiene pruebas unitarias y de aceptación. Tiene nombres con significado. Proporciona una manera en lugar de muchas de hacer una cosa. Tiene dependencias mínimas, las cuales se definen de manera explícita, y proporciona una API clara y mínima.</p><p>Cuando leemos código bien escrito, sonreímos como hacemos cuando vemos bien hecho artesanía. El código limpio nunca oscurece el diseño del autor. En cambio, está compuesto de abstracciones claras y concisas, y flujos de control directos que te hacen pensar: "Por supuesto, así es exactamente como debería ser."</p><h2>Por qué importa</h2><p>Cada vez que escribimos código descuidado nos estamos poniendo a nosotros mismos una trampa. Cada pieza de código sucia que añadimos al montón crece, haciendo más difícil para nosotros llegar al código que realmente necesitamos cambiar.</p><p>Hemos visto equipos que, debido a la negligencia acumulada, se arrastran y son incapaces de lanzar características nuevas, porque están atrapados en el mantenimiento de un sistema que nunca fue diseñado para durar.</p>`},
+    {title:'Nombres con Significado',body:`<h2>Nombres con Significado</h2><p>Los nombres están en todas partes en el software. Nombramos variables, funciones, argumentos, clases y paquetes. Nombramos archivos de código fuente y los directorios que los contienen. Nombramos archivos jar y archivos war y archivos ear. Nombramos y nombramos y nombramos. Porque hacemos tanto de esto, es mejor que lo hagamos bien.</p><h2>Usar nombres que revelen la intención</h2><p>El nombre de una variable, función o clase debe responder a todas las grandes preguntas. Debería decirte por qué existe, qué hace y cómo se usa. Si un nombre requiere un comentario, entonces el nombre no revela su intención.</p><p>El problema con el siguiente código no es la simplicidad del código sino la implicitación del código: el grado al que el contexto no está explícito en el código mismo.</p>`},
+    {title:'Funciones',body:`<h2>Funciones</h2><p>Desde los primeros días de la programación hemos hecho funciones. Los primeros programas consistían en rutinas y subrutinas. Luego llegaron los sistemas de Fortran y PL/1 y tuvimos programas, subprogramas y funciones. Hoy en día, sólo las funciones sobreviven de ese punto de vista original. Las funciones son la primera línea de organización en cualquier programa.</p><h2>Pequeñas</h2><p>La primera regla de las funciones es que deben ser pequeñas. La segunda regla de las funciones es que deben ser más pequeñas que eso. Esta no es una afirmación que puedo respaldar con investigación. Lo que puedo decirte es que durante cerca de cuatro décadas he escrito funciones de todo tipo y tamaño, y después de mucho ensayo y error, he llegado a creer que las funciones deben ser muy pequeñas.</p>`},
+    {title:'Comentarios',body:`<h2>Comentarios</h2><p>"No comentes el código malo — reescríbelo." — Brian W. Kernighan y P. J. Plaugher</p><p>Nada puede ser tan útil como un comentario bien colocado. Nada puede saturar un módulo más que comentarios dogmáticos y superfluos. Nada puede ser tan dañino como un comentario viejo y rancio que propaga mentiras e información falsa.</p><p>Los comentarios no son como Schindler's List. No son "puro bien". De hecho, los comentarios son, en el mejor de los casos, un mal necesario. Si nuestros lenguajes de programación fueran lo suficientemente expresivos, o si tuviéramos el talento para manejarlos sutilmente para expresar nuestra intención, no necesitaríamos demasiados comentarios, tal vez en absoluto.</p>`},
+    {title:'Formato',body:`<h2>Formato</h2><p>Cuando la gente mira por primera vez a tu código crudo, quieren que esté perfectamente formateado. Quieren que sea legible. De acuerdo con los estudios realizados por la compañía de Kent Beck, los equipos con convenciones de código consistentes son mucho más productivos.</p><p>El formato del código es sobre la comunicación, y la comunicación es el negocio del profesional del desarrollo. Deberías preocuparte por tu código y hacer que otros puedan leerlo fácilmente. Adopta un estilo de codificación y sé consistente con él.</p>`},
+  ]},
+  5:{chapters:['Introducción a Redes','Capa Física','Capa de Enlace','Capa de Red','TCP/IP'],content:[
+    {title:'Introducción a Redes',body:`<h1>Redes de Computadoras</h1><div class="chapter-head"><p style="color:var(--t2)">Quinta Edición — Andrew S. Tanenbaum</p></div><h2>Usos de las Redes de Computadoras</h2><p>Las redes de computadoras se han convertido en parte de la infraestructura de la civilización moderna. Utilizamos redes para comunicarnos con amigos, hacer negocios, leer las noticias, entretenernos y obtener información. La pandemia de COVID-19 aceleró dramáticamente la adopción de tecnologías de red para el trabajo remoto, la educación en línea y el entretenimiento.</p><p>Las redes de computadoras surgieron en la década de los 60 del siglo pasado, impulsadas por el deseo de compartir recursos costosos entre muchos usuarios. Hoy, las redes conectan miles de millones de dispositivos en todo el mundo, desde computadoras personales hasta teléfonos inteligentes, electrodomésticos y sensores industriales.</p><h2>El Internet</h2><p>El Internet es una red de redes, una colección de miles de millones de computadoras interconectadas que hablan un conjunto común de protocolos. Es la red más grande jamás construida y continúa creciendo a un ritmo extraordinario.</p>`},
+    {title:'Capa Física',body:`<h2>Capa Física</h2><p>La capa física es la base de todas las redes. Trata con la transmisión de bits crudos sobre un canal de comunicación. El diseño tiene que ver con asegurarse de que cuando un lado envía un 1 bit, el otro lado lo recibe como un 1 bit, no como un 0 bit.</p><p>Los problemas de diseño aquí tienen que ver con las interfaces mecánicas, eléctricas, y procedimentales, y con el medio físico que se encuentra debajo de la capa física. Los problemas de diseño incluyen ancho de banda, retardo, tasa de error, y otros.</p>`},
+    {title:'Capa de Enlace',body:`<h2>Capa de Enlace de Datos</h2><p>La capa de enlace de datos transforma el servicio de transmisión de bits crudos ofrecido por la capa física en una línea que parece estar libre de errores de transmisión no detectados. Enmascara los errores reales para que la capa de red no los vea.</p><p>Para lograr esto, el remitente divide los datos de entrada en marcos de datos (típicamente entre cientos de bytes y unos pocos kilobytes) y transmite los marcos secuencialmente. Si el servicio es confiable, el receptor confirma cada marco enviando de vuelta un marco de confirmación.</p>`},
+    {title:'Capa de Red',body:`<h2>Capa de Red</h2><p>La capa de red controla la operación de la subred. Una cuestión clave de diseño es determinar cómo se enrutan los paquetes desde la fuente al destino. Las rutas pueden basarse en tablas estáticas que están "cableadas" en la red y raramente cambian, o pueden actualizarse automáticamente.</p><p>Si se producen demasiados paquetes en la subred al mismo tiempo, se bloquearán entre sí formando cuellos de botella. El control de congestión forma parte de la capa de red, aunque las capas superiores también contribuyen.</p>`},
+    {title:'TCP/IP',body:`<h2>La Suite de Protocolos TCP/IP</h2><p>El modelo TCP/IP tiene cuatro capas: host-to-network, internet, transport y application. A diferencia del modelo OSI, no distingue claramente entre servicios, interfaces y protocolos, lo que lo hace menos útil como guía para el diseño de nuevas redes.</p><p>Sin embargo, los protocolos TCP/IP son utilizados por más de la mitad del mundo. El modelo y los protocolos son bien conocidos, ampliamente utilizados, y se han convertido en estándar de hecho. Entender TCP/IP es fundamental para cualquier ingeniero de redes.</p>`},
+  ]},
+};
+
+// ═══════════════ AUTH ═══════════════
+let CU=null;
+function doLogin(){
+  const u=document.getElementById('lu').value.trim();
+  const p=document.getElementById('lp').value;
+  const user=USERS.find(x=>(x.username===u||x.email===u)&&x.pass===p);
+  if(!user){document.getElementById('lerr').style.display='block';return;}
+  CU=user;
+  document.getElementById('lerr').style.display='none';
+  showApp();
+}
+function qlogin(u,p){document.getElementById('lu').value=u;document.getElementById('lp').value=p;doLogin();}
+function doLogout(){CU=null;document.getElementById('login-screen').classList.add('active');document.getElementById('app-screen').classList.remove('active');document.getElementById('lu').value='';document.getElementById('lp').value='';}
+function showApp(){
+  document.getElementById('login-screen').classList.remove('active');
+  document.getElementById('app-screen').classList.add('active');
+  const rc={'Admin':'chip-admin','Bibliotecario':'chip-biblio','Estudiante':'chip-student'}[CU.role];
+  document.getElementById('tbrchip').textContent=CU.role;
+  document.getElementById('tbrchip').className='tb-role-chip '+rc;
+  document.getElementById('tbuname').textContent=CU.name.split(' ')[0];
+  document.getElementById('tbrole').textContent='Sistema Integral';
+  buildSidebar();
+  go(CU.role==='Estudiante'?'my-profile':'dashboard');
+}
+
+// ═══════════════ NAV ═══════════════
+const NAV={
+  Admin:[
+    {s:'Principal'},{id:'dashboard',i:'🏠',l:'Dashboard'},
+    {id:'stats',i:'📊',l:'Estadísticas'},
+    {s:'Gestión'},{id:'biblios',i:'📖',l:'Bibliotecarios'},
+    {id:'students',i:'🎓',l:'Estudiantes'},
+    {id:'books',i:'📚',l:'Catálogo Libros'},
+    {id:'loans',i:'🔄',l:'Préstamos'},
+    {id:'sanctions',i:'⚠️',l:'Sanciones',b:'!',bc:'nb'},
+  ],
+  Bibliotecario:[
+    {s:'Principal'},{id:'dashboard',i:'🏠',l:'Dashboard'},
+    {id:'stats',i:'📊',l:'Estadísticas'},
+    {s:'Gestión'},{id:'students',i:'🎓',l:'Estudiantes'},
+    {id:'books',i:'📚',l:'Catálogo Libros'},
+    {id:'loans',i:'🔄',l:'Préstamos'},
+    {id:'sanctions',i:'⚠️',l:'Sanciones'},
+  ],
+  Estudiante:[
+    {s:'Mi Espacio'},{id:'my-profile',i:'👤',l:'Mi Perfil'},
+    {id:'digital-library',i:'📖',l:'Biblioteca Digital',b:'7',bc:'nbs'},
+    {id:'my-loans',i:'🔄',l:'Mis Préstamos'},
+    {id:'my-sanctions',i:'⚠️',l:'Mis Sanciones'},
+  ],
+};
+function buildSidebar(){
+  const sb=document.getElementById('sidebar');
+  sb.innerHTML=(NAV[CU.role]||[]).map(x=>x.s
+    ?`<div class="nav-sec">${x.s}</div>`
+    :`<div class="nitem" id="n-${x.id}" onclick="go('${x.id}')"><span class="ni">${x.i}</span>${x.l}${x.b?`<span class="nb ${x.bc||''}">${x.b}</span>`:''}</div>`
+  ).join('');
+}
+function go(pg){
+  document.querySelectorAll('.nitem').forEach(e=>e.classList.remove('active'));
+  const el=document.getElementById('n-'+pg);if(el)el.classList.add('active');
+  const PAGES={dashboard,stats,'sprint-board':sprintBoard,biblios,students,books,loans,sanctions,'my-profile':myProfile,'digital-library':digitalLibrary,'my-loans':myLoans,'my-sanctions':mySanctions};
+  document.getElementById('main').innerHTML=(PAGES[pg]||(() =>emptyPage()))()||'';
+}
+
+// ═══════════════ HELPERS ═══════════════
+const $ = id => document.getElementById(id);
+function showToast(msg, type='blue'){
+  const wrap=$('toast-wrap');
+  const t=document.createElement('div');
+  const colors={blue:'#60a5fa',green:'#34d399',amber:'#fbbf24',red:'#f87171'};
+  t.className='toast';
+  t.innerHTML=`<span style="font-size:18px">${msg.split(' ')[0]}</span><span style="color:${colors[type]||colors.blue}">${msg.slice(msg.indexOf(' ')+1)}</span>`;
+  wrap.appendChild(t);
+  setTimeout(()=>t.remove(),3500);
+}
+function openModal(html){$('modal-inner').innerHTML=html;$('modal').classList.add('open');}
+function closeModal(){$('modal').classList.remove('open');}
+$('modal').addEventListener('click',e=>{if(e.target===$('modal'))closeModal();});
+function emptyPage(){return`<div class="empty"><div class="empty-icon">🚧</div><p>En construcción</p></div>`;}
+function statusBadge(s,l){return s?`<span class="badge bg-green">✓ ${l||'Activo'}</span>`:`<span class="badge bg-red">✕ ${l||'Inactivo'}</span>`;}
+function loanStatusBadge(st){const m={vigente:'<span class="badge bg-blue">● Vigente</span>',vencido:'<span class="badge bg-red">⚠ Vencido</span>',devuelto:'<span class="badge bg-green">✓ Devuelto</span>'};return m[st]||'';}
+function prioBadge(p){const m={High:'<span class="badge bg-red">High</span>',Medium:'<span class="badge bg-amber">Medium</span>',Low:'<span class="badge bg-gray">Low</span>'};return m[p]||'';}
+
+// ═══════════════ DASHBOARD ═══════════════
+function dashboard(){
+  const actStu=STUDENTS.filter(s=>s.status).length;
+  const sanctioned=STUDENTS.filter(s=>s.sanctioned).length;
+  const totalBooks=BOOKS.length;
+  const availableBooks=BOOKS.filter(b=>b.disponible).length;
+  const activeLoans=LOANS.filter(l=>l.status==='vigente').length;
+  const overdue=LOANS.filter(l=>l.status==='vencido').length;
+  const recentActivity=[
+    {t:'🔄',msg:'Préstamo registrado: "Estructuras de Datos" — Juan Pérez',time:'hace 2h',c:'#60a5fa'},
+    {t:'⚠️',msg:'Sanción generada: Carlos García — 7 días',time:'hace 4h',c:'#f87171'},
+    {t:'✓',msg:'Devolución registrada: "El Quijote" — María López',time:'hace 1d',c:'#34d399'},
+    {t:'👤',msg:'Nuevo estudiante registrado: Ana Torres',time:'hace 2d',c:'#a78bfa'},
+    {t:'📚',msg:'Nuevo libro agregado: "Base de Datos con PostgreSQL"',time:'hace 3d',c:'#22d3ee'},
+  ];
+  return `<div class="page active">
+  <div class="ph"><div class="ph-left"><h2>Dashboard</h2><p>${new Date().toLocaleDateString('es-PE',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}</p></div></div>
+  ${overdue>0?`<div class="alert alert-warn">⚠️ Hay <strong>${overdue} préstamo(s) vencido(s)</strong> que requieren atención inmediata.</div>`:''}
+  <div class="sg">
+    <div class="sc blue"><div class="sc-icon">🎓</div><div class="sc-num">${STUDENTS.length}</div><div class="sc-label">Total Estudiantes</div><div class="sc-delta up">▲ ${actStu} activos</div></div>
+    <div class="sc green"><div class="sc-icon">📚</div><div class="sc-num">${totalBooks}</div><div class="sc-label">Libros Catálogo</div><div class="sc-delta up">▲ ${availableBooks} disponibles</div></div>
+    <div class="sc amber"><div class="sc-icon">🔄</div><div class="sc-num">${activeLoans}</div><div class="sc-label">Préstamos Activos</div><div class="sc-delta ${overdue>0?'dn':'up'}">${overdue>0?'▼ '+overdue+' vencidos':'Sin vencidos'}</div></div>
+    <div class="sc rose"><div class="sc-icon">⚠️</div><div class="sc-num">${sanctioned}</div><div class="sc-label">Sancionados</div><div class="sc-delta dn">Acceso bloqueado</div></div>
+    ${CU.role==='Admin'?`<div class="sc purple"><div class="sc-icon">📖</div><div class="sc-num">${BIBLIOS.length}</div><div class="sc-label">Bibliotecarios</div></div>`:''}
+    <div class="sc sky"><div class="sc-icon">💻</div><div class="sc-num">${BOOKS.filter(b=>b.tipo==='Virtual').length}</div><div class="sc-label">Libros Virtuales</div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+    <div class="card">
+      <div class="ch"><h3>🔔 Actividad Reciente</h3><span class="badge bg-blue">HUF72</span></div>
+      <div class="activity-list">${recentActivity.map(a=>`<div class="act-item"><div class="act-dot" style="background:${a.c}"></div><span class="act-text">${a.t} ${a.msg}</span><span class="act-time">${a.time}</span></div>`).join('')}</div>
+    </div>
+    <div class="card">
+      <div class="ch"><h3>📊 Alertas de Devolución Próximas</h3><span class="badge bg-amber">HUF73</span></div>
+      <div class="cb"><table>
+        <thead><tr><th>Estudiante</th><th>Libro</th><th>Fecha Límite</th><th>Estado</th><th>Acción</th></tr></thead>
+        <tbody>${LOANS.filter(l=>l.status!=='devuelto').map(l=>`<tr>
+          <td>${l.student_name}</td>
+          <td style="color:var(--t2)">${l.book_title}</td>
+          <td class="mono">${l.date_limit}</td>
+          <td>${loanStatusBadge(l.status)}</td>
+          <td><button class="btn btn-sm btn-ghost" onclick="processReturn(${l.id})">Registrar Devolución</button></td>
+        </tr>`).join('')}</tbody>
+      </table></div>
+    </div>
+  </div>
+  </div>`;
+}
+
+// ═══════════════ STATS ═══════════════
+function stats(){
+  const byCarrera=CARRERAS.map(c=>({c,n:STUDENTS.filter(s=>s.carrera===c).length}));
+  const byCat=CATS.map(c=>({c,n:BOOKS.filter(b=>b.cat===c).length}));
+  const maxC=Math.max(...byCarrera.map(x=>x.n),1);
+  const maxB=Math.max(...byCat.map(x=>x.n),1);
+  return `<div class="page active">
+  <div class="ph"><div class="ph-left"><h2>Estadísticas</h2><p>Panel de estadísticas generales del sistema — HUF70, HUF71, HUF75</p></div>
+  <div class="ph-right"><button class="btn btn-ghost" onclick="showToast('📄 Exportando reporte PDF...','blue')">📄 Exportar PDF</button><button class="btn btn-ghost" onclick="showToast('📊 Exportando Excel...','green')">📊 Exportar Excel</button></div></div>
+  <div class="sg">
+    <div class="sc blue"><div class="sc-icon">👥</div><div class="sc-num">${STUDENTS.length}</div><div class="sc-label">Estudiantes Total</div></div>
+    <div class="sc green"><div class="sc-icon">📗</div><div class="sc-num">${BOOKS.filter(b=>b.disponible).length}</div><div class="sc-label">Libros Disponibles</div></div>
+    <div class="sc amber"><div class="sc-icon">📕</div><div class="sc-num">${LOANS.filter(l=>l.status==='vigente').length}</div><div class="sc-label">Libros Prestados</div></div>
+    <div class="sc rose"><div class="sc-icon">⏰</div><div class="sc-num">${LOANS.filter(l=>l.status==='vencido').length}</div><div class="sc-label">Préstamos Vencidos</div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+    <div class="card">
+      <div class="ch"><h3>Estudiantes por Carrera</h3></div>
+      <div style="padding:24px">
+        ${byCarrera.map(x=>`
+          <div style="margin-bottom:14px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px"><span style="font-size:12px">${x.c}</span><span class="mono" style="font-size:12px;color:var(--accent)">${x.n}</span></div>
+            <div class="pbar-wrap"><div class="pbar pbar-blue" style="width:${Math.round(x.n/maxC*100)}%"></div></div>
+          </div>`).join('')}
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch"><h3>Libros por Categoría</h3></div>
+      <div style="padding:24px">
+        ${byCat.map(x=>`
+          <div style="margin-bottom:14px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px"><span style="font-size:12px">${x.c}</span><span class="mono" style="font-size:12px;color:var(--emerald)">${x.n}</span></div>
+            <div class="pbar-wrap"><div class="pbar pbar-green" style="width:${Math.round(x.n/maxB*100)}%"></div></div>
+          </div>`).join('')}
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ch"><h3>Estado General del Sistema — HUF71</h3></div>
+    <div style="padding:24px;display:grid;grid-template-columns:repeat(3,1fr);gap:24px">
+      <div>
+        <p style="font-size:12px;color:var(--t2);margin-bottom:12px">Estado de Libros Físicos</p>
+        ${[['Disponibles',BOOKS.filter(b=>b.tipo==='Fisico'&&b.disponible).length,'bg-green'],['Sin Stock',BOOKS.filter(b=>b.tipo==='Fisico'&&!b.disponible).length,'bg-red'],['En Préstamo',LOANS.filter(l=>l.status==='vigente').length,'bg-blue']].map(([l,n,c])=>`
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04)">
+            <span style="font-size:13px">${l}</span><span class="badge ${c}">${n}</span>
+          </div>`).join('')}
+      </div>
+      <div>
+        <p style="font-size:12px;color:var(--t2);margin-bottom:12px">Estado de Estudiantes</p>
+        ${[['Activos',STUDENTS.filter(s=>s.status).length,'bg-green'],['Bloqueados',STUDENTS.filter(s=>!s.status).length,'bg-red'],['Sancionados',STUDENTS.filter(s=>s.sanctioned).length,'bg-amber']].map(([l,n,c])=>`
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04)">
+            <span style="font-size:13px">${l}</span><span class="badge ${c}">${n}</span>
+          </div>`).join('')}
+      </div>
+      <div>
+        <p style="font-size:12px;color:var(--t2);margin-bottom:12px">Préstamos</p>
+        ${[['Vigentes',LOANS.filter(l=>l.status==='vigente').length,'bg-blue'],['Vencidos',LOANS.filter(l=>l.status==='vencido').length,'bg-red'],['Devueltos',LOANS.filter(l=>l.status==='devuelto').length,'bg-green']].map(([l,n,c])=>`
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04)">
+            <span style="font-size:13px">${l}</span><span class="badge ${c}">${n}</span>
+          </div>`).join('')}
+      </div>
+    </div>
+  </div>
+  </div>`;
+}
+
+// ═══════════════ SPRINT BOARD ═══════════════
+let activeSprint='Sprint 1';
+function sprintBoard(){
+  const sprints=Object.keys(SPRINT_DATA);
+  const sp=SPRINT_DATA[activeSprint];
+  const done=sp.tasks.filter(t=>t.done);
+  const pending=sp.tasks.filter(t=>!t.done&&t.prio==='High');
+  const medium=sp.tasks.filter(t=>!t.done&&t.prio!=='High');
+  const pct=Math.round(done.length/sp.tasks.length*100);
+  // Global progress
+  const allTasks=Object.values(SPRINT_DATA).flatMap(s=>s.tasks);
+  const allDone=allTasks.filter(t=>t.done).length;
+  const allPct=Math.round(allDone/allTasks.length*100);
+  return `<div class="page active">
+  <div class="ph"><div class="ph-left"><h2>Sprint Board</h2><p>HUF01–HUF83 · Plan de implementación completo del sistema</p></div>
+  <div class="ph-right"><span class="badge bg-blue">${allDone}/${allTasks.length} total</span><span class="badge bg-green">${allPct}% global</span></div></div>
+  <div class="sprint-tabs">${sprints.map(s=>`<button class="stab ${s===activeSprint?'active':''}" onclick="activeSprint='${s}';go('sprint-board')">${s}</button>`).join('')}</div>
+  <div style="margin-bottom:16px;background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:16px 20px">
+    <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="font-size:13px;font-weight:700">${activeSprint} — ${sp.weeks}</span><span class="mono" style="color:var(--accent)">${pct}%</span></div>
+    <div class="pbar-wrap"><div class="pbar pbar-blue" style="width:${pct}%"></div></div>
+    <p style="font-size:12px;color:var(--t2);margin-top:8px">${done.length} de ${sp.tasks.length} tareas completadas</p>
+  </div>
+  <div class="sboard">
+    <div class="scol">
+      <div class="scol-head"><h4 style="color:#f87171">🔴 High Priority</h4><span class="badge bg-red">${pending.length}</span></div>
+      <div class="stasks">${pending.map(t=>`<div class="stask">
+        <div class="stask-top"><span class="stask-id">${t.id}</span>${prioBadge(t.prio)}</div>
+        <div class="stask-title">${t.title}</div>
+        <div class="stask-desc">${t.desc}</div>
+        <div class="stask-foot"><span class="stask-who">👤 ${t.who}</span>
+          <button class="btn btn-sm btn-success" style="font-size:10px;padding:3px 8px" onclick="markDone('${t.id}')">✓ Completar</button>
+        </div>
+      </div>`).join('')||'<p style="color:var(--t3);font-size:12px;padding:10px">Sin pendientes de alta prioridad</p>'}</div>
+    </div>
+    <div class="scol">
+      <div class="scol-head"><h4 style="color:#fbbf24">🟡 Medium / Low</h4><span class="badge bg-amber">${medium.length}</span></div>
+      <div class="stasks">${medium.map(t=>`<div class="stask">
+        <div class="stask-top"><span class="stask-id">${t.id}</span>${prioBadge(t.prio)}</div>
+        <div class="stask-title">${t.title}</div>
+        <div class="stask-desc">${t.desc}</div>
+        <div class="stask-foot"><span class="stask-who">👤 ${t.who}</span>
+          <button class="btn btn-sm btn-success" style="font-size:10px;padding:3px 8px" onclick="markDone('${t.id}')">✓ Completar</button>
+        </div>
+      </div>`).join('')}</div>
+    </div>
+    <div class="scol">
+      <div class="scol-head"><h4 style="color:#34d399">✅ Completado</h4><span class="badge bg-green">${done.length}</span></div>
+      <div class="stasks">${done.map(t=>`<div class="stask" style="opacity:.65">
+        <div class="stask-top"><span class="stask-id">${t.id}</span><span class="badge bg-green" style="font-size:9px">DONE</span></div>
+        <div class="stask-title" style="text-decoration:line-through;color:var(--t2)">${t.title}</div>
+        <div class="stask-foot"><span class="stask-who">👤 ${t.who}</span></div>
+      </div>`).join('')||'<p style="color:var(--t3);font-size:12px;padding:10px">Aún sin completar</p>'}</div>
+    </div>
+  </div>
+  </div>`;
+}
+function markDone(id){
+  for(const sp of Object.values(SPRINT_DATA)){const t=sp.tasks.find(x=>x.id===id);if(t){t.done=true;break;}}
+  go('sprint-board');showToast('✅ Tarea '+id+' marcada como completada','green');
+}
+
+
+// ═══════════════ BIBLIOS ═══════════════
+function biblios(){return `<div class="page active">
+  <div class="ph"><div class="ph-left"><h2>Bibliotecarios</h2><p>HUF10, HUF11, HUF12, HUF13 — Gestión del personal bibliotecario</p></div>
+  <div class="ph-right"><button class="btn btn-primary" onclick="openBiblioModal()">＋ Nuevo Bibliotecario</button></div></div>
+  <div class="sbar">
+    <input class="sinput" placeholder="Buscar por nombre o usuario..." oninput="filterBiblios()" id="bs"/>
+    <select class="filter-select sselect" onchange="filterBiblios()" id="bsst">
+      <option value="">Todos los estados</option><option value="1">Activo</option><option value="0">Inactivo</option>
+    </select>
+  </div>
+  <div class="card" id="biblios-t">${renderBibliosT()}</div>
+  </div>`;}
+function renderBibliosT(f='',st=''){
+  const r=BIBLIOS.filter(b=>{
+    const mf=b.name.toLowerCase().includes(f.toLowerCase())||b.username.toLowerCase().includes(f.toLowerCase());
+    const ms=st===''||b.status===(st==='1');
+    return mf&&ms;
+  });
+  return `<div class="cb"><table>
+    <thead><tr><th>Nombre</th><th>Usuario</th><th>Email</th><th>Estado — HUF15</th><th>Toggle — HUF14</th><th>Acciones</th></tr></thead>
+    <tbody>${r.map(b=>`<tr>
+      <td style="font-weight:600">${b.name}</td>
+      <td><span class="mono" style="color:var(--cyan)">${b.username}</span></td>
+      <td style="color:var(--t2);font-size:12px">${b.email}</td>
+      <td>${statusBadge(b.status)}</td>
+      <td><div class="toggle ${b.status?'on':''}" onclick="toggleBiblio(${b.id})"></div></td>
+      <td><div style="display:flex;gap:6px">
+        <button class="btn btn-sm btn-ghost" onclick="editBiblio(${b.id})">Editar</button>
+        <button class="btn btn-sm btn-danger" onclick="delBiblio(${b.id})">Eliminar</button>
+      </div></td>
+    </tr>`).join('')||`<tr><td colspan="6" style="text-align:center;color:var(--t3);padding:30px">Sin resultados</td></tr>`}</tbody>
+  </table>${pagination(r.length)}</div>`;
+}
+function filterBiblios(){const f=$('bs')?.value||'';const st=$('bsst')?.value||'';$('biblios-t').innerHTML=renderBibliosT(f,st);}
+function toggleBiblio(id){const b=BIBLIOS.find(x=>x.id===id);if(b){b.status=!b.status;$('biblios-t').innerHTML=renderBibliosT();showToast(b.status?'✅ Habilitado':'🔒 Deshabilitado',b.status?'green':'red');}}
+function delBiblio(id){BIBLIOS=BIBLIOS.filter(x=>x.id!==id);$('biblios-t').innerHTML=renderBibliosT();showToast('🗑️ Bibliotecario eliminado','red');}
+function editBiblio(id){const b=BIBLIOS.find(x=>x.id===id);if(!b)return;openModal(`<div class="mh"><h3>Editar Bibliotecario</h3><button class="mclose" onclick="closeModal()">×</button></div>
+  <div class="frow"><div class="ff"><label>Nombre</label><input id="m1" value="${b.name}"/></div><div class="ff"><label>Usuario</label><input id="m2" value="${b.username}"/></div></div>
+  <div class="ff"><label>Email</label><input id="m3" value="${b.email}"/></div>
+  <div class="mfooter"><button class="btn btn-ghost" onclick="closeModal()">Cancelar</button><button class="btn btn-primary" onclick="saveBiblioEdit(${id})">Guardar</button></div>`);}
+function saveBiblioEdit(id){const b=BIBLIOS.find(x=>x.id===id);if(b){b.name=$('m1').value;b.username=$('m2').value;b.email=$('m3').value;}closeModal();$('biblios-t').innerHTML=renderBibliosT();showToast('✅ Actualizado','green');}
+function openBiblioModal(){openModal(`<div class="mh"><h3>Nuevo Bibliotecario</h3><button class="mclose" onclick="closeModal()">×</button></div>
+  <div class="frow"><div class="ff"><label>Nombre</label><input id="m1" placeholder="Nombre completo"/></div><div class="ff"><label>Usuario</label><input id="m2" placeholder="username"/></div></div>
+  <div class="frow"><div class="ff"><label>Email</label><input id="m3" placeholder="email@untels.edu.pe"/></div><div class="ff"><label>Contraseña</label><input id="m4" type="password" placeholder="••••••••"/></div></div>
+  <div class="mfooter"><button class="btn btn-ghost" onclick="closeModal()">Cancelar</button><button class="btn btn-primary" onclick="saveBiblio()">Registrar</button></div>`);}
+function saveBiblio(){const n=$('m1').value,u=$('m2').value,e=$('m3').value;if(!n||!u||!e){alert('Completa los campos');return;}BIBLIOS.push({id:Date.now(),name:n,username:u,email:e,status:true});closeModal();$('biblios-t').innerHTML=renderBibliosT();showToast('✅ Bibliotecario registrado','green');}
+
+// ═══════════════ STUDENTS ═══════════════
+function students(){return `<div class="page active">
+  <div class="ph"><div class="ph-left"><h2>Estudiantes</h2><p>HUF18–HUF28 — Gestión, búsqueda y control de acceso</p></div>
+  <div class="ph-right">${CU.role==='Admin'?`<button class="btn btn-primary" onclick="openStudentModal()">＋ Nuevo Estudiante</button>`:''}</div></div>
+  <div class="sbar">
+    <input class="sinput" placeholder="Buscar por nombre o código..." oninput="reStudents()" id="sts"/>
+    <select class="sselect" onchange="reStudents()" id="stc"><option value="">Todas las carreras</option>${CARRERAS.map(c=>`<option>${c}</option>`).join('')}</select>
+    <select class="sselect" onchange="reStudents()" id="stst"><option value="">Todos los estados</option><option value="activo">Activo</option><option value="bloqueado">Bloqueado</option><option value="sancionado">Sancionado</option></select>
+  </div>
+  <div class="card" id="students-t">${renderStudentsT()}</div>
+  </div>`;}
+function renderStudentsT(f='',c='',st=''){
+  let r=STUDENTS.filter(s=>{
+    const mn=s.name.toLowerCase().includes(f.toLowerCase())||s.codigo.toLowerCase().includes(f.toLowerCase());
+    const mc=!c||s.carrera===c;
+    const ms=!st||(st==='activo'&&s.status)||(st==='bloqueado'&&!s.status)||(st==='sancionado'&&s.sanctioned);
+    return mn&&mc&&ms;
+  });
+  return `<div class="cb"><table>
+    <thead><tr><th>Nombre</th><th>Código</th><th>Carrera</th><th>Acceso Bib.</th><th>Estado</th><th>Sanción</th><th>HUF14 Toggle</th><th>Acciones</th></tr></thead>
+    <tbody>${r.map(s=>`<tr>
+      <td style="font-weight:600">${s.name}${s.sanctioned?'<span class="badge bg-red" style="margin-left:6px;font-size:9px">SANCIONADO</span>':''}</td>
+      <td><span class="mono" style="color:var(--accent)">${s.codigo}</span></td>
+      <td style="font-size:12px;color:var(--t2)">${s.carrera}</td>
+      <td>${s.library_access?'<span class="badge bg-green">✓ Habilitado</span>':'<span class="badge bg-red">✕ Restringido</span>'}</td>
+      <td>${s.status?'<span class="badge bg-blue">Activo</span>':'<span class="badge bg-red">Bloqueado</span>'}</td>
+      <td>${s.sanctioned?`<span class="badge bg-amber">⚠ ${s.sanction_days}d</span>`:'<span class="badge bg-gray">—</span>'}</td>
+      <td><div class="toggle ${s.status?'on':''}" onclick="toggleStudent(${s.id})" title="Activar/Desactivar"></div></td>
+      <td><div style="display:flex;gap:5px;flex-wrap:wrap">
+        <button class="btn btn-sm btn-ghost" onclick="editStudentModal(${s.id})">Editar</button>
+        <button class="btn btn-sm ${s.library_access?'btn-amber':'btn-success'}" onclick="toggleAccess(${s.id})">${s.library_access?'Restringir':'Habilitar'}</button>
+        ${CU.role==='Admin'?`<button class="btn btn-sm btn-danger" onclick="delStudent(${s.id})">Eliminar</button>`:''}
+      </div></td>
+    </tr>`).join('')}</tbody>
+  </table>${pagination(r.length)}</div>`;
+}
+function reStudents(){$('students-t').innerHTML=renderStudentsT($('sts')?.value||'',$('stc')?.value||'',$('stst')?.value||'');}
+function toggleStudent(id){const s=STUDENTS.find(x=>x.id===id);if(s){s.status=!s.status;if(!s.status)s.library_access=false;reStudents();showToast(s.status?'✅ Estudiante activado':'🔒 Estudiante bloqueado',s.status?'green':'red');}}
+function toggleAccess(id){const s=STUDENTS.find(x=>x.id===id);if(s){if(s.sanctioned&&!s.library_access){showToast('⚠️ No se puede habilitar con sanción activa','red');return;}s.library_access=!s.library_access;reStudents();showToast(s.library_access?'✅ Acceso habilitado':'🔒 Acceso restringido',s.library_access?'green':'red');}}
+function delStudent(id){if(confirm('¿Eliminar estudiante?')){STUDENTS=STUDENTS.filter(x=>x.id!==id);reStudents();showToast('🗑️ Estudiante eliminado','red');}}
+function openStudentModal(){openModal(`<div class="mh"><h3>Nuevo Estudiante — HUF18</h3><button class="mclose" onclick="closeModal()">×</button></div>
+  <div class="frow"><div class="ff"><label>Nombre Completo</label><input id="m1" placeholder="Nombre completo"/></div><div class="ff"><label>Código Universitario</label><input id="m2" placeholder="EST2024XXX"/></div></div>
+  <div class="frow"><div class="ff"><label>Email</label><input id="m3" placeholder="email@untels.edu.pe"/></div><div class="ff"><label>Teléfono</label><input id="m4" placeholder="9XXXXXXXX"/></div></div>
+  <div class="ff"><label>Carrera</label><select id="m5">${CARRERAS.map(c=>`<option>${c}</option>`).join('')}</select></div>
+  <div class="mfooter"><button class="btn btn-ghost" onclick="closeModal()">Cancelar</button><button class="btn btn-primary" onclick="saveStudent()">Registrar</button></div>`);}
+function saveStudent(){const n=$('m1').value,cd=$('m2').value,e=$('m3').value,p=$('m4').value,c=$('m5').value;if(!n||!cd){alert('Completa nombre y código');return;}STUDENTS.push({id:Date.now(),name:n,codigo:cd,carrera:c,phone:p,email:e,library_access:true,status:true,sanctioned:false,sanction_days:0,date:'2026-05-04'});closeModal();go('students');showToast('✅ Estudiante registrado — HUF18','green');}
+function editStudentModal(id){const s=STUDENTS.find(x=>x.id===id);if(!s)return;openModal(`<div class="mh"><h3>Editar Estudiante — HUF20</h3><button class="mclose" onclick="closeModal()">×</button></div>
+  <div class="frow"><div class="ff"><label>Nombre</label><input id="m1" value="${s.name}"/></div><div class="ff"><label>Código</label><input id="m2" value="${s.codigo}"/></div></div>
+  <div class="frow"><div class="ff"><label>Email</label><input id="m3" value="${s.email}"/></div><div class="ff"><label>Teléfono</label><input id="m4" value="${s.phone}"/></div></div>
+  <div class="ff"><label>Carrera</label><select id="m5">${CARRERAS.map(c=>`<option ${s.carrera===c?'selected':''}>${c}</option>`).join('')}</select></div>
+  <div class="mfooter"><button class="btn btn-ghost" onclick="closeModal()">Cancelar</button><button class="btn btn-primary" onclick="saveStudentEdit(${id})">Guardar Cambios</button></div>`);}
+function saveStudentEdit(id){const s=STUDENTS.find(x=>x.id===id);if(s){s.name=$('m1').value;s.codigo=$('m2').value;s.email=$('m3').value;s.phone=$('m4').value;s.carrera=$('m5').value;}closeModal();reStudents();showToast('✅ Estudiante actualizado — HUF20','green');}
+
+// ═══════════════ BOOKS ═══════════════
+function books(){
+  const isStudent=CU.role==='Estudiante';
+  return `<div class="page active">
+  <div class="ph"><div class="ph-left"><h2>Catálogo de Libros</h2><p>HUF29–HUF42 — ${isStudent?'Consulta disponibilidad y stock':'Administra el inventario de libros'}</p></div>
+  <div class="ph-right">${!isStudent?`<button class="btn btn-primary" onclick="openBookModal()">＋ Nuevo Libro</button>`:''}</div></div>
+  <div class="sbar">
+    <input class="sinput" placeholder="Buscar por título, autor o ISBN..." oninput="reBooks()" id="bks"/>
+    <select class="sselect" onchange="reBooks()" id="bkc"><option value="">Todas las categorías</option>${CATS.map(c=>`<option>${c}</option>`).join('')}</select>
+    <select class="sselect" onchange="reBooks()" id="bkt"><option value="">Físico y Virtual</option><option>Fisico</option><option>Virtual</option></select>
+    <select class="sselect" onchange="reBooks()" id="bkd"><option value="">Todos</option><option value="si">Disponibles</option><option value="no">No Disponibles</option></select>
+  </div>
+  <div class="card" id="books-t">${renderBooksT()}</div>
+  </div>`;
+}
+function coverGrad(c){const g={c1:'rgba(37,99,235,.2),rgba(124,58,237,.2)',c2:'rgba(6,182,212,.2),rgba(5,150,105,.2)',c3:'rgba(245,158,11,.2),rgba(239,68,68,.2)',c4:'rgba(124,58,237,.2),rgba(236,72,153,.2)'};return g[c]||g.c1;}
+function renderBooksT(f='',c='',t='',d=''){
+  const isStudent=CU.role==='Estudiante';
+  let r=BOOKS.filter(b=>{
+    const ms=b.title.toLowerCase().includes(f.toLowerCase())||b.author.toLowerCase().includes(f.toLowerCase())||b.isbn.includes(f);
+    const mc=!c||b.cat===c;
+    const mt=!t||b.tipo===t;
+    const md=!d||(d==='si'&&b.disponible)||(d==='no'&&!b.disponible);
+    return ms&&mc&&mt&&md;
+  });
+  return `<div class="cb"><table>
+    <thead><tr><th>Libro</th><th>Autor</th><th>ISBN</th><th>Categoría</th><th>Tipo</th><th>Stock</th><th>Disponible</th><th>Estado</th>${!isStudent?'<th>Acciones</th>':''}</tr></thead>
+    <tbody>${r.map(b=>`<tr>
+      <td><span style="font-weight:600">${b.emoji} ${b.title}</span></td>
+      <td style="color:var(--t2);font-size:12px">${b.author}</td>
+      <td><span class="mono" style="font-size:11px;color:var(--t3)">${b.isbn}</span></td>
+      <td><span class="badge bg-blue">${b.cat}</span></td>
+      <td><span class="badge ${b.tipo==='Fisico'?'bg-amber':'bg-purple'}">${b.tipo==='Fisico'?'📦 Físico':'💻 Virtual'}</span></td>
+      <td style="text-align:center"><span class="mono">${b.tipo==='Fisico'?b.stock:'∞'}</span></td>
+      <td>${b.disponible?'<span class="badge bg-green">✓ Sí</span>':'<span class="badge bg-red">✕ No</span>'}</td>
+      <td>${b.tipo==='Fisico'?(b.stock>0?'<span class="badge bg-green">Disponible</span>':'<span class="badge bg-red">Sin Stock</span>'):'<span class="badge bg-cyan">Digital</span>'}</td>
+      ${!isStudent?`<td><div style="display:flex;gap:5px">
+        <button class="btn btn-sm btn-ghost" onclick="editBook(${b.id})">Editar</button>
+        <button class="btn btn-sm btn-danger" onclick="delBook(${b.id})">Eliminar</button>
+      </div></td>`:''}
+    </tr>`).join('')}</tbody>
+  </table>${pagination(r.length)}</div>`;
+}
+function reBooks(){$('books-t').innerHTML=renderBooksT($('bks')?.value||'',$('bkc')?.value||'',$('bkt')?.value||'',$('bkd')?.value||'');}
+function delBook(id){if(confirm('¿Eliminar libro?')){BOOKS=BOOKS.filter(b=>b.id!==id);reBooks();showToast('🗑️ Libro eliminado','red');}}
+function openBookModal(book=null){openModal(`<div class="mh"><h3>${book?'Editar':'Nuevo'} Libro — HUF${book?'33':'29/30'}</h3><button class="mclose" onclick="closeModal()">×</button></div>
+  <div class="frow"><div class="ff"><label>Título</label><input id="m1" value="${book?book.title:''}" placeholder="Título del libro"/></div><div class="ff"><label>Autor</label><input id="m2" value="${book?book.author:''}" placeholder="Nombre del autor"/></div></div>
+  <div class="frow"><div class="ff"><label>ISBN</label><input id="m3" value="${book?book.isbn:''}" placeholder="978-XXXXXXXXXX"/></div><div class="ff"><label>Categoría</label><select id="m4">${CATS.map(c=>`<option ${book&&book.cat===c?'selected':''}>${c}</option>`).join('')}</select></div></div>
+  <div class="frow"><div class="ff"><label>Tipo</label><select id="m5"><option ${book&&book.tipo==='Fisico'?'selected':''} value="Fisico">Físico</option><option ${book&&book.tipo==='Virtual'?'selected':''} value="Virtual">Virtual</option></select></div><div class="ff"><label>Stock (Físicos)</label><input id="m6" type="number" value="${book?book.stock:0}" placeholder="0"/></div></div>
+  <div class="ff"><label>Descripción</label><textarea id="m7" placeholder="Descripción del libro...">${book?book.desc:''}</textarea></div>
+  <div class="mfooter"><button class="btn btn-ghost" onclick="closeModal()">Cancelar</button><button class="btn btn-primary" onclick="saveBook(${book?book.id:'null'})">${book?'Actualizar':'Registrar'}</button></div>`);}
+function editBook(id){const b=BOOKS.find(x=>x.id===id);if(b)openBookModal(b);}
+function saveBook(id){const title=$('m1').value,author=$('m2').value,isbn=$('m3').value,cat=$('m4').value,tipo=$('m5').value,stock=parseInt($('m6').value)||0,desc=$('m7').value;if(!title||!author){alert('Completa título y autor');return;}if(id&&id!='null'){const b=BOOKS.find(x=>x.id==id);Object.assign(b,{title,author,isbn,cat,tipo,stock,disponible:stock>0||tipo==='Virtual',desc});showToast('✅ Libro actualizado — HUF33','green');}else{BOOKS.push({id:Date.now(),title,author,isbn,cat,tipo,stock,disponible:stock>0||tipo==='Virtual',cover:'c1',emoji:'📗',desc});showToast('✅ Libro registrado — HUF29/30','green');}closeModal();go('books');}
+
+// ═══════════════ LOANS ═══════════════
+function loans(){return `<div class="page active">
+  <div class="ph"><div class="ph-left"><h2>Préstamos</h2><p>HUF43–HUF58 — Gestión de préstamos de libros físicos</p></div>
+  <div class="ph-right"><button class="btn btn-primary" onclick="openLoanModal()">＋ Nuevo Préstamo</button></div></div>
+  <div class="sbar">
+    <input class="sinput" placeholder="Buscar por estudiante o libro..." oninput="reLoans()" id="ls"/>
+    <select class="sselect" onchange="reLoans()" id="lst"><option value="">Todos los estados</option><option value="vigente">Vigente</option><option value="vencido">Vencido</option><option value="devuelto">Devuelto</option></select>
+  </div>
+  <div class="card" id="loans-t">${renderLoansT()}</div>
+  </div>`;}
+function renderLoansT(f='',st=''){
+  let r=LOANS.filter(l=>{const ms=l.student_name.toLowerCase().includes(f.toLowerCase())||l.book_title.toLowerCase().includes(f.toLowerCase());const mst=!st||l.status===st;return ms&&mst;});
+  return `<div class="cb"><table>
+    <thead><tr><th>Estudiante</th><th>Libro</th><th>Fecha Préstamo</th><th>Fecha Límite</th><th>Devolución</th><th>Estado</th><th>Acciones</th></tr></thead>
+    <tbody>${r.map(l=>`<tr>
+      <td style="font-weight:600">${l.student_name}</td>
+      <td style="color:var(--t2)">${l.book_title}</td>
+      <td class="mono">${l.date_loan}</td>
+      <td class="mono" style="color:${l.status==='vencido'?'#f87171':'inherit'}">${l.date_limit}</td>
+      <td class="mono">${l.date_return||'<span style="color:var(--t3)">Pendiente</span>'}</td>
+      <td>${loanStatusBadge(l.status)}</td>
+      <td><div style="display:flex;gap:5px">
+        ${l.status!=='devuelto'?`<button class="btn btn-sm btn-success" onclick="processReturn(${l.id})">Devolver</button>`:''}
+        <button class="btn btn-sm btn-ghost" onclick="viewLoan(${l.id})">Ver</button>
+      </div></td>
+    </tr>`).join('')}</tbody>
+  </table>${pagination(r.length)}</div>`;
+}
+function reLoans(){$('loans-t').innerHTML=renderLoansT($('ls')?.value||'',$('lst')?.value||'');}
+function processReturn(id){
+  const l=LOANS.find(x=>x.id===id);if(!l||l.status==='devuelto')return;
+  const today='2026-05-04';
+  const overdue=new Date(today)>new Date(l.date_limit);
+  l.status='devuelto';l.date_return=today;
+  const b=BOOKS.find(x=>x.id===l.book_id);if(b&&b.tipo==='Fisico'){b.stock++;b.disponible=true;}
+  if(overdue){
+    const s=STUDENTS.find(x=>x.id===l.student_id);
+    if(s){s.sanctioned=true;const days=Math.ceil((new Date(today)-new Date(l.date_limit))/(1000*60*60*24));s.sanction_days=days*2;s.library_access=false;showToast('⚠️ Sanción automática generada: '+s.sanction_days+' días — HUF59','amber');}
+  }
+  if($('loans-t'))reLoans();else go('loans');
+  showToast('✅ Devolución registrada — HUF48','green');
+}
+function viewLoan(id){const l=LOANS.find(x=>x.id===id);if(!l)return;openModal(`<div class="mh"><h3>Detalle de Préstamo #${l.id}</h3><button class="mclose" onclick="closeModal()">×</button></div>
+  <div style="display:flex;flex-direction:column;gap:12px">
+    <div class="p-field"><label>Estudiante</label><span>${l.student_name}</span></div>
+    <div class="p-field"><label>Libro</label><span>${l.book_title}</span></div>
+    <div class="frow">
+      <div class="p-field"><label>Fecha Préstamo — HUF51</label><span class="mono">${l.date_loan}</span></div>
+      <div class="p-field"><label>Fecha Límite — HUF52</label><span class="mono" style="color:${l.status==='vencido'?'#f87171':'inherit'}">${l.date_limit}</span></div>
+    </div>
+    <div class="p-field"><label>Estado — HUF53</label><span>${loanStatusBadge(l.status)}</span></div>
+    ${l.date_return?`<div class="p-field"><label>Fecha Devolución</label><span class="mono">${l.date_return}</span></div>`:''}
+  </div>
+  <div class="mfooter"><button class="btn btn-ghost" onclick="closeModal()">Cerrar</button>${l.status!=='devuelto'?`<button class="btn btn-success" onclick="processReturn(${l.id});closeModal()">Registrar Devolución</button>`:''}</div>`);}
+function openLoanModal(){
+  const activeStudents=STUDENTS.filter(s=>s.status&&s.library_access&&!s.sanctioned);
+  const availableBooks=BOOKS.filter(b=>b.tipo==='Fisico'&&b.disponible&&b.stock>0);
+  openModal(`<div class="mh"><h3>Nuevo Préstamo — HUF43</h3><button class="mclose" onclick="closeModal()">×</button></div>
+  ${activeStudents.length===0?'<div class="alert alert-danger">No hay estudiantes habilitados para préstamos.</div>':''}
+  ${availableBooks.length===0?'<div class="alert alert-warn">No hay libros físicos disponibles.</div>':''}
+  <div class="ff"><label>Estudiante — HUF50</label><select id="m1"><option value="">Seleccionar estudiante habilitado</option>${activeStudents.map(s=>`<option value="${s.id}">${s.name} (${s.codigo})</option>`).join('')}</select></div>
+  <div class="ff"><label>Libro Físico — HUF49</label><select id="m2"><option value="">Seleccionar libro disponible</option>${availableBooks.map(b=>`<option value="${b.id}">${b.emoji} ${b.title} (Stock: ${b.stock})</option>`).join('')}</select></div>
+  <div class="frow">
+    <div class="ff"><label>Fecha Préstamo — HUF51</label><input type="date" id="m3" value="2026-05-04"/></div>
+    <div class="ff"><label>Fecha Límite — HUF52</label><input type="date" id="m4" value="2026-05-18"/></div>
+  </div>
+  <div class="mfooter"><button class="btn btn-ghost" onclick="closeModal()">Cancelar</button><button class="btn btn-primary" onclick="saveLoan()">Registrar Préstamo</button></div>`);}
+function saveLoan(){
+  const sid=parseInt($('m1').value),bid=parseInt($('m2').value),dl=$('m3').value,dlim=$('m4').value;
+  if(!sid||!bid){alert('Selecciona estudiante y libro');return;}
+  const s=STUDENTS.find(x=>x.id===sid);const b=BOOKS.find(x=>x.id===bid);
+  if(s.sanctioned){showToast('⚠️ Estudiante sancionado — HUF63','red');return;}
+  if(!s.library_access){showToast('⚠️ Estudiante sin acceso — HUF50','red');return;}
+  if(b.stock<=0){showToast('⚠️ Sin stock disponible — HUF49','red');return;}
+  b.stock--;if(b.stock===0)b.disponible=false;
+  LOANS.push({id:Date.now(),student_id:sid,student_name:s.name,book_id:bid,book_title:b.title,date_loan:dl,date_limit:dlim,date_return:null,status:'vigente'});
+  closeModal();go('loans');showToast('✅ Préstamo registrado — HUF43','green');
+}
+
+// ═══════════════ SANCTIONS ═══════════════
+function sanctions(){
+  const sanctioned=STUDENTS.filter(s=>s.sanctioned);
+  return `<div class="page active">
+  <div class="ph"><div class="ph-left"><h2>Sanciones</h2><p>HUF59–HUF69 — Gestión de sanciones por retrasos en devoluciones</p></div></div>
+  ${sanctioned.length===0?`<div class="empty"><div class="empty-icon">✅</div><p>No hay estudiantes sancionados actualmente</p></div>`:''}
+  <div style="display:flex;flex-direction:column;gap:12px">
+  ${sanctioned.map(s=>`
+    <div class="sanction-alert">
+      <div class="sa-icon">⚠️</div>
+      <div class="sa-text" style="flex:1">
+        <h4>${s.name} — ${s.codigo}</h4>
+        <p>Carrera: ${s.carrera} · Días de suspensión: <strong style="color:#f87171">${s.sanction_days} días — HUF61</strong></p>
+        <p style="margin-top:4px;font-size:12px">Acceso a biblioteca: <span class="badge bg-red">Bloqueado — HUF65</span> · Estado: <span class="badge bg-red">Sancionado — HUF68</span></p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <button class="btn btn-sm btn-success" onclick="clearSanction(${s.id})">Levantar Sanción</button>
+        <button class="btn btn-sm btn-amber" onclick="extendSanction(${s.id})">+7 días — HUF62</button>
+        <button class="btn btn-sm btn-ghost" onclick="viewSanctionDetail(${s.id})">Ver Detalle</button>
+      </div>
+    </div>`).join('')}
+  </div>
+  <div class="card" style="margin-top:20px">
+    <div class="ch"><h3>📋 Historial de Sanciones — HUF66, HUF67</h3></div>
+    <div class="cb"><table>
+      <thead><tr><th>Estudiante</th><th>Motivo — HUF66</th><th>Días Restantes — HUF67</th><th>Estado — HUF68</th><th>Acceso — HUF69</th></tr></thead>
+      <tbody>${STUDENTS.map(s=>`<tr>
+        <td>${s.name}</td>
+        <td style="color:var(--t2);font-size:12px">${s.sanctioned?'Devolución tardía de préstamo':'—'}</td>
+        <td class="mono">${s.sanctioned?s.sanction_days+' días':'—'}</td>
+        <td>${s.sanctioned?'<span class="badge bg-red">Sancionado</span>':'<span class="badge bg-green">Normal</span>'}</td>
+        <td>${s.library_access?'<span class="badge bg-green">Permitido</span>':'<span class="badge bg-red">Restringido</span>'}</td>
+      </tr>`).join('')}</tbody>
+    </table></div>
+  </div>
+  </div>`;
+}
+function clearSanction(id){const s=STUDENTS.find(x=>x.id===id);if(s){s.sanctioned=false;s.sanction_days=0;s.library_access=true;s.status=true;go('sanctions');showToast('✅ Sanción levantada','green');}}
+function extendSanction(id){const s=STUDENTS.find(x=>x.id===id);if(s){s.sanction_days=(s.sanction_days||0)+7;go('sanctions');showToast('⚠️ Sanción extendida +7 días — HUF62','amber');}}
+function viewSanctionDetail(id){const s=STUDENTS.find(x=>x.id===id);if(!s)return;openModal(`<div class="mh"><h3>Detalle Sanción — HUF66</h3><button class="mclose" onclick="closeModal()">×</button></div>
+  <div class="alert alert-danger" style="margin-bottom:16px">⚠️ Estudiante con sanción activa — Acceso bloqueado (HUF65, HUF69)</div>
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div class="p-field"><label>Estudiante</label><span>${s.name}</span></div>
+    <div class="p-field"><label>Código</label><span class="mono">${s.codigo}</span></div>
+    <div class="p-field"><label>Motivo — HUF66</label><span>Devolución tardía de préstamo de libro físico</span></div>
+    <div class="p-field"><label>Días de Suspensión — HUF67</label><span style="color:#f87171;font-weight:700">${s.sanction_days} días restantes</span></div>
+    <div class="p-field"><label>Acceso Biblioteca — HUF69</label><span class="badge bg-red">Restringido por sanción activa</span></div>
+  </div>
+  <div class="mfooter"><button class="btn btn-ghost" onclick="closeModal()">Cerrar</button><button class="btn btn-success" onclick="clearSanction(${s.id});closeModal()">Levantar Sanción</button></div>`);}
+
+// ═══════════════ MY PROFILE ═══════════════
+function myProfile(){
+  const student=CU.role==='Estudiante'?STUDENTS.find(s=>s.email===CU.email):null;
+  const myLoansData=CU.role==='Estudiante'?LOANS.filter(l=>l.student_id===student?.id):[];
+  return `<div class="page active">
+  <div class="ph"><div class="ph-left"><h2>Mi Perfil</h2><p>Información de tu cuenta y estado</p></div></div>
+  ${student&&student.sanctioned?`<div class="sanction-alert"><div class="sa-icon">🚫</div><div class="sa-text"><h4>Tienes una sanción activa — HUF65, HUF69</h4><p>Días restantes: ${student.sanction_days} días · Tu acceso a la biblioteca está bloqueado.</p></div></div>`:''}
+  <div class="profile-hero">
+    <div class="p-avatar">${CU.name.charAt(0)}</div>
+    <div class="p-info">
+      <h3>${CU.name}</h3>
+      <p>${CU.email}</p>
+      <div class="p-chips">
+        <span class="p-chip">@${CU.username}</span>
+        <span class="tb-role-chip ${CU.role==='Admin'?'chip-admin':CU.role==='Bibliotecario'?'chip-biblio':'chip-student'}">${CU.role}</span>
+        ${student?`<span class="p-chip">${student.codigo}</span>`:''}
+      </div>
+      ${student?`<div class="p-grid">
+        <div class="p-field"><label>Carrera</label><span>${student.carrera}</span></div>
+        <div class="p-field"><label>Teléfono</label><span class="mono">${student.phone}</span></div>
+        <div class="p-field"><label>Estado — HUF26</label><span>${statusBadge(student.status,'Activo')}</span></div>
+        <div class="p-field"><label>Acceso Bib. — HUF27</label><span>${student.library_access?'<span class="badge bg-green">✓ Habilitado</span>':'<span class="badge bg-red">✕ Restringido</span>'}</span></div>
+      </div>`:''}
+    </div>
+  </div>
+  ${student&&myLoansData.length>0?`
+  <div class="card">
+    <div class="ch"><h3>Mis Préstamos Activos</h3></div>
+    <div class="cb"><table>
+      <thead><tr><th>Libro</th><th>Fecha Préstamo</th><th>Fecha Límite</th><th>Estado</th></tr></thead>
+      <tbody>${myLoansData.map(l=>`<tr>
+        <td>${l.book_title}</td>
+        <td class="mono">${l.date_loan}</td>
+        <td class="mono">${l.date_limit}</td>
+        <td>${loanStatusBadge(l.status)}</td>
+      </tr>`).join('')}</tbody>
+    </table></div>
+  </div>`:''}
+  </div>`;
+}
+
+// ═══════════════ DIGITAL LIBRARY ═══════════════
+function digitalLibrary(){
+  const student=STUDENTS.find(s=>s.email===CU.email);
+  if(student&&student.sanctioned){return `<div class="page active">
+    <div class="ph"><div class="ph-left"><h2>Biblioteca Digital</h2></div></div>
+    <div class="sanction-alert"><div class="sa-icon">🚫</div><div class="sa-text"><h4>Acceso Restringido — HUF65</h4><p>Tienes una sanción activa de ${student.sanction_days} días. No puedes acceder a la biblioteca digital hasta que se levante la sanción.</p></div></div>
+    </div>`;}
+  const virtualBooks=BOOKS.filter(b=>b.tipo==='Virtual');
+  return `<div class="page active">
+  <div class="ph"><div class="ph-left"><h2>📖 Biblioteca Digital</h2><p>Accede y lee libros virtuales directamente en el sistema · HUF30, HUF31, HUF32</p></div></div>
+  <div class="alert alert-info" style="margin-bottom:20px">💡 Los libros virtuales están disponibles para lectura directa. Los libros físicos requieren préstamo presencial.</div>
+  <div class="sbar">
+    <input class="sinput" placeholder="Buscar libro digital..." oninput="reDigLib(this.value)" id="dls"/>
+    <select class="sselect" onchange="reDigLib($('dls').value,this.value)" id="dlc"><option value="">Todas las categorías</option>${CATS.map(c=>`<option>${c}</option>`).join('')}</select>
+  </div>
+  <div class="books-grid" id="digital-grid">
+    ${virtualBooks.map(b=>`
+      <div class="bcard" onclick="openReader(${b.id})">
+        <div class="bcover" style="background:linear-gradient(135deg,${coverGrad(b.cover)})">
+          <span>${b.emoji}</span>
+          <span class="bcover-tag"><span class="badge bg-cyan" style="font-size:9px">Virtual</span></span>
+        </div>
+        <div class="binfo">
+          <h4>${b.title}</h4>
+          <p>${b.author}</p>
+          <div class="btags">
+            <span class="badge bg-blue" style="font-size:9px">${b.cat}</span>
+            <span class="badge bg-green" style="font-size:9px">✓ Disponible</span>
+          </div>
+          <button class="btn btn-primary btn-sm" style="width:100%;margin-top:10px;justify-content:center" onclick="event.stopPropagation();openReader(${b.id})">📖 Leer Ahora</button>
+        </div>
+      </div>`).join('')}
+  </div>
+  <div style="margin-top:30px">
+    <div class="ch" style="background:var(--s1);border:1px solid var(--border);border-radius:14px 14px 0 0;margin-bottom:0"><h3>📦 Libros Físicos — Solicitar Préstamo</h3><span class="badge bg-amber">HUF55, HUF56, HUF57, HUF58</span></div>
+    <div class="card" style="border-radius:0 0 14px 14px;margin-bottom:0">
+      <div class="cb"><table>
+        <thead><tr><th>Libro</th><th>Autor</th><th>Categoría</th><th>Stock</th><th>Disponible</th><th>Solicitar — HUF58</th></tr></thead>
+        <tbody>${BOOKS.filter(b=>b.tipo==='Fisico').map(b=>`<tr>
+          <td><strong>${b.emoji} ${b.title}</strong></td>
+          <td style="color:var(--t2);font-size:12px">${b.author}</td>
+          <td><span class="badge bg-blue">${b.cat}</span></td>
+          <td class="mono">${b.stock}</td>
+          <td>${b.disponible&&b.stock>0?'<span class="badge bg-green">✓ Disponible</span>':'<span class="badge bg-red">✕ No Disponible</span>'}</td>
+          <td>${student&&student.library_access&&!student.sanctioned&&b.disponible&&b.stock>0
+            ?`<button class="btn btn-sm btn-primary" onclick="requestLoan(${b.id})">Solicitar Préstamo</button>`
+            :`<button class="btn btn-sm btn-ghost" disabled style="opacity:.5;cursor:not-allowed">${student&&student.sanctioned?'Sancionado':student&&!student.library_access?'Sin acceso':'No disponible'}</button>`}
+          </td>
+        </tr>`).join('')}</tbody>
+      </table></div>
+    </div>
+  </div>
+  </div>`;
+}
+function reDigLib(f='',c=''){
+  const vb=BOOKS.filter(b=>b.tipo==='Virtual'&&(b.title.toLowerCase().includes(f.toLowerCase())||b.author.toLowerCase().includes(f.toLowerCase()))&&(!c||b.cat===c));
+  $('digital-grid').innerHTML=vb.length?vb.map(b=>`<div class="bcard" onclick="openReader(${b.id})">
+    <div class="bcover" style="background:linear-gradient(135deg,${coverGrad(b.cover)})"><span>${b.emoji}</span><span class="bcover-tag"><span class="badge bg-cyan" style="font-size:9px">Virtual</span></span></div>
+    <div class="binfo"><h4>${b.title}</h4><p>${b.author}</p><div class="btags"><span class="badge bg-blue" style="font-size:9px">${b.cat}</span></div>
+    <button class="btn btn-primary btn-sm" style="width:100%;margin-top:10px;justify-content:center" onclick="event.stopPropagation();openReader(${b.id})">📖 Leer</button></div>
+  </div>`).join(''):`<div style="grid-column:1/-1"><div class="empty"><div class="empty-icon">🔍</div><p>No se encontraron libros digitales</p></div></div>`;
+}
+function requestLoan(bid){
+  const b=BOOKS.find(x=>x.id===bid);const student=STUDENTS.find(s=>s.email===CU.email);
+  if(!student||!student.library_access||student.sanctioned){showToast('⚠️ No tienes acceso para solicitar préstamos','red');return;}
+  openModal(`<div class="mh"><h3>Solicitar Préstamo — HUF56</h3><button class="mclose" onclick="closeModal()">×</button></div>
+  <div class="alert alert-info">📋 Tu solicitud será procesada por el bibliotecario</div>
+  <div style="background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:16px;margin:16px 0">
+    <div style="font-size:13px;font-weight:700;margin-bottom:4px">${b.emoji} ${b.title}</div>
+    <div style="font-size:12px;color:var(--t2)">${b.author} · Stock disponible: ${b.stock}</div>
+  </div>
+  <div class="ff"><label>Nota adicional</label><textarea id="m1" placeholder="Motivo o nota para el bibliotecario..."></textarea></div>
+  <div class="mfooter"><button class="btn btn-ghost" onclick="closeModal()">Cancelar</button><button class="btn btn-primary" onclick="confirmLoanRequest(${bid})">Confirmar Solicitud — HUF57</button></div>`);}
+function confirmLoanRequest(bid){const b=BOOKS.find(x=>x.id===bid);closeModal();showToast('✅ Solicitud enviada: "'+b.title+'" — Acércate a biblioteca para retirar — HUF57','green');}
+
+// ═══════════════ MY LOANS ═══════════════
+function myLoans(){
+  const student=STUDENTS.find(s=>s.email===CU.email);
+  const ml=student?LOANS.filter(l=>l.student_id===student.id):[];
+  return `<div class="page active">
+  <div class="ph"><div class="ph-left"><h2>Mis Préstamos</h2><p>HUF45, HUF46 — Historial de préstamos de libros físicos</p></div></div>
+  ${ml.length===0?`<div class="empty"><div class="empty-icon">📋</div><p>No tienes préstamos registrados</p></div>`:`
+  <div class="card">
+    <div class="ch"><h3>Préstamos Activos e Historial</h3></div>
+    <div class="cb"><table>
+      <thead><tr><th>Libro</th><th>Fecha Préstamo — HUF51</th><th>Fecha Límite — HUF52</th><th>Devolución</th><th>Estado — HUF53</th></tr></thead>
+      <tbody>${ml.map(l=>`<tr>
+        <td style="font-weight:600">${l.book_title}</td>
+        <td class="mono">${l.date_loan}</td>
+        <td class="mono" style="color:${l.status==='vencido'?'#f87171':'inherit'}">${l.date_limit}</td>
+        <td class="mono">${l.date_return||'<span style="color:var(--t3)">Pendiente</span>'}</td>
+        <td>${loanStatusBadge(l.status)}</td>
+      </tr>`).join('')}</tbody>
+    </table></div>
+  </div>`}
+  </div>`;
+}
+
+// ═══════════════ MY SANCTIONS ═══════════════
+function mySanctions(){
+  const student=STUDENTS.find(s=>s.email===CU.email);
+  return `<div class="page active">
+  <div class="ph"><div class="ph-left"><h2>Mis Sanciones</h2><p>HUF66–HUF69 — Estado de sanciones y acceso</p></div></div>
+  ${student&&student.sanctioned?`
+    <div class="sanction-alert"><div class="sa-icon">🚫</div><div class="sa-text">
+      <h4>Tienes una Sanción Activa — HUF68</h4>
+      <p>Motivo: Devolución tardía de préstamo — HUF66</p>
+      <p style="margin-top:6px">Días restantes: <strong style="color:#f87171">${student.sanction_days} días — HUF67</strong></p>
+      <p style="margin-top:4px"><span class="badge bg-red">Acceso Restringido — HUF69</span> <span class="badge bg-red" style="margin-left:6px">Préstamos Bloqueados — HUF63</span></p>
+    </div></div>
+    <div class="alert alert-danger" style="margin-top:12px">Tu acceso a la biblioteca digital y física está completamente bloqueado hasta que se levante la sanción — HUF65</div>`:`
+    <div class="alert alert-success">✅ No tienes sanciones activas. Tu acceso está habilitado.</div>`}
+  </div>`;
+}
+
+// ═══════════════ READER ═══════════════
+function openReader(id){
+  const b=BOOKS.find(x=>x.id===id);if(!b)return;
+  const content=BOOK_CONTENT[id];
+  $('reader-title').textContent=b.title;
+  const panel=$('reader-panel');
+  if(content){
+    $('reader-chapters').innerHTML=content.chapters.map((c,i)=>`<div class="chapter-item ${i===0?'active':''}" onclick="loadChapter(${id},${i})">${c}</div>`).join('');
+    $('reader-content').innerHTML=content.content[0].body;
+  } else {
+    $('reader-chapters').innerHTML='<div class="chapter-item active">Contenido</div>';
+    $('reader-content').innerHTML=`<h1>${b.title}</h1><div class="chapter-head"><p style="color:var(--t2)">${b.author}</p></div><h2>Acerca de este libro</h2><p>${b.desc}</p><h2>Contenido</h2><p>Este libro está disponible para lectura en el sistema de biblioteca digital de UNTELS. El contenido completo se cargaría desde la API de libros virtuales conectada al backend de Spring Boot.</p><p>Los libros virtuales no requieren préstamo físico y están disponibles para todos los estudiantes con acceso habilitado a la biblioteca.</p><div style="background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:20px;margin-top:24px"><div style="font-size:13px;font-weight:700;margin-bottom:8px">📡 Conexión con Backend</div><p style="font-size:13px;color:var(--t2)">En el sistema real, el contenido se cargaría desde el endpoint:<br><span class="mono" style="color:var(--accent)">GET /api/books/${id}/content</span></p></div>`;
+  }
+  panel.classList.add('open');
+}
+function loadChapter(bookId,idx){
+  const content=BOOK_CONTENT[bookId];if(!content)return;
+  $('reader-content').innerHTML=content.content[idx].body;
+  document.querySelectorAll('.chapter-item').forEach((el,i)=>el.classList.toggle('active',i===idx));
+  $('reader-content').scrollTop=0;
+}
+function closeReader(){$('reader-panel').classList.remove('open');}
+
+// ═══════════════ PAGINATION ═══════════════
+function pagination(total=10){
+  return `<div class="pagination">
+    <button class="pag-btn">‹</button>
+    <button class="pag-btn active">1</button>
+    ${total>10?`<button class="pag-btn">2</button>`:''} 
+    <button class="pag-btn">›</button>
+    <span class="pag-info">${total} registros — HUF82</span>
+  </div>`;}
+</script>
+</body>
+</html>
