@@ -1,6 +1,7 @@
 package pe.edu.untels.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import java.time.LocalDateTime;
 
 @Entity
@@ -12,12 +13,15 @@ public class ConfigParametro {
     private int idConfig;
 
     @Column(name = "limitePrestamos", nullable = false)
+    @Min(1)
     private int limitePrestamos;
 
     @Column(name = "diasPrestamo", nullable = false)
+    @Min(1)
     private int diasPrestamo;
 
     @Column(name = "stockMinimo", nullable = false)
+    @Min(0)
     private int stockMinimo;
 
     @Column(name = "fechaActualizacion", nullable = false)
@@ -29,6 +33,16 @@ public class ConfigParametro {
         this.limitePrestamos = limitePrestamos;
         this.diasPrestamo = diasPrestamo;
         this.stockMinimo = stockMinimo;
+        this.fechaActualizacion = LocalDateTime.now();
+    }
+
+    @PrePersist
+    public void prePersist() {
+        this.fechaActualizacion = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
         this.fechaActualizacion = LocalDateTime.now();
     }
 
