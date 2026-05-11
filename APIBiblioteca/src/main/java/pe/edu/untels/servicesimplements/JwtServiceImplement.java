@@ -8,7 +8,9 @@ import io.jsonwebtoken.security.Keys;
 import pe.edu.untels.entities.User;
 import java.security.Key;
 import java.util.Date;
-
+/**
+ * Servicio encargado de generar tokens JWT para autenticación y autorización.
+ */
 @Service
 public class JwtServiceImplement {
 

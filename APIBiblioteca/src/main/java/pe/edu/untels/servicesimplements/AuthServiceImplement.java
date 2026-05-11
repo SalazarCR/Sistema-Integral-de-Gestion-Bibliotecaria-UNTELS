@@ -10,7 +10,10 @@ import pe.edu.untels.exceptions.ValidationException;
 import pe.edu.untels.repositories.IUserRepository;
 import pe.edu.untels.servicesinterfaces.IAuthService;
 import java.util.Optional;
-
+/**
+ * Realiza el proceso de login validando credenciales,
+ * estado, rol y generando tokens JWT.
+ */
 @Service
 public class AuthServiceImplement implements IAuthService {
 
