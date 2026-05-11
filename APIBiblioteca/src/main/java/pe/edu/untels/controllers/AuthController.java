@@ -10,7 +10,10 @@ import pe.edu.untels.dtos.LoginResponseDTO;
 import pe.edu.untels.exceptions.AuthException;
 import pe.edu.untels.exceptions.ValidationException;
 import pe.edu.untels.servicesinterfaces.IAuthService;
-
+/**
+ * Endpoint para iniciar sesión de usuarios.
+ * Retorna tokens y datos del usuario autenticado.
+ */
 @RestController
 @RequestMapping("/api/auth")
 @CrossOrigin(origins = "*")
