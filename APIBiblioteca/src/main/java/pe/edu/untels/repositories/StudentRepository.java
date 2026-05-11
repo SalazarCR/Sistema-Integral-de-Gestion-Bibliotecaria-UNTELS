@@ -11,8 +11,6 @@ import java.util.Optional;
 
 public interface StudentRepository extends JpaRepository<Student, Long> {
 
-    List<Student> findByEstado(Boolean estado);
-
     Page<Student> findAll(Pageable pageable);
 
     Optional<Student> findByDni(String dni);
@@ -20,4 +18,6 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     Optional<Student> findByCodigo(String codigo);
 
     List<Student> findByCarreraId(Long carreraId);
+
+    List<Student> findByEstado(Boolean estado);
 }

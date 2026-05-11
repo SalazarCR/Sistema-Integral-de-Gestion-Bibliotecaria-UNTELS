@@ -49,11 +49,6 @@ public class StudentServiceImplement implements StudentService {
     }
 
     @Override
-    public List<Student> filtrarPorEstado(Boolean estado) {
-        return studentRepository.findByEstado(estado);
-    }
-
-    @Override
     public Page<Student> listar(Pageable pageable) {
         return studentRepository.findAll(pageable);
     }
@@ -103,6 +98,11 @@ public class StudentServiceImplement implements StudentService {
     @Override
     public List<Student> filtrarPorCarrera(Long carreraId) {
         return studentRepository.findByCarreraId(carreraId);
+    }
+
+    @Override
+    public List<Student> filtrarPorEstado(Boolean estado) {
+        return studentRepository.findByEstado(estado);
     }
 
 }

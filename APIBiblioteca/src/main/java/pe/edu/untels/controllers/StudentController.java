@@ -22,10 +22,6 @@ public class StudentController {
         return studentService.registrar(dto);
     }
 
-    @GetMapping("/estado/{estado}")
-    public List<Student> filtrarPorEstado(@PathVariable Boolean estado) {
-        return studentService.filtrarPorEstado(estado);
-    }
     @GetMapping
     public Page<Student> listar(Pageable pageable) {
         return studentService.listar(pageable);
@@ -55,5 +51,10 @@ public class StudentController {
     @GetMapping("/carrera/{id}")
     public List<Student> filtrarPorCarrera(@PathVariable Long id) {
         return studentService.filtrarPorCarrera(id);
+    }
+
+    @GetMapping("/estado/{estado}")
+    public List<Student> filtrarPorEstado(@PathVariable Boolean estado) {
+        return studentService.filtrarPorEstado(estado);
     }
 }
