@@ -12,8 +12,6 @@ public interface StudentService {
 
     Student registrar(StudentDTO dto);
 
-    Student actualizar(Long id, StudentDTO dto);
-
     Student toggleEstado(Long id);
 
     Student buscarPorDni(String dni);
@@ -25,4 +23,6 @@ public interface StudentService {
     List<Student> filtrarPorEstado(Boolean estado);
 
     Page<Student> listar(Pageable pageable);
+
+    Student actualizar(Long id, StudentDTO dto);
 }

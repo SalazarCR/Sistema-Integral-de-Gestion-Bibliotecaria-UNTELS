@@ -49,25 +49,6 @@ public class StudentServiceImplement implements StudentService {
     }
 
     @Override
-    public Student actualizar(Long id, StudentDTO dto) {
-
-        Student student = studentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Estudiante no encontrado"));
-
-        Carrera carrera = carreraRepository.findById(dto.getCarreraId())
-                .orElseThrow(() -> new RuntimeException("Carrera no encontrada"));
-
-        student.setNombres(dto.getNombres());
-        student.setApellidos(dto.getApellidos());
-        student.setDni(dto.getDni());
-        student.setCodigo(dto.getCodigo());
-        student.setEmail(dto.getEmail());
-        student.setCarrera(carrera);
-
-        return studentRepository.save(student);
-    }
-
-    @Override
     public Student toggleEstado(Long id) {
 
         Student student = studentRepository.findById(id)
@@ -103,5 +84,24 @@ public class StudentServiceImplement implements StudentService {
     @Override
     public Page<Student> listar(Pageable pageable) {
         return studentRepository.findAll(pageable);
+    }
+
+    @Override
+    public Student actualizar(Long id, StudentDTO dto) {
+
+        Student student = studentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Estudiante no encontrado"));
+
+        Carrera carrera = carreraRepository.findById(dto.getCarreraId())
+                .orElseThrow(() -> new RuntimeException("Carrera no encontrada"));
+
+        student.setNombres(dto.getNombres());
+        student.setApellidos(dto.getApellidos());
+        student.setDni(dto.getDni());
+        student.setCodigo(dto.getCodigo());
+        student.setEmail(dto.getEmail());
+        student.setCarrera(carrera);
+
+        return studentRepository.save(student);
     }
 }
