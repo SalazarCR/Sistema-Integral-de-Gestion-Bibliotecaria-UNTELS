@@ -57,4 +57,8 @@ public class StudentController {
     public List<Student> filtrarPorEstado(@PathVariable Boolean estado) {
         return studentService.filtrarPorEstado(estado);
     }
+    @GetMapping
+    public List<Student> listar() {
+        return studentService.listar();
+    }
 }

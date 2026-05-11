@@ -25,4 +25,6 @@ public interface StudentService {
     List<Student> filtrarPorCarrera(Long carreraId);
 
     List<Student> filtrarPorEstado(Boolean estado);
+
+    List<Student> listar();
 }

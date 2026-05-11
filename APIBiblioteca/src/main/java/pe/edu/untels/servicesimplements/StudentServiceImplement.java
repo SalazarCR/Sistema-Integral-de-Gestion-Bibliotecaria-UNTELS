@@ -105,4 +105,9 @@ public class StudentServiceImplement implements StudentService {
     public List<Student> filtrarPorEstado(Boolean estado) {
         return studentRepository.findByEstado(estado);
     }
+
+    @Override
+    public List<Student> listar() {
+        return studentRepository.findAll();
+    }
 }
