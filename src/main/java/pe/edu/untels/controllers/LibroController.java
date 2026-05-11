@@ -1,25 +1,32 @@
 package pe.edu.untels.controllers;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
-import pe.edu.untels.dtos.LibroDTO;
 
-import java.util.ArrayList;
-import java.util.List;
+import pe.edu.untels.entities.Libro;
+import pe.edu.untels.repositories.ILibroRepository;
 
 @RestController
 @RequestMapping("/libros")
 public class LibroController {
 
-    @GetMapping
-    public List<LibroDTO> listarLibros() {
+    @Autowired
+    private ILibroRepository libroRepository;
 
-        List<LibroDTO> lista = new ArrayList<>();
+    @GetMapping("/paginado")
+    public Page<Libro> listarLibrosPaginados(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
 
-        return lista;
+        return libroRepository.findAll(PageRequest.of(page, size));
     }
 
     @PostMapping
-    public String registrarLibro(@RequestBody LibroDTO dto) {
+    public String registrarLibro(@RequestBody Libro libro) {
+
+        libroRepository.save(libro);
 
         return "Libro registrado correctamente";
     }
