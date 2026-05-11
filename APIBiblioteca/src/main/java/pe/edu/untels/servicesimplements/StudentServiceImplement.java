@@ -49,12 +49,6 @@ public class StudentServiceImplement implements StudentService {
     }
 
     @Override
-    public Student buscarPorDni(String dni) {
-        return studentRepository.findByDni(dni)
-                .orElseThrow(() -> new RuntimeException("Estudiante no encontrado"));
-    }
-
-    @Override
     public Student buscarPorCodigo(String codigo) {
         return studentRepository.findByCodigo(codigo)
                 .orElseThrow(() -> new RuntimeException("Estudiante no encontrado"));
@@ -103,6 +97,12 @@ public class StudentServiceImplement implements StudentService {
         student.setEstado(!student.getEstado());
 
         return studentRepository.save(student);
+    }
+
+    @Override
+    public Student buscarPorDni(String dni) {
+        return studentRepository.findByDni(dni)
+                .orElseThrow(() -> new RuntimeException("Estudiante no encontrado"));
     }
 
 }
