@@ -49,17 +49,6 @@ public class StudentServiceImplement implements StudentService {
     }
 
     @Override
-    public Student toggleEstado(Long id) {
-
-        Student student = studentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Estudiante no encontrado"));
-
-        student.setEstado(!student.getEstado());
-
-        return studentRepository.save(student);
-    }
-
-    @Override
     public Student buscarPorDni(String dni) {
         return studentRepository.findByDni(dni)
                 .orElseThrow(() -> new RuntimeException("Estudiante no encontrado"));
@@ -104,4 +93,16 @@ public class StudentServiceImplement implements StudentService {
 
         return studentRepository.save(student);
     }
+
+    @Override
+    public Student toggleEstado(Long id) {
+
+        Student student = studentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Estudiante no encontrado"));
+
+        student.setEstado(!student.getEstado());
+
+        return studentRepository.save(student);
+    }
+
 }
