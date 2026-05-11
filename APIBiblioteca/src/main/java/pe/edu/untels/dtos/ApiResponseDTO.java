@@ -1,5 +1,7 @@
 package pe.edu.untels.dtos;
-
+/**
+ * DTO de respuesta para el login, contiene tokens y datos básicos del usuario.
+ */
 public class ApiResponseDTO {
 
     private Boolean success;
