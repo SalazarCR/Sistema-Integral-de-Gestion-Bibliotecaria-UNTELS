@@ -29,5 +29,26 @@ public class LibroController {
         libroRepository.save(libro);
 
         return "Libro registrado correctamente";
+
+    }
+    @PutMapping("/{id}")
+    public String actualizarLibro(@PathVariable int id,
+                                  @RequestBody Libro libroActualizado) {
+
+        Libro libro = libroRepository.findById(id).orElse(null);
+
+        if (libro == null) {
+            return "Libro no encontrado";
+        }
+
+        libro.setTitulo(libroActualizado.getTitulo());
+        libro.setAutor(libroActualizado.getAutor());
+        libro.setDescripcion(libroActualizado.getDescripcion());
+        libro.setIsbn(libroActualizado.getIsbn());
+        libro.setStock(libroActualizado.getStock());
+
+        libroRepository.save(libro);
+
+        return "Libro actualizado correctamente";
     }
 }
