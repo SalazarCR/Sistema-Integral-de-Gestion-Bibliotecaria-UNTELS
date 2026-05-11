@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import pe.edu.untels.dtos.StudentDTO;
 import pe.edu.untels.entities.Student;
+import pe.edu.untels.servicesinterfaces.StudentService;
 
 import java.util.List;
 
