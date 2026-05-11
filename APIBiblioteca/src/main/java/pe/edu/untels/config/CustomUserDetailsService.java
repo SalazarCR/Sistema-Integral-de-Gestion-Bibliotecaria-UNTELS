@@ -12,7 +12,10 @@ import pe.edu.untels.repositories.IUserRepository;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
-
+/**
+ * Servicio personalizado para cargar usuarios desde la base de datos
+ * para la autenticación en el sistema de biblioteca.
+ */
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
