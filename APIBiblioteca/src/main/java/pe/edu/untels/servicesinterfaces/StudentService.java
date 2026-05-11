@@ -12,8 +12,6 @@ public interface StudentService {
 
     Student registrar(StudentDTO dto);
 
-    Page<Student> listar(Pageable pageable);
-
     Student actualizar(Long id, StudentDTO dto);
 
     Student toggleEstado(Long id);
@@ -26,5 +24,5 @@ public interface StudentService {
 
     List<Student> filtrarPorEstado(Boolean estado);
 
-    List<Student> listar();
+    Page<Student> listar(Pageable pageable);
 }

@@ -1,8 +1,6 @@
 package pe.edu.untels.servicesimplements;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import pe.edu.untels.dtos.StudentDTO;
 import pe.edu.untels.entities.Carrera;
@@ -10,7 +8,8 @@ import pe.edu.untels.entities.Student;
 import pe.edu.untels.repositories.CarreraRepository;
 import pe.edu.untels.repositories.StudentRepository;
 import pe.edu.untels.servicesinterfaces.StudentService;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 @Service
@@ -47,11 +46,6 @@ public class StudentServiceImplement implements StudentService {
         student.setCarrera(carrera);
 
         return studentRepository.save(student);
-    }
-
-    @Override
-    public Page<Student> listar(Pageable pageable) {
-        return studentRepository.findAll(pageable);
     }
 
     @Override
@@ -107,7 +101,7 @@ public class StudentServiceImplement implements StudentService {
     }
 
     @Override
-    public List<Student> listar() {
-        return studentRepository.findAll();
+    public Page<Student> listar(Pageable pageable) {
+        return studentRepository.findAll(pageable);
     }
 }

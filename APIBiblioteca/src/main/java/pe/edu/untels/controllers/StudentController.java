@@ -1,12 +1,12 @@
 package pe.edu.untels.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import pe.edu.untels.dtos.StudentDTO;
 import pe.edu.untels.entities.Student;
 import pe.edu.untels.servicesinterfaces.StudentService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -20,11 +20,6 @@ public class StudentController {
     @PostMapping
     public Student registrar(@RequestBody StudentDTO dto) {
         return studentService.registrar(dto);
-    }
-
-    @GetMapping
-    public Page<Student> listar(Pageable pageable) {
-        return studentService.listar(pageable);
     }
 
     @PutMapping("/{id}")
@@ -58,7 +53,7 @@ public class StudentController {
         return studentService.filtrarPorEstado(estado);
     }
     @GetMapping
-    public List<Student> listar() {
-        return studentService.listar();
+    public Page<Student> listar(Pageable pageable) {
+        return studentService.listar(pageable);
     }
 }
