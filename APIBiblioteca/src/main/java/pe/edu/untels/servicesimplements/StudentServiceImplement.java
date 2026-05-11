@@ -49,11 +49,6 @@ public class StudentServiceImplement implements StudentService {
     }
 
     @Override
-    public List<Student> filtrarPorCarrera(Long carreraId) {
-        return studentRepository.findByCarreraId(carreraId);
-    }
-
-    @Override
     public List<Student> filtrarPorEstado(Boolean estado) {
         return studentRepository.findByEstado(estado);
     }
@@ -103,6 +98,11 @@ public class StudentServiceImplement implements StudentService {
     public Student buscarPorCodigo(String codigo) {
         return studentRepository.findByCodigo(codigo)
                 .orElseThrow(() -> new RuntimeException("Estudiante no encontrado"));
+    }
+
+    @Override
+    public List<Student> filtrarPorCarrera(Long carreraId) {
+        return studentRepository.findByCarreraId(carreraId);
     }
 
 }

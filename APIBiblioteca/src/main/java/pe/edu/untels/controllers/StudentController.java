@@ -22,11 +22,6 @@ public class StudentController {
         return studentService.registrar(dto);
     }
 
-    @GetMapping("/carrera/{id}")
-    public List<Student> filtrarPorCarrera(@PathVariable Long id) {
-        return studentService.filtrarPorCarrera(id);
-    }
-
     @GetMapping("/estado/{estado}")
     public List<Student> filtrarPorEstado(@PathVariable Boolean estado) {
         return studentService.filtrarPorEstado(estado);
@@ -55,5 +50,10 @@ public class StudentController {
     @GetMapping("/codigo/{codigo}")
     public Student buscarPorCodigo(@PathVariable String codigo) {
         return studentService.buscarPorCodigo(codigo);
+    }
+
+    @GetMapping("/carrera/{id}")
+    public List<Student> filtrarPorCarrera(@PathVariable Long id) {
+        return studentService.filtrarPorCarrera(id);
     }
 }
