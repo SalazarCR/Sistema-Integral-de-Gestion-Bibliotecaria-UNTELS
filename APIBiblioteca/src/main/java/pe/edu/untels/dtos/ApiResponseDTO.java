@@ -1,20 +1,32 @@
 package pe.edu.untels.dtos;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+
 /**
- * DTO de respuesta para el login, contiene tokens y datos básicos del usuario.
+ * DTO de respuesta para APIs.
  */
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ApiResponseDTO {
 
     private Boolean success;
     private String message;
     private Object data;
     private Integer statusCode;
-
-    public ApiResponseDTO() {}
+    private LocalDateTime timestamp;
 
     public ApiResponseDTO(Boolean success, String message) {
         this.success = success;
         this.message = message;
         this.statusCode = success ? 200 : 400;
+        this.timestamp = LocalDateTime.now();
     }
 
     public ApiResponseDTO(Boolean success, String message, Object data) {
@@ -22,6 +34,7 @@ public class ApiResponseDTO {
         this.message = message;
         this.data = data;
         this.statusCode = success ? 200 : 400;
+        this.timestamp = LocalDateTime.now();
     }
 
     public ApiResponseDTO(Boolean success, String message, Object data, Integer statusCode) {
@@ -29,23 +42,6 @@ public class ApiResponseDTO {
         this.message = message;
         this.data = data;
         this.statusCode = statusCode;
-    }
-
-    public Boolean getSuccess() { return success; }
-    public void setSuccess(Boolean success) { this.success = success; }
-
-    public String getMessage() { return message; }
-    public void setMessage(String message) { this.message = message; }
-
-    public Object getData() { return data; }
-    public void setData(Object data) { this.data = data; }
-
-    public Integer getStatusCode() { return statusCode; }
-    public void setStatusCode(Integer statusCode) { this.statusCode = statusCode; }
-
-    @Override
-    public String toString() {
-        return "ApiResponseDTO{" + "success=" + success + ", message='" + message + '\'' + '}';
+        this.timestamp = LocalDateTime.now();
     }
 }
-
