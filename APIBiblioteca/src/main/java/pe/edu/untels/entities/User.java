@@ -21,6 +21,15 @@ public class User {
     @Column(name = "email_user", unique = true, length = 100)
     private String emailUser;
 
+    @Column(name = "dni_user", unique = true, length = 8)
+    private String dniUser;
+
+    @Column(name = "nombre_user", length = 100)
+    private String nombreUser;
+
+    @Column(name = "apellido_user", length = 100)
+    private String apellidoUser;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_role", nullable = false)
     private Role role;
@@ -55,6 +64,15 @@ public class User {
 
     public String getEmailUser() { return emailUser; }
     public void setEmailUser(String emailUser) { this.emailUser = emailUser; }
+
+    public String getDniUser() { return dniUser; }
+    public void setDniUser(String dniUser) { this.dniUser = dniUser; }
+
+    public String getNombreUser() { return nombreUser; }
+    public void setNombreUser(String nombreUser) { this.nombreUser = nombreUser; }
+
+    public String getApellidoUser() { return apellidoUser; }
+    public void setApellidoUser(String apellidoUser) { this.apellidoUser = apellidoUser; }
 
     public Role getRole() { return role; }
     public void setRole(Role role) { this.role = role; }
