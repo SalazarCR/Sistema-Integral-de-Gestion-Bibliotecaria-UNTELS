@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import pe.edu.untels.entities.Libro;
 import pe.edu.untels.repositories.ILibroRepository;
+import pe.edu.untels.servicesinterfaces.ILibroService;
 
 @RestController
 @RequestMapping("/libros")
@@ -14,6 +15,9 @@ public class LibroController {
 
     @Autowired
     private ILibroRepository libroRepository;
+
+    @Autowired
+    private ILibroService libroService;
 
     @GetMapping("/paginado")
     public Page<Libro> listarLibrosPaginados(
@@ -29,25 +33,17 @@ public class LibroController {
         libroRepository.save(libro);
 
         return "Libro registrado correctamente";
-
     }
+
     @PutMapping("/{id}")
     public String actualizarLibro(@PathVariable int id,
                                   @RequestBody Libro libroActualizado) {
 
-        Libro libro = libroRepository.findById(id).orElse(null);
+        Libro libro = libroService.actualizarLibro(id, libroActualizado);
 
         if (libro == null) {
             return "Libro no encontrado";
         }
-
-        libro.setTitulo(libroActualizado.getTitulo());
-        libro.setAutor(libroActualizado.getAutor());
-        libro.setDescripcion(libroActualizado.getDescripcion());
-        libro.setIsbn(libroActualizado.getIsbn());
-        libro.setStock(libroActualizado.getStock());
-
-        libroRepository.save(libro);
 
         return "Libro actualizado correctamente";
     }
