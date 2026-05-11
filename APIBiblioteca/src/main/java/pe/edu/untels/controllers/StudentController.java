@@ -22,12 +22,6 @@ public class StudentController {
         return studentService.registrar(dto);
     }
 
-    @PutMapping("/{id}")
-    public Student actualizar(@PathVariable Long id,
-                              @RequestBody StudentDTO dto) {
-        return studentService.actualizar(id, dto);
-    }
-
     @PatchMapping("/{id}/toggle")
     public Student toggleEstado(@PathVariable Long id) {
         return studentService.toggleEstado(id);
@@ -55,5 +49,11 @@ public class StudentController {
     @GetMapping
     public Page<Student> listar(Pageable pageable) {
         return studentService.listar(pageable);
+    }
+
+    @PutMapping("/{id}")
+    public Student actualizar(@PathVariable Long id,
+                              @RequestBody StudentDTO dto) {
+        return studentService.actualizar(id, dto);
     }
 }
