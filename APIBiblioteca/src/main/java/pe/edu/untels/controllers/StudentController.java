@@ -22,11 +22,6 @@ public class StudentController {
         return studentService.registrar(dto);
     }
 
-    @PatchMapping("/{id}/toggle")
-    public Student toggleEstado(@PathVariable Long id) {
-        return studentService.toggleEstado(id);
-    }
-
     @GetMapping("/dni/{dni}")
     public Student buscarPorDni(@PathVariable String dni) {
         return studentService.buscarPorDni(dni);
@@ -55,5 +50,10 @@ public class StudentController {
     public Student actualizar(@PathVariable Long id,
                               @RequestBody StudentDTO dto) {
         return studentService.actualizar(id, dto);
+    }
+
+    @PatchMapping("/{id}/toggle")
+    public Student toggleEstado(@PathVariable Long id) {
+        return studentService.toggleEstado(id);
     }
 }
