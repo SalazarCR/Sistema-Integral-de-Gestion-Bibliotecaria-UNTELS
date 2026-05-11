@@ -1,6 +1,8 @@
 package pe.edu.untels.entities;
 
 import jakarta.persistence.*;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
 
 @Entity
 @Table(name = "Libro")
@@ -25,6 +27,9 @@ public class Libro {
     @Column(name = "descripcion", length = 500)
     private String descripcion;
 
+    @ManyToOne
+    @JoinColumn(name = "idCategoria")
+    private Categoria categoria;
     public Libro() {
     }
 
@@ -34,6 +39,12 @@ public class Libro {
         this.isbn = isbn;
         this.stock = stock;
         this.descripcion = descripcion;
+    }
+    public Categoria getCategoria() {
+        return categoria;
+    }
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
     }
 
     public int getIdLibro() {
