@@ -12,8 +12,6 @@ public interface StudentService {
 
     Student registrar(StudentDTO dto);
 
-    Student buscarPorCodigo(String codigo);
-
     List<Student> filtrarPorCarrera(Long carreraId);
 
     List<Student> filtrarPorEstado(Boolean estado);
@@ -25,4 +23,6 @@ public interface StudentService {
     Student toggleEstado(Long id);
 
     Student buscarPorDni(String dni);
+
+    Student buscarPorCodigo(String codigo);
 }
