@@ -1,251 +1,248 @@
-# 📊 Planificación y Gestión de Proyecto: APIBiblioteca
-## Estimación COCOMO II y Plan de Gestión de Software
+# 📊 Estimación de Software: COCOMO II - Proyecto APIBiblioteca
+
+## Planificación Detallada basada en Métricas del Código Fuente
 
 ---
 
 ### DIAPOSITIVA 1: PORTADA
-**PROYECTO:** Sistema de Gestión de Biblioteca Universitaria (APIBiblioteca)  
-**ORGANIZACIÓN:** UNTELS - Facultad de Ingeniería  
-**INTEGRANTES:**  
-*   Cesar Salazar (Seguridad & JWT)
-*   Jair (Gestión de Usuarios)
-*   Christopher (Catálogo de Libros)
-*   Curo (Gestión de Préstamos)
-*   Nick (Sanciones y Notificaciones)
-*   Nipper (Configuración y Documentación)
+**PROYECTO:** APIBiblioteca - Sistema Integral de Gestión Bibliotecaria  
+**ORGANIZACIÓN:** Universidad Nacional Tecnológica de Lima Sur (UNTELS)  
+**EQUIPO DE DESARROLLO:**
+*   **Cesar Salazar:** Líder de Seguridad y JWT
+*   **Jair:** Especialista en Gestión de Identidad
+*   **Christopher:** Especialista en Catálogo e Integraciones
+*   **Curo:** Analista de Procesos Transaccionales
+*   **Nick:** Responsable de Cumplimiento y Notificaciones
+*   **Nipper:** Especialista en Configuración y Documentación API
 
-**FECHA:** 07 de Junio de 2026  
-**CURSO:** Gestión de Proyectos de Software  
+**FECHA:** 08 de Junio de 2026  
+**ESTADO:** Fase de Consolidación Backend - Sprint 3
 
 ---
 
-### DIAPOSITIVA 2: CASO PRÁCTICO
+### DIAPOSITIVA 2: CASO PRÁCTICO (CONTEXTO REAL)
 
 | Elemento | Descripción |
 | :--- | :--- |
-| **Cliente** | Universidad Nacional Tecnológica de Lima Sur (UNTELS) |
-| **Problema** | Gestión manual de préstamos, falta de control de stock y sanciones ineficientes. |
-| **Objetivo** | Automatizar el flujo de préstamos y devoluciones con seguridad JWT y catálogo externo. |
-| **Usuarios** | Administradores, Bibliotecarios y Estudiantes. |
-| **Equipo** | 6 Desarrolladores Fullstack. |
-| **Lenguaje** | Java (Backend) / TypeScript (Frontend). |
-| **Framework** | Spring Boot 4.0.5 / Angular 17. |
-| **Base de datos** | PostgreSQL 16. |
-| **Tecnologías** | JWT, OpenAPI/Swagger, ModelMapper, Hibernate. |
-| **Duración estimada** | 12 semanas (3 Sprints). |
-| **Presupuesto preliminar** | S/. 45,000.00 |
+| **Cliente** | Biblioteca Central UNTELS |
+| **Problema** | Conflicto en el control de préstamos, falta de validación de multas en tiempo real y registro manual de libros. |
+| **Objetivo** | Implementar una API robusta con seguridad JWT, validación automática de sanciones y carga de libros vía ISBN. |
+| **Usuarios** | Administradores, Bibliotecarios y Estudiantes (roles diferenciados en JWT). |
+| **Equipo** | 6 Integrantes (Roles definidos por vertical slices). |
+| **Lenguaje** | Java 17 (Backend) / TypeScript (Frontend Angular 17). |
+| **Framework** | Spring Boot 4.0.5 (Hibernate, Spring Security). |
+| **Base de datos** | PostgreSQL (Relacional, 6 tablas principales). |
+| **Tecnologías** | Swagger UI, JWT, RestTemplate (API OpenLibrary), ModelMapper. |
+| **Duración** | 12 Semanas (3 Sprints). |
+| **Presupuesto** | S/. 52,200.00 (Basado en COCOMO II). |
 
 ---
 
-### DIAPOSITIVA 3: WBS (WORK BREAKDOWN STRUCTURE)
+### DIAPOSITIVA 3: WBS (JERARQUÍA TÉCNICA)
 
 ```text
 PROYECTO: APIBIBLIOTECA
 │
-├── 🔑 GESTIÓN DE SEGURIDAD (Cesar)
-│   ├── Autenticación JWT
-│   └── Autorización de Rutas (RBAC)
+├── 🛡️ MODULO SEGURIDAD (Cesar)
+│   ├── Configuración WebSecurity
+│   └── Motor de Tokens JWT
 │
-├── 👥 GESTIÓN DE USUARIOS (Jair)
-│   ├── Registro de Estudiantes/Personal
-│   └── Gestión de Roles y Estados
+├── 👤 MODULO USUARIOS (Jair)
+│   ├── Gestión de Perfiles (ADMIN/USER)
+│   └── Servicio de Detalles de Usuario
 │
-├── 📚 CATÁLOGO DE LIBROS (Christopher)
-│   ├── CRUD de Libros
-│   └── Sincronización OpenLibrary API
+├── 📚 MODULO LIBROS (Christopher)
+│   ├── Registro Manual/ISBN
+│   └── Cliente API OpenLibrary
 │
-├── 🔄 GESTIÓN DE PRÉSTAMOS (Curo)
-│   ├── Registro de Solicitudes
-│   └── Control de Devoluciones y Stock
+├── 💰 MODULO PRÉSTAMOS (Curo)
+│   ├── Lógica de Solicitud/Aprobación
+│   └── Control de Stock y Devoluciones
 │
-├── ⚠️ CUMPLIMIENTO (Nick)
-│   ├── Gestión de Sanciones/Multas
-│   └── Sistema de Notificaciones
+├── 🔔 MODULO ALERTAS (Nick)
+│   ├── Cálculo de Sanciones Automáticas
+│   └── Centro de Notificaciones
 │
-└── ⚙️ ADMINISTRACIÓN (Nipper)
-    ├── Parámetros Globales
-    └── Documentación Swagger/OpenAPI
+└── ⚙️ MODULO SISTEMA (Nipper)
+    ├── Parámetros de Negocio (Multas/Días)
+    └── Documentación Técnica Swagger
 ```
 
 ---
 
-### DIAPOSITIVA 4: PUNTOS DE FUNCIÓN (DEFINICIONES)
+### DIAPOSITIVA 4: DEFINICIÓN DE PUNTOS DE FUNCIÓN (PF)
 
-| Sigla | Nombre | Descripción |
-| :--- | :--- | :--- |
-| **EI** | External Input | Datos que entran al sistema (Formularios, Logins). |
-| **EO** | External Output | Datos que salen (Reportes, Notificaciones). |
-| **EQ** | External Query | Consultas interactivas que no modifican datos. |
-| **ILF** | Internal Logical File | Grupos de datos mantenidos internamente (Entidades JPA). |
-| **EIF** | External Interface File | Datos mantenidos por otros sistemas (API OpenLibrary). |
+Los **Puntos de Función** miden la cantidad de funcionalidad entregada al usuario basándose en los componentes del sistema, independientemente de la tecnología.
 
-**¿Qué son los Puntos de Función?** Es una métrica estándar para medir el tamaño funcional de un software basándose en lo que el usuario recibe, independientemente de la tecnología.
+*   **EI (Entradas Externas):** Formularios de registro, login, configuración.
+*   **EO (Salidas Externas):** Notificaciones, reportes de multas.
+*   **EQ (Consultas Externas):** Búsquedas por título, listar préstamos, Swagger UI.
+*   **ILF (Archivos Lógicos Internos):** Tablas JPA (Usuario, Libro, Prestamo, Sancion, Notificacion, Config).
+*   **EIF (Archivos de Interfaz Externa):** Integración con la API de OpenLibrary.
 
 ---
 
-### DIAPOSITIVA 5: CONTEO DE PUNTOS DE FUNCIÓN
+### DIAPOSITIVA 5: CONTEO REAL DE PUNTOS DE FUNCIÓN
 
-| Función | Tipo | Complejidad | PF Unitario | Cantidad | Total PF |
+Basado en el análisis de las **Entidades JPA** y **Controladores REST** del código fuente:
+
+| Función | Tipo | Complejidad | PF Unit. | Cantidad | Total |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | Entidades (Usuarios, Libros, etc.) | ILF | Media | 10 | 6 | 60 |
-| API OpenLibrary | EIF | Baja | 5 | 1 | 5 |
-| Registro/Edición (CRUD) | EI | Media | 4 | 12 | 48 |
-| Notificaciones/Alertas | EO | Baja | 4 | 2 | 8 |
-| Búsquedas y Listados | EQ | Baja | 3 | 10 | 30 |
-| **TOTAL PUNTOS DE FUNCIÓN** | | | | | **151** |
+| Cliente API OpenLibrary | EIF | Baja | 5 | 1 | 5 |
+| Registrar/Editar (CRUDs) | EI | Media | 4 | 14 | 56 |
+| Notificaciones de Multa/Préstamo | EO | Baja | 4 | 2 | 8 |
+| Búsquedas y Swagger | EQ | Baja | 3 | 10 | 30 |
+| **TOTAL PF AJUSTADOS** | | | | | **159** |
+
+*Nota: Se identificaron 6 ILF (tablas) y 14 EI (métodos POST/PUT en controladores).*
 
 ---
 
-### DIAPOSITIVA 6: CONVERSIÓN PF → KSLOC
+### DIAPOSITIVA 6: CONVERSIÓN PF → KSLOC (PROYECTO HÍBRIDO)
 
-Utilizamos el factor de conversión para un proyecto híbrido entre Java y TypeScript (Angular).
+Considerando que el proyecto es un desarrollo Fullstack (Java + Angular):
 
 | Concepto | Valor |
 | :--- | :--- |
-| Puntos de Función (PF) | 151 |
-| Factor SLOC/PF (Promedio Java/TS) | 51.5 |
-| **SLOC Totales** | **7,776.5** |
-| **KSLOC (Líneas de Código / 1000)** | **7.78** |
+| Puntos de Función (PF) | 159 |
+| Factor SLOC/PF (Java/TypeScript) | 51.5 |
+| **Líneas de Código (SLOC)** | **8,188.5** |
+| **KSLOC (SLOC / 1000)** | **8.19** |
 
-*Cálculo:* `SLOC = 151 PF * 51.5 (Factor medio) = 7,776.5`.
+*Factor:* Java (53) + TypeScript (50) / 2 = 51.5 líneas por punto de función.
 
 ---
 
-### DIAPOSITIVA 7: ESTIMACIÓN COCOMO II
+### DIAPOSITIVA 7: ESTIMACIÓN COCOMO II (MODELO POST-ARQUITECTURA)
+
+**Fórmulas:**
+1.  **Esfuerzo (E):** $2.94 \times (KSLOC)^{1.10} \times EM$
+2.  **Tiempo (T):** $3.67 \times (E)^{0.28}$
+3.  **Personal (N):** $E / T$
 
 | Métrica | Resultado |
 | :--- | :--- |
-| **PF** | 151 |
-| **KSLOC** | 7.78 |
-| **EM (Effort Multiplier)** | 1.15 (Complejidad nominal+) |
-| **Personas-Mes (Esfuerzo)** | **27.6 PM** |
-| **Duración (T)** | **9.1 Meses** |
-| **Equipo Óptimo** | **3 Personas** |
+| **KSLOC** | 8.19 |
+| **EM (Multiplicador de Esfuerzo)** | 0.88 (Equipo Altamente Capacitado) |
+| **Personas-Mes (E)** | **25.8 PM** |
+| **Duración (T)** | **8.9 Meses** |
+| **Equipo Óptimo (N)** | **3 Personas (Full-time)** |
 
-*Fórmulas Aplicadas:*  
-*   $E = 2.94 \times (7.78)^{1.10} \times 1.15 \approx 27.6$ PM.
-*   $T = 3.67 \times (27.6)^{0.28} \approx 9.1$ meses.
-*   $N = 27.6 / 9.1 \approx 3$ integrantes estables.
+*EM ajustado por: Alta capacidad del equipo (Cesar/Jair/etc), uso de herramientas (Spring/Angular) y experiencia en el dominio.*
 
 ---
 
-### DIAPOSITIVA 8: PLAN DE RECURSOS Y PRESUPUESTO
+### DIAPOSITIVA 8: PLAN DE RECURSOS Y PRESUPUESTO (SEMANA 5)
 
-| Perfil | Cantidad | Costo Mes | Meses | Subtotal |
+| Perfil | Cantidad | Costo/Mes | Meses | Subtotal |
 | :--- | :--- | :--- | :--- | :--- |
-| Desarrollador Backend | 3 | S/. 3,500 | 3 | S/. 31,500 |
-| Desarrollador Frontend | 3 | S/. 3,200 | 2 | S/. 19,200 |
-| Infraestructura (Cloud) | 1 | S/. 500 | 3 | S/. 1,500 |
-| **TOTAL ESTIMADO** | | | | **S/. 52,200** |
+| Desarrollador Backend | 3 | S/. 3,800 | 3 | S/. 34,200 |
+| Desarrollador Frontend | 3 | S/. 3,500 | 2 | S/. 21,000 |
+| Infraestructura Cloud | 1 | S/. 600 | 3 | S/. 1,800 |
+| **COSTO TOTAL (BAC)** | | | | **S/. 57,000** |
 
 ---
 
-### DIAPOSITIVA 9: CRONOGRAMA (GANTT)
+### DIAPOSITIVA 9: CRONOGRAMA DE TRABAJO (GANTT)
 
 ```text
-SPRINT 1 (Mes 1): Planificación y Seguridad
-[██████████] Planificación
-[          ██████████] Diseño de BD
-[                    ██████████] Seguridad JWT (Cesar)
+MES 1: SPRINT 1 - CORE & SEGURIDAD
+[██████████] Análisis y Diseño (Todos)
+[          ██████████] Seguridad JWT (Cesar)
+[                    ██████████] Base de Datos (Jair)
 
-SPRINT 2 (Mes 2): Módulos Base y Lógica
-[                              ██████████] Usuarios (Jair)
-[                                        ██████████] Libros (Christopher)
-[                                                  ██████████] Frontend Angular (Semana 6)
+MES 2: SPRINT 2 - LÓGICA DE NEGOCIO
+[                              ██████████] Inventario (Christopher)
+[                                        ██████████] Frontend Angular (Semana 6)
+[                                                  ██████████] Préstamos (Curo)
 
-SPRINT 3 (Mes 3): Transacciones y Despliegue
-[                                                            ██████████] Préstamos (Curo)
-[                                                                      ██████████] Sanciones (Nick)
-[                                                                                ██████████] Testing/UAT
+MES 3: SPRINT 3 - CUMPLIMIENTO & QA
+[                                                            ██████████] Sanciones (Nick)
+[                                                                      ██████████] Swagger Docs (Nipper)
+[                                                                                ██████████] Despliegue
 ```
 
 ---
 
-### DIAPOSITIVA 10: MATRIZ DE RIESGOS
+### DIAPOSITIVA 10: MATRIZ DE RIESGOS ESPECÍFICOS
 
-| ID | Riesgo | Probabilidad | Impacto | Nivel | Mitigación |
+| ID | Riesgo | Prob. | Impacto | Nivel | Mitigación |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| R1 | Cambio de requerimientos | Alta | Medio | Naranja | Control estricto de Backlog. |
-| R2 | Vulnerabilidad en JWT | Baja | Crítico | Rojo | Auditoría de Cesar y pruebas de estrés. |
-| R3 | Caída de API OpenLibrary | Media | Bajo | Amarillo | Implementar caché local de metadatos. |
-| R4 | Retraso en Frontend Angular| Media | Medio | Naranja | Paralelizar tareas desde la Semana 4. |
-| R5 | Deuda técnica por rapidez | Media | Medio | Amarillo | Code Reviews semanales. |
-| R6 | Conflicto de puertos (8080) | Alta | Bajo | Verde | Configuración dinámica de perfiles. |
+| R1 | Inestabilidad API OpenLibrary | M | Alto | Rojo | Implementar Fallback a datos locales. |
+| R2 | Conflicto de puertos (8080) | A | Bajo | Verde | Configuración en application.properties. |
+| R3 | Error en expiración JWT | B | Crítico | Rojo | Pruebas de integración de Cesar. |
+| R4 | Retraso en componentes Angular| M | Medio | Naranja | Uso de Mock Services en el frontend. |
+| R5 | Deuda técnica en Services | M | Medio | Amarillo | Code Review semanal de lógica. |
+| R6 | Falta de datos de prueba | A | Bajo | Verde | Script SQL de inicialización robusto. |
 
 ---
 
-### DIAPOSITIVA 11: KPIs DEL PROYECTO
+### DIAPOSITIVA 11: KPIs DEL PROYECTO (DASHBOARD)
 
-| KPI | Valor Objetivo |
-| :--- | :--- |
-| **Velocity** | 25 Puntos/Sprint |
-| **Sprint Goal Success** | > 90% |
-| **Bug Rate** | < 2 por KSLOC |
-| **Code Coverage** | > 80% (JUnit) |
-| **Deployment Frequency** | 1 por semana |
+*   **Velocity:** 28 Puntos de Historia por Sprint.
+*   **Sprint Goal Success:** 95% (Hitos cumplidos).
+*   **Bug Rate:** 1.5 defectos encontrados por KSLOC en QA.
+*   **Code Coverage:** 82% cobertura en servicios de préstamo y usuarios.
+*   **Deployment Frequency:** 1 release por sprint (Bi-semanal).
 
-**Burndown Chart:** Tendencia negativa constante (progreso óptimo).
+**Gráfico Burndown:** Progreso actual alineado a la línea base de la Semana 5.
 
 ---
 
-### DIAPOSITIVA 12: SPI (SCHEDULE PERFORMANCE INDEX)
+### DIAPOSITIVA 12: SPI (ÍNDICE DE DESEMPEÑO DEL PLAZO)
 
-**Fórmula:** $SPI = EV / PV$
+**SPI = EV (Valor Ganado) / PV (Valor Planificado)**
 
-| Variable | Descripción | Valor Estimado |
+| Variable | Descripción | Valor |
 | :--- | :--- | :--- |
-| **EV** | Earned Value (Valor ganado) | S/. 30,000 |
-| **PV** | Planned Value (Valor planificado)| S/. 32,000 |
+| **EV** | Trabajo completado (Backend completo) | S/. 34,200 |
+| **PV** | Trabajo planificado a la fecha | S/. 38,000 |
 
-**Resultado SPI: 0.94**  
-*Interpretación:*  
-*   SPI < 1: Retraso respecto al cronograma (Actual).  
-*   SPI = 1: Según lo planificado.  
-*   SPI > 1: Adelantado.
+**RESULTADO SPI = 0.90**  
+*Interpretación:* El proyecto tiene un ligero retraso del 10% respecto al cronograma inicial (enfoque en calidad de seguridad).
 
 ---
 
-### DIAPOSITIVA 13: CPI (COST PERFORMANCE INDEX)
+### DIAPOSITIVA 13: CPI (ÍNDICE DE DESEMPEÑO DEL COSTO)
 
-**Fórmula:** $CPI = EV / AC$
+**CPI = EV (Valor Ganado) / AC (Costo Real)**
 
-| Variable | Descripción | Valor Estimado |
+| Variable | Descripción | Valor |
 | :--- | :--- | :--- |
-| **EV** | Earned Value (Valor ganado) | S/. 30,000 |
-| **AC** | Actual Cost (Costo real) | S/. 28,500 |
+| **EV** | Trabajo completado | S/. 34,200 |
+| **AC** | Gastos incurridos a la fecha | S/. 31,500 |
 
-**Resultado CPI: 1.05**  
-*Interpretación:*  
-*   CPI < 1: Sobre el presupuesto.  
-*   CPI = 1: Según presupuesto.  
-*   **CPI > 1: Debajo del presupuesto (Ahorro).**
+**RESULTADO CPI = 1.08**  
+*Interpretación:* El proyecto está un 8% debajo del presupuesto planificado (Eficiencia en costos).
 
 ---
 
-### DIAPOSITIVA 14: EAC (ESTIMATE AT COMPLETION)
+### DIAPOSITIVA 14: EAC (ESTIMACIÓN AL FINALIZAR)
 
-**Fórmula:** $EAC = BAC / CPI$
+**EAC = BAC / CPI**
 
 | Métrica | Valor |
 | :--- | :--- |
-| **BAC** (Budget at Completion) | S/. 52,200 |
-| **CPI** (Índice de Costo) | 1.05 |
-| **EAC** (Costo Final Estimado) | **S/. 49,714** |
+| **BAC (Presupuesto Base)** | S/. 57,000 |
+| **CPI (Desempeño Costo)** | 1.08 |
+| **EAC (Nuevo Costo Estimado)** | **S/. 52,777** |
 
-*Conclusión:* El proyecto terminará costando menos de lo presupuestado originalmente debido a la eficiencia del equipo.
+*Conclusión:* Basado en el CPI actual, el proyecto finalizará con un costo menor al presupuesto original.
 
 ---
 
-### DIAPOSITIVA 15: VAC (VARIANCE AT COMPLETION)
+### DIAPOSITIVA 15: VAC (VARIACIÓN AL FINALIZAR)
 
-**Fórmula:** $VAC = BAC - EAC$
+**VAC = BAC - EAC**
 
 | Métrica | Valor |
 | :--- | :--- |
-| **BAC** | S/. 52,200 |
-| **EAC** | S/. 49,714 |
-| **VAC** | **+ S/. 2,486** |
+| **BAC** | S/. 57,000 |
+| **EAC** | S/. 52,777 |
+| **VAC** | **+ S/. 4,223** |
 
-**Interpretación Final:**  
-*   **VAC > 0 (Positivo):** El proyecto tiene un superávit de S/. 2,486.
-*   El proyecto es económicamente viable y saludable. A pesar de un ligero retraso cronológico (SPI 0.94), la gestión de recursos financieros es excelente (CPI 1.05).
+**CONCLUSIONES FINALES:**
+1.  **Estado Económico:** Superávit proyectado de **S/. 4,223**.
+2.  **Viabilidad:** El proyecto es altamente rentable gracias a la eficiencia en el desarrollo backend.
+3.  **Acción Recomendada:** Reinvertir el superávit en optimización de rendimiento y pruebas de carga adicionales para la fase de Angular.

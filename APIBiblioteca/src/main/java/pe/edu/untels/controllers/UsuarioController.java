@@ -78,7 +78,7 @@ public class UsuarioController {
         }
 
         Usuario usuario = mapper.map(dto, Usuario.class);
-        usuario.setPassword(passwordEncoder.encode(dto.getPassword())); // ¡SEGURO!
+        usuario.setPassword(passwordEncoder.encode(dto.getPassword())); // ENCRIPTADO
         Usuario guardado = usuarioService.insert(usuario);
         UsuarioDTO responseDTO = mapper.map(guardado, UsuarioDTO.class);
 
@@ -97,7 +97,7 @@ public class UsuarioController {
         Usuario usuario = existente.get();
         usuario.setUsername(dto.getUsername());
         if (dto.getPassword() != null && !dto.getPassword().isEmpty()) {
-            usuario.setPassword(passwordEncoder.encode(dto.getPassword())); // ¡SEGURO!
+            usuario.setPassword(passwordEncoder.encode(dto.getPassword())); // ENCRIPTADO
         }
         usuario.setCodigo(dto.getCodigo());
         usuario.setCarnet(dto.getCarnet());
