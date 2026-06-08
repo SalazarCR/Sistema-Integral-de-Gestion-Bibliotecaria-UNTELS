@@ -2,7 +2,6 @@ package pe.edu.untels.servicesimplements;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,7 +9,7 @@ import org.springframework.stereotype.Service;
 import pe.edu.untels.entities.User;
 
 import javax.crypto.SecretKey;
-import java.security.Key;
+import java.time.Instant;
 import java.util.Date;
 
 @Service
@@ -26,23 +25,31 @@ public class JwtServiceImplement {
     private long refreshExpiration;
 
     public String generarToken(User user) {
+        SecretKey key = getSigningKey();
+        Instant now = Instant.now();
+        Instant expiresAt = now.plusMillis(jwtExpiration);
+
         return Jwts.builder()
-                .setSubject(user.getUsernameUser())
+                .subject(user.getUsernameUser())
                 .claim("userId", user.getIdUser())
                 .claim("role", user.getRole().getNameRole())
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .issuedAt(Date.from(now))
+                .expiration(Date.from(expiresAt))
+                .signWith(key)
                 .compact();
     }
 
     public String generarRefreshToken(User user) {
+        SecretKey key = getSigningKey();
+        Instant now = Instant.now();
+        Instant expiresAt = now.plusMillis(refreshExpiration);
+
         return Jwts.builder()
-                .setSubject(user.getUsernameUser())
+                .subject(user.getUsernameUser())
                 .claim("userId", user.getIdUser())
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + refreshExpiration))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .issuedAt(Date.from(now))
+                .expiration(Date.from(expiresAt))
+                .signWith(key)
                 .compact();
     }
 
@@ -60,16 +67,15 @@ public class JwtServiceImplement {
     }
 
     private Claims extractClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
-    private Key getSigningKey() {
+    private SecretKey getSigningKey() {
         byte[] keyBytes = jwtSecret.getBytes();
         return Keys.hmacShaKeyFor(keyBytes);
     }
 }
-

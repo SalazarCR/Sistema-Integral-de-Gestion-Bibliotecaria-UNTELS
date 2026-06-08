@@ -9,7 +9,7 @@ import pe.edu.untels.exceptions.AuthException;
 import pe.edu.untels.exceptions.ParametroValidationException;
 import pe.edu.untels.exceptions.ValidationException;
 
-@RestControllerAdvice
+@RestControllerAdvice(basePackages = "pe.edu.untels.controllers")
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ValidationException.class)

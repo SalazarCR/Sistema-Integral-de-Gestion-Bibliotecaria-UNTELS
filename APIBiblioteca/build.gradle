@@ -10,7 +10,7 @@ description = 'APIBiblioteca'
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(25)
     }
 }
 
@@ -37,7 +37,7 @@ dependencies {
     implementation 'org.modelmapper:modelmapper:3.1.1'
 
     // Swagger/OpenAPI
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6'
 
     // Lombok (optional)
     compileOnly 'org.projectlombok:lombok'
