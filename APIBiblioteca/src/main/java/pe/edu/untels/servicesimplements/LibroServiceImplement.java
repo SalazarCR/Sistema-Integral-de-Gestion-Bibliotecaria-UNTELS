@@ -60,6 +60,34 @@ public class LibroServiceImplement implements ILibroService {
     }
 
     @Override
+    public Libro registrarLibroPorIsbn(String isbn) {
+        if (existeIsbn(isbn)) {
+            throw new RuntimeException("El libro con ISBN " + isbn + " ya existe en la biblioteca");
+        }
+
+        LibroApiExternaDTO dto = buscarPorIsbnEnApi(isbn);
+        if (dto == null) {
+            throw new RuntimeException("No se encontró información para el ISBN: " + isbn);
+        }
+
+        Libro libro = new Libro();
+        libro.setTitulo(dto.getTitulo());
+        libro.setAutor(dto.getAutor() != null ? dto.getAutor() : "Autor Desconocido");
+        libro.setIsbn(isbn);
+        libro.setEditorial(dto.getEditorial());
+        libro.setAnio(dto.getAnio());
+        libro.setDescripcion(dto.getDescripcion());
+        libro.setRecurso(dto.getPortada());
+        
+        // Valores por defecto para registro automático
+        libro.setCategoria("General");
+        libro.setStock(1);
+        libro.setStockTotal(1);
+
+        return libroRepository.save(libro);
+    }
+
+    @Override
     public LibroApiExternaDTO buscarPorIsbnEnApi(String isbn) {
         LibroApiExternaDTO dto = new LibroApiExternaDTO();
         dto.setIsbn(isbn);

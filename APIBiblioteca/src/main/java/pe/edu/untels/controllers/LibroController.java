@@ -80,7 +80,8 @@ public class LibroController {
     @PostMapping("/registrar-por-isbn")
     public ResponseEntity<?> registrarPorIsbn(@RequestParam String isbn) {
         try {
-            Libro libroGuardado = libroService.registrarLibroPorIsbn(isbn);
+            Libro libroGuardado = libroService
+                    .registrarLibroPorIsbn(isbn);
             ModelMapper mapper = new ModelMapper();
             LibroDTO responseDTO = mapper.map(libroGuardado, LibroDTO.class);
             return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);

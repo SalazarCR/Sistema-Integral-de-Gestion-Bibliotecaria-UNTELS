@@ -24,5 +24,7 @@ public interface ILibroService {
 
     boolean existeIsbn(String isbn);
 
+    Libro registrarLibroPorIsbn(String isbn);
+
     LibroApiExternaDTO buscarPorIsbnEnApi(String isbn);
 }
