@@ -6,6 +6,7 @@
   padding: 0 8px;
 }
 
+
 /* --- Botón principal --- */
 .btn-rojo {
   background-color: #1275d8;
@@ -21,9 +22,11 @@
   transition: background-color 0.2s ease;
 }
 
+
 .btn-rojo:hover {
   background-color: rgba(142, 193, 232, 0.798);
 }
+
 
 /* --- Icono --- */
 .btn-rojo mat-icon,
@@ -33,17 +36,20 @@
   line-height: 1;
 }
 
+
 /* --- Texto dentro del botón --- */
 .btn-rojo span:not(.material-symbols-outlined),
 .btn-rojo {
   vertical-align: middle;
 }
 
+
 /* --- Asegurar color blanco --- */
 .custom-toolbar button,
 .custom-toolbar mat-icon {
   color: rgb(255, 255, 255);
 }
+
 
 /* --- Menú desplegable translúcido verde claro --- */
 .mat-mdc-menu-panel {
@@ -59,6 +65,7 @@
   padding: 4px 0;
 }
 
+
 /* --- Opciones del menú --- */
 .mat-mdc-menu-item {
   color: #0c570c !important; /* texto verde oscuro */
@@ -66,6 +73,11 @@
   font-weight: 500;
 }
 
+
 .mat-mdc-menu-item:hover {
   background-color: rgba(46, 158, 46, 0.2) !important; /* un verde más visible al pasar el mouse */
 }
+
+
+
+

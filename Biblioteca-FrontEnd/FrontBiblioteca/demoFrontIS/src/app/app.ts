@@ -4,10 +4,10 @@ import { Menucomponent } from './components/menucomponent/menucomponent';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, Menucomponent],
+  imports: [RouterOutlet,Menucomponent],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
 export class App {
-  protected readonly title = signal('FrontBiblioteca');
+  protected readonly title = signal('demoFrontIS');
 }
