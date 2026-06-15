@@ -1,1 +1,21 @@
-<p>menucomponent works!</p>
+<div class="container">
+  <mat-toolbar class="custom-toolbar">
+    <button
+      mat-button
+      class="btn-rojo"
+      [matMenuTriggerFor]="menuBiblioteca"
+    >
+      <mat-icon fontIcon="menu"></mat-icon>
+      Biblioteca
+    </button>
+  </mat-toolbar>
+
+  <mat-menu #menuBiblioteca="matMenu">
+    <button mat-menu-item routerLink="/homes"><mat-icon>home</mat-icon>Inicio</button>
+    <button mat-menu-item routerLink="/libros"><mat-icon>book</mat-icon>Libros</button>
+    <button mat-menu-item routerLink="/usuarios"><mat-icon>person</mat-icon>Usuarios</button>
+    <button mat-menu-item routerLink="/estudiantes"><mat-icon>school</mat-icon>Estudiantes</button>
+    <button mat-menu-item routerLink="/prestamos"><mat-icon>assignment</mat-icon>Préstamos</button>
+    <button mat-menu-item routerLink="/catalogo"><mat-icon>list</mat-icon>Catálogo</button>
+  </mat-menu>
+</div>
