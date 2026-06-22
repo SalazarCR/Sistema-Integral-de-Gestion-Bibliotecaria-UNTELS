@@ -1,1 +1,42 @@
-<p>configuracioncomponent works!</p>
+<div class="config-container">
+	<h2>Configuración del Sistema</h2>
+
+	<form [formGroup]="form" (ngSubmit)="save()">
+		<div>
+			<label>Días máximos de préstamo</label>
+			<input type="number" formControlName="diasMaximosPrestamo" />
+		</div>
+
+		<div>
+			<label>Límite de préstamos por estudiante</label>
+			<input type="number" formControlName="limitePrestamos" />
+		</div>
+
+		<div>
+			<label>Monto de multa</label>
+			<input type="number" formControlName="montoMulta" step="0.01" />
+		</div>
+
+		<div>
+			<label>Días de suspensión</label>
+			<input type="number" formControlName="diasSuspension" />
+		</div>
+
+		<div>
+			<label>
+				<input type="checkbox" formControlName="activarNotificaciones" /> Activar notificaciones
+			</label>
+		</div>
+
+		<div>
+			<label>
+				<input type="checkbox" formControlName="permitirSolicitudes" /> Permitir solicitudes de préstamo
+			</label>
+		</div>
+
+		<div class="actions">
+			<button type="submit" [disabled]="saving">Guardar cambios</button>
+			<button type="button" (click)="cancel()">Cancelar</button>
+		</div>
+	</form>
+</div>
