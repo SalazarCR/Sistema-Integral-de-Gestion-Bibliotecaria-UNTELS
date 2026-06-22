@@ -54,6 +54,12 @@ ng e2e
 
 Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
 
+## Nota de Corrección del Sprint 3.1
+
+Se corrigió la asignación de responsables del módulo:
+
+- Usuarios y Estudiantes → Nick (verificado en `usuariocomponent` y `estudiantecomponent`)
+
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
