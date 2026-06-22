@@ -1,1 +1,63 @@
-<p>misprestamocomponent works!</p>
+<div class="misprestamos-container">
+	<h2>Mis Préstamos</h2>
+
+	<div *ngIf="loading">Cargando préstamos...</div>
+
+	<section class="seccion">
+		<h3>Préstamos activos</h3>
+		<table *ngIf="activos.length > 0">
+			<thead>
+				<tr><th>Libro</th><th>Fecha préstamo</th><th>Fecha límite</th><th>Días restantes</th><th>Acción</th></tr>
+			</thead>
+			<tbody>
+				<tr *ngFor="let p of activos">
+					<td>{{ p.libroTitulo }}</td>
+					<td>{{ p.fechaPrestamo }}</td>
+					<td>{{ p.fechaLimite }}</td>
+					<td>{{ diasRestantes(p) }}</td>
+					<td>
+						<button (click)="verSancion(p)">Ver sanción</button>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<div *ngIf="activos.length === 0">No tienes préstamos activos.</div>
+	</section>
+
+	<section class="seccion">
+		<h3>Préstamos vencidos</h3>
+		<table *ngIf="vencidos.length > 0">
+			<thead>
+				<tr><th>Libro</th><th>Fecha préstamo</th><th>Fecha límite</th><th>Días vencidos</th><th>Sanción</th></tr>
+			</thead>
+			<tbody>
+				<tr *ngFor="let p of vencidos">
+					<td>{{ p.libroTitulo }}</td>
+					<td>{{ p.fechaPrestamo }}</td>
+					<td>{{ p.fechaLimite }}</td>
+					<td>{{ Math.abs(diasRestantes(p)) }}</td>
+					<td>{{ p.sancion || 'Ninguna' }}</td>
+				</tr>
+			</tbody>
+		</table>
+		<div *ngIf="vencidos.length === 0">No tienes préstamos vencidos.</div>
+	</section>
+
+	<section class="seccion">
+		<h3>Historial</h3>
+		<table *ngIf="historial.length > 0">
+			<thead>
+				<tr><th>Libro</th><th>Fecha préstamo</th><th>Fecha límite</th><th>Estado</th></tr>
+			</thead>
+			<tbody>
+				<tr *ngFor="let p of historial">
+					<td>{{ p.libroTitulo }}</td>
+					<td>{{ p.fechaPrestamo }}</td>
+					<td>{{ p.fechaLimite }}</td>
+					<td>{{ p.estado }}</td>
+				</tr>
+			</tbody>
+		</table>
+		<div *ngIf="historial.length === 0">No hay historial de préstamos.</div>
+	</section>
+</div>

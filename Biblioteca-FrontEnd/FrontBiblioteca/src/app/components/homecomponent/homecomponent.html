@@ -1,4 +1,37 @@
 <div class="home-container">
+  <section class="stats-grid">
+    <div *ngIf="loading">Cargando estadísticas...</div>
+    <div class="card" *ngIf="!loading">
+      <div class="value">{{ stats.totalLibros }}</div>
+      <div class="label">Libros disponibles</div>
+    </div>
+
+    <div class="card" *ngIf="!loading">
+      <div class="value">{{ stats.prestamosActivos }}</div>
+      <div class="label">Préstamos activos</div>
+    </div>
+
+    <div class="card" *ngIf="!loading">
+      <div class="value">{{ stats.prestamosVencidos }}</div>
+      <div class="label">Préstamos vencidos</div>
+    </div>
+
+    <div class="card" *ngIf="!loading">
+      <div class="value">{{ stats.estudiantes }}</div>
+      <div class="label">Estudiantes registrados</div>
+    </div>
+
+    <div class="card" *ngIf="!loading">
+      <div class="value">{{ stats.sancionesActivas }}</div>
+      <div class="label">Sanciones activas</div>
+    </div>
+
+    <div class="card" *ngIf="!loading">
+      <div class="value">{{ stats.solicitudesPendientes }}</div>
+      <div class="label">Solicitudes pendientes</div>
+    </div>
+  </section>
+
   <header class="home-header">
     <h1>Sistema de Gestión de Biblioteca</h1>
     <p class="description">
@@ -9,32 +42,27 @@
   <section class="team-section">
     <h2>Nuestro Equipo</h2>
     <div class="team-grid">
-      <!-- Nick Ronald Rimache Oropeza -->
+      <!-- Team members preserved -->
       <div class="team-member">
         <img src="integrantes/nick.jpg" alt="Nick Ronald Rimache Oropeza">
         <p>Rimache Oropeza, Nick Ronald</p>
       </div>
-      <!-- Carlos Agustín Curo Ramos -->
       <div class="team-member">
         <img src="integrantes/carlos.jpg" alt="Carlos Agustín Curo Ramos">
         <p>Curo Ramos, Carlos Agustín</p>
       </div>
-      <!-- Christopher Carlos Risco Rojas -->
       <div class="team-member">
         <img src="integrantes/christopher.jpg" alt="Christopher Carlos Risco Rojas">
         <p>Risco Rojas Christopher Carlos</p>
       </div>
-      <!-- Nipper Ecker Ruiz Garcia -->
       <div class="team-member">
         <img src="integrantes/nipper.jpg" alt="Nipper Ecker Ruiz Garcia">
         <p>Ruiz Garcia Nipper Ecker</p>
       </div>
-      <!-- Jair Emanuel Castillo Roldan -->
       <div class="team-member">
         <img src="integrantes/jair.jpg" alt="Jair Emanuel Castillo Roldan">
         <p>Castillo Roldan, Jair Emanuel</p>
       </div>
-      <!-- Cesar Rolando Salazar Giraldo -->
       <div class="team-member">
         <img src="integrantes/cesar.jpg" alt="Cesar Rolando Salazar Giraldo">
         <p>Salazar Giraldo Cesar Rolando</p>

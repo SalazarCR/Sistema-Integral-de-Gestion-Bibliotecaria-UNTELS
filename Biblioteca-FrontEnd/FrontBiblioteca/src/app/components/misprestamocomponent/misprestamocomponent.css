@@ -1,0 +1,8 @@
+/* empty */
+.misprestamos-container { padding:12px; }
+.seccion { margin-bottom:16px; }
+.seccion table { width:100%; border-collapse:collapse; }
+.seccion th, .seccion td { border:1px solid #ddd; padding:8px; text-align:left; }
+.seccion th { background:#f5f5f5; }
+.seccion tr:nth-child(even) { background:#fafafa; }
+.seccion button { padding:6px 10px; }
