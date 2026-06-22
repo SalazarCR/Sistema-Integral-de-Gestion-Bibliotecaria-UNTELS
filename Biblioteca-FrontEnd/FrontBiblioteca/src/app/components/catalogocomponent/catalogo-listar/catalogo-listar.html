@@ -1,1 +1,49 @@
-<p>catalogo-listar works!</p>
+<div class="catalogo-container">
+	<h3>Catálogo de Libros</h3>
+
+	<div class="controls">
+		<select [(ngModel)]="field" (change)="onSearchChange()">
+			<option value="titulo">Título</option>
+			<option value="autor">Autor</option>
+			<option value="isbn">ISBN</option>
+		</select>
+
+		<input type="text" [(ngModel)]="query" (input)="onSearchChange()" placeholder="Buscar..." />
+
+		<label class="avail">
+			<input type="checkbox" [(ngModel)]="onlyAvailable" (change)="toggleAvailability()" /> Solo disponibles
+		</label>
+	</div>
+
+	<div *ngIf="loading">Cargando libros...</div>
+
+	<table class="catalogo-table" *ngIf="!loading">
+		<thead>
+			<tr>
+				<th>Título</th>
+				<th>Autor</th>
+				<th>ISBN</th>
+				<th>Categoría</th>
+				<th>Stock</th>
+				<th>Disponibilidad</th>
+				<th>Acción</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr *ngFor="let libro of resultado">
+				<td>{{ libro.titulo }}</td>
+				<td>{{ libro.autor }}</td>
+				<td>{{ libro.isbn || '-' }}</td>
+				<td>{{ libro.categoria || '-' }}</td>
+				<td>{{ libro.stock }}</td>
+				<td>{{ libro.disponible ? 'Disponible' : 'No disponible' }}</td>
+				<td>
+					<button (click)="solicitarPrestamo(libro)" [disabled]="!libro.disponible || libro.stock <= 0">Solicitar préstamo</button>
+				</td>
+			</tr>
+			<tr *ngIf="resultado.length === 0">
+				<td colspan="7">No se encontraron libros.</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
