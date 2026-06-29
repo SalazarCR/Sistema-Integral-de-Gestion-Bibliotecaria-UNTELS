@@ -1,11 +1,9 @@
 import { Component } from '@angular/core';
-import { CatalogoListar } from './catalogo-listar/catalogo-listar';
 
 @Component({
   selector: 'app-catalogocomponent',
-  standalone: true,
-  imports: [CatalogoListar],
+  imports: [],
   templateUrl: './catalogocomponent.html',
-  styleUrls: ['./catalogocomponent.css'],
+  styleUrl: './catalogocomponent.css',
 })
 export class Catalogocomponent {}
