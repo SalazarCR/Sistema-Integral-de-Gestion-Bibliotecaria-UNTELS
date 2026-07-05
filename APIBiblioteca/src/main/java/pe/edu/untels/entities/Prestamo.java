@@ -45,7 +45,7 @@ public class Prestamo {
     @Column(name = "estado", nullable = false, length = 20)
     private String estado;
 
-    @Column(name = "motivo", length = 30)
+    @Column(name = "motivo", length = 255)
     private String motivo;
 
     @Column(name = "curso", length = 100)

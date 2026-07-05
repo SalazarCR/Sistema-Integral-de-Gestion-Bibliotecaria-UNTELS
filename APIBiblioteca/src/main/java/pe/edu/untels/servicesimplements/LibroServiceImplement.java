@@ -1,11 +1,7 @@
 package pe.edu.untels.servicesimplements;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-import pe.edu.untels.dtos.LibroApiExternaDTO;
 import pe.edu.untels.entities.Libro;
 import pe.edu.untels.repositories.ILibroRepository;
 import pe.edu.untels.servicesinterfaces.ILibroService;
@@ -60,104 +56,17 @@ public class LibroServiceImplement implements ILibroService {
     }
 
     @Override
-    public Libro registrarLibroPorIsbn(String isbn) {
-        if (existeIsbn(isbn)) {
-            throw new RuntimeException("El libro con ISBN " + isbn + " ya existe en la biblioteca");
-        }
-
-        LibroApiExternaDTO dto = buscarPorIsbnEnApi(isbn);
-        if (dto == null) {
-            throw new RuntimeException("No se encontró información para el ISBN: " + isbn);
-        }
-
-        Libro libro = new Libro();
-        libro.setTitulo(dto.getTitulo());
-        libro.setAutor(dto.getAutor() != null ? dto.getAutor() : "Autor Desconocido");
-        libro.setIsbn(isbn);
-        libro.setEditorial(dto.getEditorial());
-        libro.setAnio(dto.getAnio());
-        libro.setDescripcion(dto.getDescripcion());
-        libro.setRecurso(dto.getPortada());
-        
-        // Valores por defecto para registro automático
-        libro.setCategoria("General");
-        libro.setStock(1);
-        libro.setStockTotal(1);
-
-        return libroRepository.save(libro);
+    public List<Libro> buscarPorAutor(String autor) {
+        return libroRepository.findByAutorContainingIgnoreCase(autor);
     }
 
     @Override
-    public LibroApiExternaDTO buscarPorIsbnEnApi(String isbn) {
-        LibroApiExternaDTO dto = new LibroApiExternaDTO();
-        dto.setIsbn(isbn);
+    public Optional<Libro> buscarPorIsbn(String isbn) {
+        return libroRepository.findByIsbn(isbn);
+    }
 
-        try {
-            RestTemplate restTemplate = new RestTemplate();
-            String url = "https://openlibrary.org/api/books?bibkeys=ISBN:" + isbn + "&format=json&jscmd=data";
-
-            String jsonResponse = restTemplate.getForObject(url, String.class);
-
-            if (jsonResponse == null || jsonResponse.equals("{}")) {
-                return null;
-            }
-
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode root = mapper.readTree(jsonResponse);
-            String key = "ISBN:" + isbn;
-            JsonNode bookNode = root.get(key);
-
-            if (bookNode == null) {
-                return null;
-            }
-
-            if (bookNode.has("title")) {
-                dto.setTitulo(bookNode.get("title").asText());
-            }
-
-            if (bookNode.has("authors") && bookNode.get("authors").isArray()) {
-                JsonNode firstAuthor = bookNode.get("authors").get(0);
-                if (firstAuthor != null && firstAuthor.has("name")) {
-                    dto.setAutor(firstAuthor.get("name").asText());
-                }
-            }
-
-            if (bookNode.has("publishers") && bookNode.get("publishers").isArray()) {
-                JsonNode firstPublisher = bookNode.get("publishers").get(0);
-                if (firstPublisher != null && firstPublisher.has("name")) {
-                    dto.setEditorial(firstPublisher.get("name").asText());
-                }
-            } else if (bookNode.has("publisher")) {
-                dto.setEditorial(bookNode.get("publisher").asText());
-            }
-
-            if (bookNode.has("publish_date")) {
-                String fecha = bookNode.get("publish_date").asText();
-                try {
-                    dto.setAnio(Integer.parseInt(fecha.replaceAll("[^0-9]", "").substring(0, 4)));
-                } catch (Exception ignored) {
-                }
-            }
-
-            if (bookNode.has("description")) {
-                JsonNode descNode = bookNode.get("description");
-                if (descNode.isObject() && descNode.has("value")) {
-                    dto.setDescripcion(descNode.get("value").asText());
-                } else {
-                    dto.setDescripcion(descNode.asText());
-                }
-            }
-
-            if (bookNode.has("cover") && bookNode.get("cover").has("large")) {
-                dto.setPortada(bookNode.get("cover").get("large").asText());
-            } else if (bookNode.has("cover") && bookNode.get("cover").has("medium")) {
-                dto.setPortada(bookNode.get("cover").get("medium").asText());
-            }
-
-        } catch (Exception e) {
-            return null;
-        }
-
-        return dto;
+    @Override
+    public List<Libro> buscarConStockBajo(int umbral) {
+        return libroRepository.findByStockLessThanEqual(umbral);
     }
 }

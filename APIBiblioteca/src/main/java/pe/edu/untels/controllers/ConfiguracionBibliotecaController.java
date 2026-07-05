@@ -1,9 +1,11 @@
 package pe.edu.untels.controllers;
 
+import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,6 +19,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/configuracion")
+@PreAuthorize("hasAnyRole('ADMIN', 'BIBLIOTECARIO')")
 public class ConfiguracionBibliotecaController {
 
     @Autowired
@@ -37,7 +40,8 @@ public class ConfiguracionBibliotecaController {
     }
 
     @PutMapping("/actualiza")
-    public ResponseEntity<String> actualizar(@RequestBody ConfiguracionBibliotecaDTO dto) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<String> actualizar(@Valid @RequestBody ConfiguracionBibliotecaDTO dto) {
         Optional<ConfiguracionBiblioteca> existente = configuracionService.obtener();
 
         if (existente.isEmpty()) {

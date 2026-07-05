@@ -1,12 +1,17 @@
 package pe.edu.untels.dtos;
 
+import jakarta.validation.constraints.NotBlank;
+
 import java.io.Serializable;
 
 public class JwtRequest implements Serializable {
 
     private static final long serialVersionUID = 5926468583005150707L;
 
+    @NotBlank(message = "El username es obligatorio")
     private String username;
+
+    @NotBlank(message = "La contraseña es obligatoria")
     private String password;
 
     public JwtRequest() {

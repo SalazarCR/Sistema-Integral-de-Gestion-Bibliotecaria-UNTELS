@@ -1,0 +1,431 @@
+{
+  "info": {
+    "name": "SIGBAU - Sistema Integral de Gestion Bibliotecaria",
+    "description": "Coleccion de pruebas para APIBiblioteca. Ejecutar primero las carpetas de Auth para poblar los tokens (adminToken, biblioToken, estudianteToken) como variables de coleccion antes de correr el resto.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "adminToken", "value": "" },
+    { "key": "biblioToken", "value": "" },
+    { "key": "estudianteToken", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login admin (200 + guarda adminToken)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "const json = pm.response.json();",
+            "pm.collectionVariables.set('adminToken', json.token);"
+          ] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/login",
+            "body": { "mode": "raw", "raw": "{\"username\":\"admin1\",\"password\":\"Password123!\"}" }
+          }
+        },
+        {
+          "name": "Login bibliotecario (200 + guarda biblioToken)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "const json = pm.response.json();",
+            "pm.collectionVariables.set('biblioToken', json.token);"
+          ] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/login",
+            "body": { "mode": "raw", "raw": "{\"username\":\"biblio1\",\"password\":\"Password123!\"}" }
+          }
+        },
+        {
+          "name": "Login estudiante (200 + guarda estudianteToken)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "const json = pm.response.json();",
+            "pm.collectionVariables.set('estudianteToken', json.token);"
+          ] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/login",
+            "body": { "mode": "raw", "raw": "{\"username\":\"jperez\",\"password\":\"Password123!\"}" }
+          }
+        },
+        {
+          "name": "Login credenciales invalidas (401)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('401 Unauthorized', () => pm.response.to.have.status(401));"
+          ] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/login",
+            "body": { "mode": "raw", "raw": "{\"username\":\"admin1\",\"password\":\"incorrecta\"}" }
+          }
+        },
+        {
+          "name": "Login usuario inactivo (403)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('403 Forbidden', () => pm.response.to.have.status(403));"
+          ] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/login",
+            "body": { "mode": "raw", "raw": "{\"username\":\"atorres\",\"password\":\"Password123!\"}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Usuarios",
+      "item": [
+        {
+          "name": "Listar usuarios como ADMIN (200)",
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('200 OK', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": "{{baseUrl}}/api/usuarios/lista"
+          }
+        },
+        {
+          "name": "Listar usuarios como ESTUDIANTE (403 - RBAC)",
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('403 Forbidden', () => pm.response.to.have.status(403));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{estudianteToken}}" }],
+            "url": "{{baseUrl}}/api/usuarios/lista"
+          }
+        },
+        {
+          "name": "Listar usuarios sin token (401)",
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('401 Unauthorized', () => pm.response.to.have.status(401));"] } }],
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/usuarios/lista" }
+        },
+        {
+          "name": "Buscar usuarios por texto (200)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": "{{baseUrl}}/api/usuarios/buscar?q=perez"
+          }
+        },
+        {
+          "name": "Registrar usuario con rol ADMIN (400 - bloqueado)",
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('400 Bad Request', () => pm.response.to.have.status(400));"] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/usuarios/nuevo",
+            "body": { "mode": "raw", "raw": "{\"username\":\"nuevoadmin\",\"password\":\"Password123!\",\"codigo\":\"X-999\",\"dni\":\"99999999\",\"nombre\":\"Test\",\"email\":\"a@a.com\",\"rol\":\"ADMIN\",\"estado\":\"ACTIVO\"}" }
+          }
+        },
+        {
+          "name": "Registrar usuario con datos invalidos (400 - Bean Validation)",
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('400 Bad Request', () => pm.response.to.have.status(400));"] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/usuarios/nuevo",
+            "body": { "mode": "raw", "raw": "{\"username\":\"ab\",\"password\":\"123\",\"codigo\":\"\",\"dni\":\"abc\",\"nombre\":\"\",\"email\":\"no-es-email\",\"rol\":\"ESTUDIANTE\",\"estado\":\"ACTIVO\"}" }
+          }
+        },
+        {
+          "name": "Registrar estudiante valido (201)",
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('201 Created', () => pm.response.to.have.status(201));"] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/usuarios/nuevo",
+            "body": { "mode": "raw", "raw": "{\"username\":\"postmantest\",\"password\":\"Password123!\",\"codigo\":\"EST-9001\",\"dni\":\"20099001\",\"nombre\":\"Postman Test\",\"email\":\"postman@untels.edu.pe\",\"rol\":\"ESTUDIANTE\",\"carrera\":\"Ingenieria\",\"ciclo\":1,\"estado\":\"ACTIVO\"}" }
+          }
+        },
+        {
+          "name": "Registrar usuario username duplicado (409)",
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('409 Conflict', () => pm.response.to.have.status(409));"] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/usuarios/nuevo",
+            "body": { "mode": "raw", "raw": "{\"username\":\"admin1\",\"password\":\"Password123!\",\"codigo\":\"X-777\",\"dni\":\"20099002\",\"nombre\":\"Duplicado\",\"email\":\"dup@untels.edu.pe\",\"rol\":\"ESTUDIANTE\",\"estado\":\"ACTIVO\"}" }
+          }
+        },
+        {
+          "name": "Activar/Desactivar usuario (200)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": "{{baseUrl}}/api/usuarios/7/estado"
+          }
+        },
+        {
+          "name": "Usuario inexistente (404)",
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('404 Not Found', () => pm.response.to.have.status(404));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": "{{baseUrl}}/api/usuarios/9999"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Libros",
+      "item": [
+        {
+          "name": "Listar catalogo (200)",
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('200 OK', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{estudianteToken}}" }],
+            "url": "{{baseUrl}}/api/libros/lista"
+          }
+        },
+        {
+          "name": "Buscar por titulo (200)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{estudianteToken}}" }],
+            "url": "{{baseUrl}}/api/libros/buscar?titulo=Redes"
+          }
+        },
+        {
+          "name": "Buscar por autor (200)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{estudianteToken}}" }],
+            "url": "{{baseUrl}}/api/libros/autor?autor=Tanenbaum"
+          }
+        },
+        {
+          "name": "Registrar libro como ESTUDIANTE (403 - RBAC)",
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('403 Forbidden', () => pm.response.to.have.status(403));"] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{estudianteToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/libros/nuevo",
+            "body": { "mode": "raw", "raw": "{\"titulo\":\"X\",\"autor\":\"Y\",\"isbn\":\"000\",\"categoria\":\"TECNICO\",\"stock\":1,\"stockTotal\":1}" }
+          }
+        },
+        {
+          "name": "Registrar libro con stock negativo (400 - Bean Validation)",
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('400 Bad Request', () => pm.response.to.have.status(400));"] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{biblioToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/libros/nuevo",
+            "body": { "mode": "raw", "raw": "{\"titulo\":\"Libro Test\",\"autor\":\"Autor Test\",\"isbn\":\"9999999999999\",\"categoria\":\"TECNICO\",\"stock\":-1,\"stockTotal\":5}" }
+          }
+        },
+        {
+          "name": "Registrar libro valido (201)",
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('201 Created', () => pm.response.to.have.status(201));"] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{biblioToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/libros/nuevo",
+            "body": { "mode": "raw", "raw": "{\"titulo\":\"Libro Postman\",\"autor\":\"Autor Postman\",\"isbn\":\"9999999999998\",\"categoria\":\"TECNICO\",\"stock\":3,\"stockTotal\":3}" }
+          }
+        },
+        {
+          "name": "Registrar libro ISBN duplicado (409)",
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('409 Conflict', () => pm.response.to.have.status(409));"] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{biblioToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/libros/nuevo",
+            "body": { "mode": "raw", "raw": "{\"titulo\":\"Duplicado\",\"autor\":\"Autor\",\"isbn\":\"9786073209000\",\"categoria\":\"TECNICO\",\"stock\":1,\"stockTotal\":1}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Prestamos",
+      "item": [
+        {
+          "name": "Solicitar prestamo como ESTUDIANTE (201)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('201 Created', () => pm.response.to.have.status(201));",
+            "const json = pm.response.json();",
+            "pm.collectionVariables.set('idPrestamoTest', json.idPrestamo);"
+          ] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{estudianteToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/prestamos/solicitar",
+            "body": { "mode": "raw", "raw": "{\"idLibro\":1,\"idEstudiante\":4,\"fechaEntrega\":\"2026-09-01T00:00:00\",\"motivo\":\"Prueba Postman\"}" }
+          }
+        },
+        {
+          "name": "Solicitar prestamo como BIBLIOTECARIO (403 - RBAC)",
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('403 Forbidden', () => pm.response.to.have.status(403));"] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{biblioToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/prestamos/solicitar",
+            "body": { "mode": "raw", "raw": "{\"idLibro\":1,\"idEstudiante\":4,\"fechaEntrega\":\"2026-09-01T00:00:00\",\"motivo\":\"Prueba\"}" }
+          }
+        },
+        {
+          "name": "Listar bandeja de solicitados (200)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{biblioToken}}" }],
+            "url": "{{baseUrl}}/api/prestamos/estado/solicitado"
+          }
+        },
+        {
+          "name": "Aprobar prestamo (200)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{biblioToken}}" }],
+            "url": "{{baseUrl}}/api/prestamos/aprobar/{{idPrestamoTest}}"
+          }
+        },
+        {
+          "name": "Aprobar prestamo inexistente (404)",
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('404 Not Found', () => pm.response.to.have.status(404));"] } }],
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{biblioToken}}" }],
+            "url": "{{baseUrl}}/api/prestamos/aprobar/999999"
+          }
+        },
+        {
+          "name": "Devolver prestamo (200)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{biblioToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/prestamos/devolver",
+            "body": { "mode": "raw", "raw": "{\"idPrestamo\":{{idPrestamoTest}},\"estadoDevolucion\":\"BUENO\",\"observacionesDev\":\"Sin novedad\"}" }
+          }
+        },
+        {
+          "name": "Mis prestamos (estudiante, 200)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{estudianteToken}}" }],
+            "url": "{{baseUrl}}/api/prestamos/estudiante/4"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Sanciones",
+      "item": [
+        {
+          "name": "Listar sanciones (200)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{biblioToken}}" }],
+            "url": "{{baseUrl}}/api/sanciones/lista"
+          }
+        },
+        {
+          "name": "Listar sanciones como ESTUDIANTE (403 - RBAC)",
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('403 Forbidden', () => pm.response.to.have.status(403));"] } }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{estudianteToken}}" }],
+            "url": "{{baseUrl}}/api/sanciones/lista"
+          }
+        },
+        {
+          "name": "Mi sancion (estudiante propio, 200)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{estudianteToken}}" }],
+            "url": "{{baseUrl}}/api/sanciones/estudiante/4"
+          }
+        },
+        {
+          "name": "Cumplir sancion inexistente (404)",
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('404 Not Found', () => pm.response.to.have.status(404));"] } }],
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{biblioToken}}" }],
+            "url": "{{baseUrl}}/api/sanciones/cumplir/999999"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notificaciones",
+      "item": [
+        {
+          "name": "Notificaciones del estudiante (200)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{estudianteToken}}" }],
+            "url": "{{baseUrl}}/api/notificaciones/estudiante/4"
+          }
+        },
+        {
+          "name": "Notificaciones pendientes (200)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{estudianteToken}}" }],
+            "url": "{{baseUrl}}/api/notificaciones/estudiante/4/pendientes"
+          }
+        },
+        {
+          "name": "Marcar notificaciones como leidas (200)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{estudianteToken}}" }],
+            "url": "{{baseUrl}}/api/notificaciones/marcar-leidas/4"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Configuracion",
+      "item": [
+        {
+          "name": "Obtener configuracion (200)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{biblioToken}}" }],
+            "url": "{{baseUrl}}/api/configuracion"
+          }
+        },
+        {
+          "name": "Actualizar configuracion como BIBLIOTECARIO (403 - solo ADMIN)",
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('403 Forbidden', () => pm.response.to.have.status(403));"] } }],
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{biblioToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/configuracion/actualiza",
+            "body": { "mode": "raw", "raw": "{\"diasMaxPrestamo\":15,\"limitePrestamos\":3,\"multaPorDia\":2,\"schedulerActivo\":true,\"notifEmail\":false,\"alertaStock\":true,\"modoMant\":false}" }
+          }
+        },
+        {
+          "name": "Actualizar configuracion como ADMIN (200)",
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('200 OK', () => pm.response.to.have.status(200));"] } }],
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/configuracion/actualiza",
+            "body": { "mode": "raw", "raw": "{\"diasMaxPrestamo\":15,\"limitePrestamos\":3,\"multaPorDia\":2,\"schedulerActivo\":true,\"notifEmail\":false,\"alertaStock\":true,\"modoMant\":false}" }
+          }
+        },
+        {
+          "name": "Actualizar configuracion con datos invalidos (400)",
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('400 Bad Request', () => pm.response.to.have.status(400));"] } }],
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/configuracion/actualiza",
+            "body": { "mode": "raw", "raw": "{\"diasMaxPrestamo\":-1,\"limitePrestamos\":0,\"multaPorDia\":-5,\"schedulerActivo\":true,\"notifEmail\":false,\"alertaStock\":true,\"modoMant\":false}" }
+          }
+        }
+      ]
+    }
+  ]
+}

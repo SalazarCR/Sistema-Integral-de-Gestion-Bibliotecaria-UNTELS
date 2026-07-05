@@ -6,6 +6,7 @@ import pe.edu.untels.entities.Prestamo;
 import pe.edu.untels.repositories.IPrestamoRepository;
 import pe.edu.untels.servicesinterfaces.IPrestamoService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,5 +54,10 @@ public class PrestamoServiceImplement implements IPrestamoService {
     @Override
     public List<Prestamo> buscarPorLibro(int idLibro) {
         return prestamoRepository.findByLibroIdLibro(idLibro);
+    }
+
+    @Override
+    public List<Prestamo> buscarVigentesVencidos(LocalDateTime fecha) {
+        return prestamoRepository.findByEstadoAndFechaEntregaBefore("vigente", fecha);
     }
 }

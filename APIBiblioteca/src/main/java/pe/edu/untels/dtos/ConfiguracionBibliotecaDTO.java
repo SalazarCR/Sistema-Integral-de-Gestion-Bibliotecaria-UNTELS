@@ -1,11 +1,21 @@
 package pe.edu.untels.dtos;
 
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
+
 public class ConfiguracionBibliotecaDTO {
 
     private int idConfiguracionBiblioteca;
+
+    @Positive(message = "Los dias maximos de prestamo deben ser mayores a cero")
     private int diasMaxPrestamo;
+
+    @Positive(message = "El limite de prestamos debe ser mayor a cero")
     private int limitePrestamos;
+
+    @PositiveOrZero(message = "La multa por dia no puede ser negativa")
     private double multaPorDia;
+
     private boolean schedulerActivo;
     private boolean notifEmail;
     private boolean alertaStock;

@@ -6,6 +6,7 @@ import pe.edu.untels.entities.Sancion;
 import pe.edu.untels.repositories.ISancionRepository;
 import pe.edu.untels.servicesinterfaces.ISancionService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,5 +49,10 @@ public class SancionServiceImplement implements ISancionService {
     @Override
     public List<Sancion> buscarPorEstudiante(int idEstudiante) {
         return sancionRepository.findByEstudianteIdUsuario(idEstudiante);
+    }
+
+    @Override
+    public List<Sancion> buscarActivasVencidas(LocalDateTime fecha) {
+        return sancionRepository.findByEstadoAndFechaFinBefore("activa", fecha);
     }
 }

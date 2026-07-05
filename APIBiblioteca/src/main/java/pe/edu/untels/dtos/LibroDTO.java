@@ -1,17 +1,47 @@
 package pe.edu.untels.dtos;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
+
 public class LibroDTO {
 
     private int idLibro;
+
+    @NotBlank(message = "El titulo es obligatorio")
+    @Size(max = 100, message = "El titulo no puede superar los 100 caracteres")
     private String titulo;
+
+    @NotBlank(message = "El autor es obligatorio")
+    @Size(max = 100, message = "El autor no puede superar los 100 caracteres")
     private String autor;
+
+    @NotBlank(message = "El ISBN es obligatorio")
+    @Size(max = 20, message = "El ISBN no puede superar los 20 caracteres")
     private String isbn;
+
+    @Size(max = 100, message = "La editorial no puede superar los 100 caracteres")
     private String editorial;
+
+    @Min(value = 1400, message = "El anio no es valido")
+    @Max(value = 2100, message = "El anio no es valido")
     private Integer anio;
+
+    @NotBlank(message = "La categoria es obligatoria")
     private String categoria;
+
+    @PositiveOrZero(message = "El stock no puede ser negativo")
     private int stock;
+
+    @PositiveOrZero(message = "El stock total no puede ser negativo")
     private int stockTotal;
+
+    @Size(max = 500, message = "La descripcion no puede superar los 500 caracteres")
     private String descripcion;
+
+    @Size(max = 300, message = "El recurso no puede superar los 300 caracteres")
     private String recurso;
 
     public int getIdLibro() {
