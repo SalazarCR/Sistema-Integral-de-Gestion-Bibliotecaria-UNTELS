@@ -22,4 +22,6 @@ public interface IUsuarioService {
     List<Usuario> buscarPorEstado(String estado);
 
     boolean existeUsername(String username);
+
+    Usuario buscarPorUsername(String username);
 }

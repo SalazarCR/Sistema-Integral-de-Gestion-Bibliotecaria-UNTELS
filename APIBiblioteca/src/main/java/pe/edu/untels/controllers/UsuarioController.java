@@ -18,7 +18,9 @@ import pe.edu.untels.dtos.UsuarioDTO;
 import pe.edu.untels.entities.Usuario;
 import pe.edu.untels.servicesinterfaces.IUsuarioService;
 
+import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -136,5 +138,54 @@ public class UsuarioController {
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body("Usuario no encontrado");
+    }
+
+    // HUF12.2: cada usuario actualiza su propio nombre/email/telefono. Se resuelve
+    // el usuario a partir del token (Principal), no del body, para que nadie pueda
+    // editar el perfil de otra persona ni escalar su propio rol/estado.
+    @PreAuthorize("isAuthenticated()")
+    @PutMapping("/mi-perfil")
+    public ResponseEntity<?> actualizarMiPerfil(@RequestBody Map<String, String> body, Principal principal) {
+        Usuario usuario = usuarioService.buscarPorUsername(principal.getName());
+
+        if (usuario == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
+        }
+
+        if (body.get("nombre") != null) usuario.setNombre(body.get("nombre"));
+        if (body.get("email") != null) usuario.setEmail(body.get("email"));
+        if (body.get("telefono") != null) usuario.setTelefono(body.get("telefono"));
+
+        usuarioService.edit(usuario);
+
+        return ResponseEntity.ok("Perfil actualizado correctamente");
+    }
+
+    // HUF12.3: cambio de contraseña con validacion de la actual + confirmacion
+    // (la confirmacion de la nueva contraseña se valida en el frontend).
+    @PreAuthorize("isAuthenticated()")
+    @PutMapping("/cambiar-password")
+    public ResponseEntity<?> cambiarPassword(@RequestBody Map<String, String> body, Principal principal) {
+        String actual = body.get("passwordActual");
+        String nueva = body.get("passwordNueva");
+
+        if (actual == null || actual.isBlank() || nueva == null || nueva.isBlank()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Debes indicar la contraseña actual y la nueva");
+        }
+
+        Usuario usuario = usuarioService.buscarPorUsername(principal.getName());
+        if (usuario == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
+        }
+
+        if (!passwordEncoder.matches(actual, usuario.getPassword())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La contraseña actual no es correcta");
+        }
+
+        usuario.setPassword(passwordEncoder.encode(nueva));
+        usuarioService.edit(usuario);
+
+        return ResponseEntity.ok("Contraseña actualizada correctamente");
     }
 }
