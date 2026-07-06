@@ -1,11 +1,13 @@
 package pe.edu.untels.dtos;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 
 public class JwtResponse implements Serializable {
 
     private static final long serialVersionUID = -8091879091924046844L;
 
+    @JsonProperty("token")
     private final String jwttoken;
     private final int idUsuario;
     private final String username;
@@ -20,6 +22,7 @@ public class JwtResponse implements Serializable {
         this.rol = rol;
     }
 
+    @JsonProperty("token")
     public String getToken() {
         return this.jwttoken;
     }

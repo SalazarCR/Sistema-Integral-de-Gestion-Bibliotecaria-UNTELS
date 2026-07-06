@@ -38,20 +38,21 @@ TRUNCATE TABLE notificaciones, sanciones, prestamos, libros, usuarios, configura
 
 -- =====================================================================
 -- USUARIOS: 2 admin (id 1-2) + 5 bibliotecarios (id 3-7) + 5 estudiantes (id 8-12)
+-- Cada hash BCrypt corresponde exactamente al proporcionado.
 -- =====================================================================
 INSERT INTO usuarios (username, password, codigo, carnet, dni, nombre, email, telefono, rol, carrera, ciclo, estado) VALUES
-('admin1',     '$2a$10$nGtL6bsIFCiMatPZX4j51.4dL3CialcvxAS3GFTjPidu9rHjiuPgW', 'ADM-0001', NULL,     '10000001', 'Admin General',   'admin1@untels.edu.pe',     '999000001', 'ADMIN',         NULL,                     NULL, 'ACTIVO'),   -- 1
-('admin2',     '$2a$10$nGtL6bsIFCiMatPZX4j51.4dL3CialcvxAS3GFTjPidu9rHjiuPgW', 'ADM-0002', NULL,     '10000002', 'Admin Secundario','admin2@untels.edu.pe',     '999000002', 'ADMIN',         NULL,                     NULL, 'ACTIVO'),   -- 2
-('biblio1',    '$2a$10$nGtL6bsIFCiMatPZX4j51.4dL3CialcvxAS3GFTjPidu9rHjiuPgW', 'BIB-0001', NULL,     '10000003', 'Rosa Mendoza',    'rmendoza@untels.edu.pe',   '999000003', 'BIBLIOTECARIO', NULL,                     NULL, 'ACTIVO'),   -- 3
-('biblio2',    '$2a$10$nGtL6bsIFCiMatPZX4j51.4dL3CialcvxAS3GFTjPidu9rHjiuPgW', 'BIB-0002', NULL,     '10000004', 'Jorge Salinas',   'jsalinas@untels.edu.pe',   '999000004', 'BIBLIOTECARIO', NULL,                     NULL, 'ACTIVO'),   -- 4
-('biblio3',    '$2a$10$nGtL6bsIFCiMatPZX4j51.4dL3CialcvxAS3GFTjPidu9rHjiuPgW', 'BIB-0003', NULL,     '10000005', 'Carmen Diaz',     'cdiaz@untels.edu.pe',      '999000005', 'BIBLIOTECARIO', NULL,                     NULL, 'ACTIVO'),   -- 5
-('biblio4',    '$2a$10$nGtL6bsIFCiMatPZX4j51.4dL3CialcvxAS3GFTjPidu9rHjiuPgW', 'BIB-0004', NULL,     '10000006', 'Pedro Vargas',    'pvargas@untels.edu.pe',    '999000006', 'BIBLIOTECARIO', NULL,                     NULL, 'ACTIVO'),   -- 6
-('biblio5',    '$2a$10$nGtL6bsIFCiMatPZX4j51.4dL3CialcvxAS3GFTjPidu9rHjiuPgW', 'BIB-0005', NULL,     '10000007', 'Lucia Rojas',     'lrojas@untels.edu.pe',     '999000007', 'BIBLIOTECARIO', NULL,                     NULL, 'ACTIVO'),   -- 7
-('jperez',     '$2a$10$nGtL6bsIFCiMatPZX4j51.4dL3CialcvxAS3GFTjPidu9rHjiuPgW', 'EST-1001', 'C-1001', '20000001', 'Juan Perez',      'jperez@untels.edu.pe',     '988000001', 'ESTUDIANTE',    'Ingenieria de Sistemas', 5,    'ACTIVO'),   -- 8
-('mlopez',     '$2a$10$nGtL6bsIFCiMatPZX4j51.4dL3CialcvxAS3GFTjPidu9rHjiuPgW', 'EST-1002', 'C-1002', '20000002', 'Maria Lopez',     'mlopez@untels.edu.pe',     '988000002', 'ESTUDIANTE',    'Ingenieria Industrial',  3,    'ACTIVO'),   -- 9
-('cramirez',   '$2a$10$nGtL6bsIFCiMatPZX4j51.4dL3CialcvxAS3GFTjPidu9rHjiuPgW', 'EST-1003', 'C-1003', '20000003', 'Carlos Ramirez',  'cramirez@untels.edu.pe',   '988000003', 'ESTUDIANTE',    'Administracion',         7,    'ACTIVO'),   -- 10 (tiene sancion activa)
-('atorres',    '$2a$10$nGtL6bsIFCiMatPZX4j51.4dL3CialcvxAS3GFTjPidu9rHjiuPgW', 'EST-1004', 'C-1004', '20000004', 'Ana Torres',      'atorres@untels.edu.pe',    '988000004', 'ESTUDIANTE',    'Contabilidad',           2,    'INACTIVO'), -- 11 (para probar login bloqueado)
-('lfernandez', '$2a$10$nGtL6bsIFCiMatPZX4j51.4dL3CialcvxAS3GFTjPidu9rHjiuPgW', 'EST-1005', 'C-1005', '20000005', 'Luis Fernandez',  'lfernandez@untels.edu.pe', '988000005', 'ESTUDIANTE',    'Ingenieria de Sistemas', 9,    'ACTIVO');  -- 12
+('admin1',     '$2a$12$7/8spXDjcdh3xUJxlxZSGuJoa/Zge2lKKuTr7vwWLfYmjfir0lpkq', 'ADM-0001', NULL,     '10000001', 'Admin General',   'admin1@untels.edu.pe',     '999000001', 'ADMIN',         NULL,                     NULL, 'ACTIVO'),   -- 1
+('admin2',     '$2a$12$N5TS/vYxKvAo2Lptwsqr7uZ7Yh7MSaTUmcMlC/PgE0p6nU0FiYHIK', 'ADM-0002', NULL,     '10000002', 'Admin Secundario','admin2@untels.edu.pe',     '999000002', 'ADMIN',         NULL,                     NULL, 'ACTIVO'),   -- 2
+('biblio1',    '$2a$12$/eOx79LC6F./Aje8cMhvheQ8vJjMW0zzKHgC.SImqa4zxh1j4KFya', 'BIB-0001', NULL,     '10000003', 'Rosa Mendoza',    'rmendoza@untels.edu.pe',   '999000003', 'BIBLIOTECARIO', NULL,                     NULL, 'ACTIVO'),   -- 3
+('biblio2',    '$2a$12$6KTwcqvZJyWUzyvzukP05eA7ER2VTcCj2pw9dOiYktz/2Ikcp0rf6', 'BIB-0002', NULL,     '10000004', 'Jorge Salinas',   'jsalinas@untels.edu.pe',   '999000004', 'BIBLIOTECARIO', NULL,                     NULL, 'ACTIVO'),   -- 4
+('biblio3',    '$2a$12$HUg9YA1UNfMQz3Gqea7beuf2vlWT1nnAzwSH5vePrGsM5v/6L.GHC', 'BIB-0003', NULL,     '10000005', 'Carmen Diaz',     'cdiaz@untels.edu.pe',      '999000005', 'BIBLIOTECARIO', NULL,                     NULL, 'ACTIVO'),   -- 5
+('biblio4',    '$2a$12$9dmF1R8pbEKWjTQzQFCzv.0iiJIqd1.9GSEUjzyTBYg1IVtraYovS', 'BIB-0004', NULL,     '10000006', 'Pedro Vargas',    'pvargas@untels.edu.pe',    '999000006', 'BIBLIOTECARIO', NULL,                     NULL, 'ACTIVO'),   -- 6
+('biblio5',    '$2a$12$3KMT/.pg//tWuWIkNQP/p.yHQvDGEo/oXz0ecI2yzogfRm96ufTE.', 'BIB-0005', NULL,     '10000007', 'Lucia Rojas',     'lrojas@untels.edu.pe',     '999000007', 'BIBLIOTECARIO', NULL,                     NULL, 'ACTIVO'),   -- 7
+('est1',       '$2a$12$xg3ti4wnuJJOzYE.FBIKq.XnbZdjv2Go3NgBe0infIh0JZFeuVD7y', 'EST-1001', 'C-1001', '20000001', 'Juan Perez',      'est1@untels.edu.pe',       '988000001', 'ESTUDIANTE',    'Ingenieria de Sistemas', 5,    'ACTIVO'),   -- 8
+('est2',       '$2a$12$Fw2BU.LbNftVkVWZiCASuuuF2FkSp5ou.qDcL4BuEscUWB9So76D2', 'EST-1002', 'C-1002', '20000002', 'Maria Lopez',     'est2@untels.edu.pe',       '988000002', 'ESTUDIANTE',    'Ingenieria Industrial',  3,    'ACTIVO'),   -- 9
+('est3',       '$2a$12$0qXUfFfdaYr5rwEF1nahvuuNpvl7XkliApzkg.vF4pCR5kK2wJIJ2', 'EST-1003', 'C-1003', '20000003', 'Carlos Ramirez',  'est3@untels.edu.pe',       '988000003', 'ESTUDIANTE',    'Administracion',         7,    'ACTIVO'),   -- 10 (tiene sancion activa)
+('est4',       '$2a$12$1rmPJ9/9ZR2Mc6D44aj39.1aup3lLpGV7Py7itZydJOYzKp2Bti/q', 'EST-1004', 'C-1004', '20000004', 'Ana Torres',      'est4@untels.edu.pe',       '988000004', 'ESTUDIANTE',    'Contabilidad',           2,    'INACTIVO'), -- 11 (para probar login bloqueado)
+('est5',       '$2a$12$uOWtnUzTaR.d1T.ximul8.MQUoyNGMYLfHsoKgP3EzqSkOQqb8VR2', 'EST-1005', 'C-1005', '20000005', 'Luis Fernandez',  'est5@untels.edu.pe',       '988000005', 'ESTUDIANTE',    'Ingenieria de Sistemas', 9,    'ACTIVO');  -- 12
 
 -- =====================================================================
 -- LIBROS: 30 libros (id 1..30). "autor", "categoria" y "editorial" son

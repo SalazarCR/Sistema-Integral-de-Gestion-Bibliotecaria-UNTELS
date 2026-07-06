@@ -9,10 +9,11 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import pe.edu.untels.dtos.JwtRequest;
+import pe.edu.untels.dtos.LoginRequest;
 import pe.edu.untels.dtos.JwtResponse;
 import pe.edu.untels.entities.ConfiguracionBiblioteca;
 import pe.edu.untels.entities.Usuario;
@@ -24,6 +25,7 @@ import pe.edu.untels.servicesinterfaces.IUsuarioService;
 import java.util.Optional;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 public class JwtAuthenticationController {
 
     @Autowired
@@ -42,13 +44,13 @@ public class JwtAuthenticationController {
     private IUsuarioService usuarioService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> createAuthenticationToken(@Valid @RequestBody JwtRequest authenticationRequest) {
+    public ResponseEntity<?> createAuthenticationToken(@Valid @RequestBody LoginRequest loginRequest) {
         UserDetails userDetails;
 
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                    authenticationRequest.getUsername(), authenticationRequest.getPassword()));
-            userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
+                    loginRequest.getUsername(), loginRequest.getPassword()));
+            userDetails = userDetailsService.loadUserByUsername(loginRequest.getUsername());
         } catch (DisabledException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body("El usuario se encuentra inactivo. Contacte al administrador.");
