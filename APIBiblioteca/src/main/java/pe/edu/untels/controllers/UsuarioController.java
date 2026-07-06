@@ -77,7 +77,10 @@ public class UsuarioController {
     public ResponseEntity<?> registrar(@RequestBody UsuarioDTO dto) {
         ModelMapper mapper = new ModelMapper();
 
-
+        if ("ADMIN".equalsIgnoreCase(dto.getRol())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("No esta permitido registrar nuevos administradores");
+        }
 
         if (usuarioService.existeUsername(dto.getUsername())) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
