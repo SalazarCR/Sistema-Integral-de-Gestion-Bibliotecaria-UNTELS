@@ -4,6 +4,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -65,6 +66,7 @@ public class PrestamoController {
         return dto;
     }
 
+    @PreAuthorize("hasAuthority('BIBLIOTECARIO')")
     @GetMapping("/lista")
     public ResponseEntity<List<PrestamoDTO>> listar() {
         List<PrestamoDTO> lista = prestamoService.list()
@@ -75,6 +77,7 @@ public class PrestamoController {
         return ResponseEntity.ok(lista);
     }
 
+    @PreAuthorize("hasAuthority('BIBLIOTECARIO') or hasAuthority('ESTUDIANTE')")
     @GetMapping("/{id}")
     public ResponseEntity<?> buscarPorId(@PathVariable int id) {
         Optional<Prestamo> prestamo = prestamoService.listId(id);
@@ -87,6 +90,7 @@ public class PrestamoController {
                 .body("Prestamo no encontrado");
     }
 
+    @PreAuthorize("hasAuthority('BIBLIOTECARIO')")
     @GetMapping("/estado/{estado}")
     public ResponseEntity<List<PrestamoDTO>> buscarPorEstado(@PathVariable String estado) {
         List<PrestamoDTO> lista = prestamoService.buscarPorEstado(estado)
@@ -97,6 +101,7 @@ public class PrestamoController {
         return ResponseEntity.ok(lista);
     }
 
+    @PreAuthorize("hasAuthority('BIBLIOTECARIO') or hasAuthority('ESTUDIANTE')")
     @GetMapping("/estudiante/{idEstudiante}")
     public ResponseEntity<List<PrestamoDTO>> buscarPorEstudiante(@PathVariable int idEstudiante) {
         List<PrestamoDTO> lista = prestamoService.buscarPorEstudiante(idEstudiante)
@@ -107,6 +112,7 @@ public class PrestamoController {
         return ResponseEntity.ok(lista);
     }
 
+    @PreAuthorize("hasAuthority('ESTUDIANTE')")
     @PostMapping("/solicitar")
     public ResponseEntity<?> solicitar(@RequestBody PrestamoDTO dto) {
         Optional<Usuario> estudianteOpt = usuarioService.listId(dto.getIdEstudiante());
@@ -204,6 +210,7 @@ public class PrestamoController {
         }
     }
 
+    @PreAuthorize("hasAuthority('BIBLIOTECARIO')")
     @PutMapping("/aprobar/{idPrestamo}")
     public ResponseEntity<String> aprobar(@PathVariable int idPrestamo) {
         Optional<Prestamo> prestamoOpt = prestamoService.listId(idPrestamo);
@@ -249,6 +256,7 @@ public class PrestamoController {
         return ResponseEntity.ok("Prestamo aprobado correctamente");
     }
 
+    @PreAuthorize("hasAuthority('BIBLIOTECARIO')")
     @PutMapping("/rechazar/{idPrestamo}")
     public ResponseEntity<String> rechazar(@PathVariable int idPrestamo, @RequestBody(required = false) Map<String, String> body) {
         Optional<Prestamo> prestamoOpt = prestamoService.listId(idPrestamo);
@@ -285,6 +293,7 @@ public class PrestamoController {
         return ResponseEntity.ok("Prestamo rechazado correctamente");
     }
 
+    @PreAuthorize("hasAuthority('BIBLIOTECARIO')")
     @PutMapping("/devolver")
     public ResponseEntity<?> devolver(@RequestBody PrestamoDTO dto) {
         Optional<Prestamo> prestamoOpt = prestamoService.listId(dto.getIdPrestamo());

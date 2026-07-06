@@ -4,6 +4,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -24,6 +25,7 @@ public class SancionController {
     @Autowired
     private ISancionService sancionService;
 
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('BIBLIOTECARIO')")
     @GetMapping("/lista")
     public ResponseEntity<List<SancionDTO>> listar() {
         ModelMapper mapper = new ModelMapper();
@@ -36,6 +38,7 @@ public class SancionController {
         return ResponseEntity.ok(lista);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('BIBLIOTECARIO')")
     @GetMapping("/estado/{estado}")
     public ResponseEntity<List<SancionDTO>> buscarPorEstado(@PathVariable String estado) {
         ModelMapper mapper = new ModelMapper();
@@ -48,6 +51,7 @@ public class SancionController {
         return ResponseEntity.ok(lista);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('BIBLIOTECARIO') or hasAuthority('ESTUDIANTE')")
     @GetMapping("/estudiante/{idEstudiante}")
     public ResponseEntity<List<SancionDTO>> buscarPorEstudiante(@PathVariable int idEstudiante) {
         ModelMapper mapper = new ModelMapper();
@@ -60,6 +64,7 @@ public class SancionController {
         return ResponseEntity.ok(lista);
     }
 
+    @PreAuthorize("hasAuthority('BIBLIOTECARIO')")
     @PutMapping("/cumplir/{idSancion}")
     public ResponseEntity<String> cumplir(@PathVariable int idSancion) {
         Optional<Sancion> sancionOpt = sancionService.listId(idSancion);

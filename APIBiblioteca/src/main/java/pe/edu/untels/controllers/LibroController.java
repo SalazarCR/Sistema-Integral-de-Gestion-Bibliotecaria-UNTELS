@@ -4,6 +4,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +28,7 @@ public class LibroController {
     @Autowired
     private ILibroService libroService;
 
+    @PreAuthorize("hasAuthority('BIBLIOTECARIO') or hasAuthority('ESTUDIANTE')")
     @GetMapping("/lista")
     public ResponseEntity<List<LibroDTO>> listar() {
         ModelMapper mapper = new ModelMapper();
@@ -39,6 +41,7 @@ public class LibroController {
         return ResponseEntity.ok(lista);
     }
 
+    @PreAuthorize("hasAuthority('BIBLIOTECARIO') or hasAuthority('ESTUDIANTE')")
     @GetMapping("/{id}")
     public ResponseEntity<?> buscarPorId(@PathVariable int id) {
         ModelMapper mapper = new ModelMapper();
@@ -53,6 +56,7 @@ public class LibroController {
                 .body("Libro no encontrado");
     }
 
+    @PreAuthorize("hasAuthority('BIBLIOTECARIO') or hasAuthority('ESTUDIANTE')")
     @GetMapping("/buscar")
     public ResponseEntity<List<LibroDTO>> buscarPorTitulo(@RequestParam String titulo) {
         ModelMapper mapper = new ModelMapper();
@@ -65,6 +69,7 @@ public class LibroController {
         return ResponseEntity.ok(lista);
     }
 
+    @PreAuthorize("hasAuthority('BIBLIOTECARIO') or hasAuthority('ESTUDIANTE')")
     @GetMapping("/categoria/{categoria}")
     public ResponseEntity<List<LibroDTO>> buscarPorCategoria(@PathVariable String categoria) {
         ModelMapper mapper = new ModelMapper();
@@ -77,6 +82,7 @@ public class LibroController {
         return ResponseEntity.ok(lista);
     }
 
+    @PreAuthorize("hasAuthority('BIBLIOTECARIO')")
     @PostMapping("/registrar-por-isbn")
     public ResponseEntity<?> registrarPorIsbn(@RequestParam String isbn) {
         try {
@@ -90,6 +96,7 @@ public class LibroController {
         }
     }
 
+    @PreAuthorize("hasAuthority('BIBLIOTECARIO')")
     @PostMapping("/nuevo")
     public ResponseEntity<?> registrar(@RequestBody LibroDTO dto) {
         ModelMapper mapper = new ModelMapper();
@@ -111,6 +118,7 @@ public class LibroController {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
     }
 
+    @PreAuthorize("hasAuthority('BIBLIOTECARIO')")
     @PutMapping("/actualiza")
     public ResponseEntity<String> actualizar(@RequestBody LibroDTO dto) {
         Optional<Libro> existente = libroService.listId(dto.getIdLibro());
@@ -137,6 +145,7 @@ public class LibroController {
         return ResponseEntity.ok("Libro actualizado correctamente");
     }
 
+    @PreAuthorize("hasAuthority('BIBLIOTECARIO')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> eliminar(@PathVariable int id) {
         Optional<Libro> libro = libroService.listId(id);

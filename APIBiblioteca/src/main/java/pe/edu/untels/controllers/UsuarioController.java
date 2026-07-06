@@ -4,6 +4,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,6 +43,7 @@ public class UsuarioController {
         return ResponseEntity.ok(lista);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('BIBLIOTECARIO')")
     @GetMapping("/{id}")
     public ResponseEntity<?> buscarPorId(@PathVariable int id) {
         ModelMapper mapper = new ModelMapper();
@@ -56,6 +58,7 @@ public class UsuarioController {
                 .body("Usuario no encontrado");
     }
 
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('BIBLIOTECARIO')")
     @GetMapping("/rol/{rol}")
     public ResponseEntity<List<UsuarioDTO>> buscarPorRol(@PathVariable String rol) {
         ModelMapper mapper = new ModelMapper();
@@ -72,6 +75,11 @@ public class UsuarioController {
     public ResponseEntity<?> registrar(@RequestBody UsuarioDTO dto) {
         ModelMapper mapper = new ModelMapper();
 
+        if ("ADMIN".equalsIgnoreCase(dto.getRol())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("No esta permitido registrar nuevos administradores");
+        }
+
         if (usuarioService.existeUsername(dto.getUsername())) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body("Ya existe un usuario con ese username");
@@ -85,6 +93,7 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('BIBLIOTECARIO')")
     @PutMapping("/actualiza")
     public ResponseEntity<String> actualizar(@RequestBody UsuarioDTO dto) {
         Optional<Usuario> existente = usuarioService.listId(dto.getIdUsuario());
@@ -115,6 +124,7 @@ public class UsuarioController {
         return ResponseEntity.ok("Usuario actualizado correctamente");
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> eliminar(@PathVariable int id) {
         Optional<Usuario> usuario = usuarioService.listId(id);
