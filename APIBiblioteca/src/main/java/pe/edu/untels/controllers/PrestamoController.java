@@ -148,11 +148,15 @@ public class PrestamoController {
             }
         }
 
+        // fechaEntrega es NOT NULL en BD: se calcula en el servidor a partir de la
+        // configuracion (diasMaxPrestamo) en lugar de confiar en que el frontend la envie.
+        int diasMaxPrestamo = configOpt.map(ConfiguracionBiblioteca::getDiasMaxPrestamo).orElse(15);
+
         Prestamo prestamo = new Prestamo();
         prestamo.setLibro(libroOpt.get());
         prestamo.setEstudiante(estudiante);
         prestamo.setFecha(LocalDateTime.now());
-        prestamo.setFechaEntrega(dto.getFechaEntrega());
+        prestamo.setFechaEntrega(LocalDateTime.now().plusDays(diasMaxPrestamo));
         prestamo.setEstado("solicitado");
         prestamo.setMotivo(dto.getMotivo());
         prestamo.setCurso(dto.getCurso());
