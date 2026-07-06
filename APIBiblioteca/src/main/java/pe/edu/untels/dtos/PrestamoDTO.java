@@ -1,42 +1,22 @@
 package pe.edu.untels.dtos;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Size;
-
 import java.time.LocalDateTime;
 
 public class PrestamoDTO {
 
     private int idPrestamo;
-
-    @Positive(message = "Debe indicar un libro valido")
     private int idLibro;
-
-    @Positive(message = "Debe indicar un estudiante valido")
     private int idEstudiante;
-
     private LocalDateTime fecha;
     private LocalDateTime fechaRecojo;
     private LocalDateTime fechaEntrega;
     private LocalDateTime fechaConfirmacion;
     private LocalDateTime fechaDevolucion;
     private String estado;
-
-    @NotBlank(message = "El motivo del prestamo es obligatorio")
-    @Size(max = 255, message = "El motivo no puede superar los 255 caracteres")
     private String motivo;
-
-    @Size(max = 100, message = "El curso no puede superar los 100 caracteres")
     private String curso;
-
-    @Size(max = 500, message = "Las observaciones no pueden superar los 500 caracteres")
     private String observaciones;
-
-    @Size(max = 30, message = "El estado de devolucion no puede superar los 30 caracteres")
     private String estadoDevolucion;
-
-    @Size(max = 500, message = "Las observaciones de devolucion no pueden superar los 500 caracteres")
     private String observacionesDev;
 
     public int getIdPrestamo() {

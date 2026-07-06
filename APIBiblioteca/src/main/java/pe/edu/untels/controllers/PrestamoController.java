@@ -1,18 +1,15 @@
 package pe.edu.untels.controllers;
 
-import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import pe.edu.untels.dtos.PrestamoDTO;
 import pe.edu.untels.entities.ConfiguracionBiblioteca;
@@ -56,7 +53,6 @@ public class PrestamoController {
     private INotificacionService notificacionService;
 
     @GetMapping("/lista")
-    @PreAuthorize("hasAnyRole('ADMIN', 'BIBLIOTECARIO')")
     public ResponseEntity<List<PrestamoDTO>> listar() {
         ModelMapper mapper = new ModelMapper();
 
@@ -83,7 +79,6 @@ public class PrestamoController {
     }
 
     @GetMapping("/estado/{estado}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'BIBLIOTECARIO')")
     public ResponseEntity<List<PrestamoDTO>> buscarPorEstado(@PathVariable String estado) {
         ModelMapper mapper = new ModelMapper();
 
@@ -108,8 +103,7 @@ public class PrestamoController {
     }
 
     @PostMapping("/solicitar")
-    @PreAuthorize("hasRole('ESTUDIANTE')")
-    public ResponseEntity<?> solicitar(@Valid @RequestBody PrestamoDTO dto) {
+    public ResponseEntity<?> solicitar(@RequestBody PrestamoDTO dto) {
         ModelMapper mapper = new ModelMapper();
 
         Optional<Usuario> estudianteOpt = usuarioService.listId(dto.getIdEstudiante());
@@ -171,7 +165,6 @@ public class PrestamoController {
     }
 
     @PutMapping("/aprobar/{idPrestamo}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'BIBLIOTECARIO')")
     public ResponseEntity<String> aprobar(@PathVariable int idPrestamo) {
         Optional<Prestamo> prestamoOpt = prestamoService.listId(idPrestamo);
 
@@ -212,9 +205,7 @@ public class PrestamoController {
     }
 
     @PutMapping("/rechazar/{idPrestamo}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'BIBLIOTECARIO')")
-    public ResponseEntity<String> rechazar(@PathVariable int idPrestamo,
-                                            @RequestParam(required = false) String motivo) {
+    public ResponseEntity<String> rechazar(@PathVariable int idPrestamo) {
         Optional<Prestamo> prestamoOpt = prestamoService.listId(idPrestamo);
 
         if (prestamoOpt.isEmpty()) {
@@ -232,15 +223,10 @@ public class PrestamoController {
         prestamo.setEstado("rechazado");
         prestamoService.edit(prestamo);
 
-        String mensaje = "Tu solicitud de prestamo del libro '" + prestamo.getLibro().getTitulo() + "' ha sido rechazada";
-        if (motivo != null && !motivo.isBlank()) {
-            mensaje += ": " + motivo;
-        }
-
         Notificacion notificacion = new Notificacion();
         notificacion.setEstudiante(prestamo.getEstudiante());
         notificacion.setTipo("rechazo");
-        notificacion.setMensaje(mensaje);
+        notificacion.setMensaje("Tu solicitud de prestamo del libro '" + prestamo.getLibro().getTitulo() + "' ha sido rechazada");
         notificacion.setFecha(LocalDateTime.now());
         notificacion.setLeida(false);
         notificacionService.insert(notificacion);
@@ -249,7 +235,6 @@ public class PrestamoController {
     }
 
     @PutMapping("/devolver")
-    @PreAuthorize("hasAnyRole('ADMIN', 'BIBLIOTECARIO')")
     public ResponseEntity<?> devolver(@RequestBody PrestamoDTO dto) {
         Optional<Prestamo> prestamoOpt = prestamoService.listId(dto.getIdPrestamo());
 

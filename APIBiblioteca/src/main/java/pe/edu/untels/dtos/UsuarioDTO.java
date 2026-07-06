@@ -1,50 +1,19 @@
 package pe.edu.untels.dtos;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
-
 public class UsuarioDTO {
 
     private int idUsuario;
-
-    @NotBlank(message = "El username es obligatorio")
-    @Size(min = 4, max = 30, message = "El username debe tener entre 4 y 30 caracteres")
     private String username;
-
-    @Size(min = 6, max = 100, message = "La contraseña debe tener entre 6 y 100 caracteres")
     private String password;
-
-    @NotBlank(message = "El codigo es obligatorio")
-    @Size(max = 20, message = "El codigo no puede superar los 20 caracteres")
     private String codigo;
-
-    @Size(max = 20, message = "El carnet no puede superar los 20 caracteres")
     private String carnet;
-
-    @NotBlank(message = "El DNI es obligatorio")
-    @Pattern(regexp = "\\d{8}", message = "El DNI debe tener exactamente 8 digitos numericos")
     private String dni;
-
-    @NotBlank(message = "El nombre es obligatorio")
-    @Size(max = 100, message = "El nombre no puede superar los 100 caracteres")
     private String nombre;
-
-    @NotBlank(message = "El email es obligatorio")
-    @Email(message = "El email no tiene un formato valido")
     private String email;
-
-    @Pattern(regexp = "^$|\\d{6,20}", message = "El telefono debe contener solo numeros (6 a 20 digitos)")
     private String telefono;
-
-    @NotBlank(message = "El rol es obligatorio")
     private String rol;
-
     private String carrera;
     private Integer ciclo;
-
-    @NotBlank(message = "El estado es obligatorio")
     private String estado;
 
     public int getIdUsuario() {

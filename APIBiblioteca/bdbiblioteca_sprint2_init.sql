@@ -89,7 +89,9 @@ ON CONFLICT (name_role) DO NOTHING;  -- No duplica si ya existen
 INSERT INTO users (username_user, password_user, email_user, id_role, status_user) VALUES
 (
   'admin.sistema',              -- Username único
-  '12345',                       -- Password (sin encriptar - cambiar en producción)
+  '' ||
+  '' ||
+  '',                       -- Password (sin encriptar - cambiar en producción)
   'admin@untels.edu.pe',         -- Email
   1,                             -- id_role = 1 (ADMINISTRADOR)
   true                           -- status_user = activo

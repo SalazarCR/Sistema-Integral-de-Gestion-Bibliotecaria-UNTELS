@@ -1,31 +1,21 @@
 package pe.edu.untels.controllers;
 
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import pe.edu.untels.dtos.LoginRequest;
+import pe.edu.untels.dtos.JwtRequest;
 import pe.edu.untels.dtos.JwtResponse;
-import pe.edu.untels.entities.ConfiguracionBiblioteca;
-import pe.edu.untels.entities.Usuario;
 import pe.edu.untels.securities.JwtTokenUtil;
 import pe.edu.untels.securities.JwtUserDetailsService;
-import pe.edu.untels.servicesinterfaces.IConfiguracionBibliotecaService;
-import pe.edu.untels.servicesinterfaces.IUsuarioService;
-
-import java.util.Optional;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 public class JwtAuthenticationController {
 
     @Autowired
@@ -37,40 +27,23 @@ public class JwtAuthenticationController {
     @Autowired
     private JwtUserDetailsService userDetailsService;
 
-    @Autowired
-    private IConfiguracionBibliotecaService configuracionService;
-
-    @Autowired
-    private IUsuarioService usuarioService;
-
     @PostMapping("/login")
-    public ResponseEntity<?> createAuthenticationToken(@Valid @RequestBody LoginRequest loginRequest) {
-        UserDetails userDetails;
+    public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
+        authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
 
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
+        final String token = jwtTokenUtil.generateToken(userDetails.getUsername());
+
+        return ResponseEntity.ok(new JwtResponse(token));
+    }
+
+    private void authenticate(String username, String password) throws Exception {
         try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                    loginRequest.getUsername(), loginRequest.getPassword()));
-            userDetails = userDetailsService.loadUserByUsername(loginRequest.getUsername());
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         } catch (DisabledException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body("El usuario se encuentra inactivo. Contacte al administrador.");
+            throw new Exception("USER_DISABLED", e);
         } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("Usuario o contraseña incorrectos.");
+            throw new Exception("INVALID_CREDENTIALS", e);
         }
-
-        boolean esAdmin = userDetails.getAuthorities().stream()
-                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
-
-        Optional<ConfiguracionBiblioteca> configOpt = configuracionService.obtener();
-        if (!esAdmin && configOpt.isPresent() && configOpt.get().isModoMant()) {
-            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
-                    .body("El sistema se encuentra en mantenimiento. Intente mas tarde.");
-        }
-
-        Usuario usuario = usuarioService.buscarPorUsername(userDetails.getUsername());
-        final String token = jwtTokenUtil.generateToken(usuario.getUsername(), usuario.getRol());
-
-        return ResponseEntity.ok(new JwtResponse(token, usuario.getIdUsuario(), usuario.getUsername(), usuario.getNombre(), usuario.getRol()));
     }
 }

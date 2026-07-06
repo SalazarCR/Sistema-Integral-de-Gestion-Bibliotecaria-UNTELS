@@ -1,5 +1,6 @@
 package pe.edu.untels.servicesinterfaces;
 
+import pe.edu.untels.dtos.LibroApiExternaDTO;
 import pe.edu.untels.entities.Libro;
 
 import java.util.List;
@@ -21,11 +22,9 @@ public interface ILibroService {
 
     List<Libro> buscarPorTitulo(String titulo);
 
-    List<Libro> buscarPorAutor(String autor);
-
-    Optional<Libro> buscarPorIsbn(String isbn);
-
     boolean existeIsbn(String isbn);
 
-    List<Libro> buscarConStockBajo(int umbral);
+    Libro registrarLibroPorIsbn(String isbn);
+
+    LibroApiExternaDTO buscarPorIsbnEnApi(String isbn);
 }

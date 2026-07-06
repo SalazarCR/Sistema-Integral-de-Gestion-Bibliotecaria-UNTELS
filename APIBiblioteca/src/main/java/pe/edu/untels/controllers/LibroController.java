@@ -1,11 +1,9 @@
 package pe.edu.untels.controllers;
 
-import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -79,34 +77,21 @@ public class LibroController {
         return ResponseEntity.ok(lista);
     }
 
-    @GetMapping("/autor")
-    public ResponseEntity<List<LibroDTO>> buscarPorAutor(@RequestParam String autor) {
-        ModelMapper mapper = new ModelMapper();
-
-        List<LibroDTO> lista = libroService.buscarPorAutor(autor)
-                .stream()
-                .map(libro -> mapper.map(libro, LibroDTO.class))
-                .toList();
-
-        return ResponseEntity.ok(lista);
-    }
-
-    @GetMapping("/isbn/{isbn}")
-    public ResponseEntity<?> buscarPorIsbn(@PathVariable String isbn) {
-        ModelMapper mapper = new ModelMapper();
-        Optional<Libro> libro = libroService.buscarPorIsbn(isbn);
-
-        if (libro.isPresent()) {
-            return ResponseEntity.ok(mapper.map(libro.get(), LibroDTO.class));
+    @PostMapping("/registrar-por-isbn")
+    public ResponseEntity<?> registrarPorIsbn(@RequestParam String isbn) {
+        try {
+            Libro libroGuardado = libroService
+                    .registrarLibroPorIsbn(isbn);
+            ModelMapper mapper = new ModelMapper();
+            LibroDTO responseDTO = mapper.map(libroGuardado, LibroDTO.class);
+            return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body("Libro no encontrado");
     }
 
     @PostMapping("/nuevo")
-    @PreAuthorize("hasAnyRole('ADMIN', 'BIBLIOTECARIO')")
-    public ResponseEntity<?> registrar(@Valid @RequestBody LibroDTO dto) {
+    public ResponseEntity<?> registrar(@RequestBody LibroDTO dto) {
         ModelMapper mapper = new ModelMapper();
 
         if (libroService.existeIsbn(dto.getIsbn())) {
@@ -127,8 +112,7 @@ public class LibroController {
     }
 
     @PutMapping("/actualiza")
-    @PreAuthorize("hasAnyRole('ADMIN', 'BIBLIOTECARIO')")
-    public ResponseEntity<String> actualizar(@Valid @RequestBody LibroDTO dto) {
+    public ResponseEntity<String> actualizar(@RequestBody LibroDTO dto) {
         Optional<Libro> existente = libroService.listId(dto.getIdLibro());
 
         if (existente.isEmpty()) {
@@ -154,7 +138,6 @@ public class LibroController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'BIBLIOTECARIO')")
     public ResponseEntity<String> eliminar(@PathVariable int id) {
         Optional<Libro> libro = libroService.listId(id);
 

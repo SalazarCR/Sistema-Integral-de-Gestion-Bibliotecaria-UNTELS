@@ -54,15 +54,4 @@ public class UsuarioServiceImplement implements IUsuarioService {
     public boolean existeUsername(String username) {
         return usuarioRepository.existsByUsername(username);
     }
-
-    @Override
-    public Usuario buscarPorUsername(String username) {
-        return usuarioRepository.findByUsername(username);
-    }
-
-    @Override
-    public List<Usuario> buscar(String texto) {
-        return usuarioRepository.findByNombreContainingIgnoreCaseOrUsernameContainingIgnoreCaseOrCodigoContainingIgnoreCaseOrDniContainingIgnoreCase(
-                texto, texto, texto, texto);
-    }
 }

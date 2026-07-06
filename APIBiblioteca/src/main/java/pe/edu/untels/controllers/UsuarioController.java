@@ -4,18 +4,14 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import jakarta.validation.Valid;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import pe.edu.untels.dtos.UsuarioDTO;
 import pe.edu.untels.entities.Usuario;
@@ -26,7 +22,6 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/usuarios")
-@PreAuthorize("hasAnyRole('ADMIN', 'BIBLIOTECARIO')")
 public class UsuarioController {
 
     @Autowired
@@ -73,26 +68,9 @@ public class UsuarioController {
         return ResponseEntity.ok(lista);
     }
 
-    @GetMapping("/buscar")
-    public ResponseEntity<List<UsuarioDTO>> buscar(@RequestParam String q) {
-        ModelMapper mapper = new ModelMapper();
-
-        List<UsuarioDTO> lista = usuarioService.buscar(q)
-                .stream()
-                .map(usuario -> mapper.map(usuario, UsuarioDTO.class))
-                .toList();
-
-        return ResponseEntity.ok(lista);
-    }
-
     @PostMapping("/nuevo")
-    public ResponseEntity<?> registrar(@Valid @RequestBody UsuarioDTO dto) {
+    public ResponseEntity<?> registrar(@RequestBody UsuarioDTO dto) {
         ModelMapper mapper = new ModelMapper();
-
-        if (dto.getRol() != null && dto.getRol().equalsIgnoreCase("ADMIN")) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("No esta permitido registrar nuevos administradores");
-        }
 
         if (usuarioService.existeUsername(dto.getUsername())) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
@@ -108,7 +86,7 @@ public class UsuarioController {
     }
 
     @PutMapping("/actualiza")
-    public ResponseEntity<String> actualizar(@Valid @RequestBody UsuarioDTO dto) {
+    public ResponseEntity<String> actualizar(@RequestBody UsuarioDTO dto) {
         Optional<Usuario> existente = usuarioService.listId(dto.getIdUsuario());
 
         if (existente.isEmpty()) {
@@ -135,23 +113,6 @@ public class UsuarioController {
         usuarioService.edit(usuario);
 
         return ResponseEntity.ok("Usuario actualizado correctamente");
-    }
-
-    @PatchMapping("/{id}/estado")
-    public ResponseEntity<?> cambiarEstado(@PathVariable int id) {
-        Optional<Usuario> existente = usuarioService.listId(id);
-
-        if (existente.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Usuario no encontrado");
-        }
-
-        Usuario usuario = existente.get();
-        usuario.setEstado("ACTIVO".equals(usuario.getEstado()) ? "INACTIVO" : "ACTIVO");
-        usuarioService.edit(usuario);
-
-        ModelMapper mapper = new ModelMapper();
-        return ResponseEntity.ok(mapper.map(usuario, UsuarioDTO.class));
     }
 
     @DeleteMapping("/{id}")
