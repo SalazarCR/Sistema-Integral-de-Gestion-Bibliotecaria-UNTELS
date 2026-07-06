@@ -7,6 +7,8 @@ public class PrestamoDTO {
     private int idPrestamo;
     private int idLibro;
     private int idEstudiante;
+    private String tituloLibro;
+    private String nombreEstudiante;
     private LocalDateTime fecha;
     private LocalDateTime fechaRecojo;
     private LocalDateTime fechaEntrega;
@@ -41,6 +43,22 @@ public class PrestamoDTO {
 
     public void setIdEstudiante(int idEstudiante) {
         this.idEstudiante = idEstudiante;
+    }
+
+    public String getTituloLibro() {
+        return tituloLibro;
+    }
+
+    public void setTituloLibro(String tituloLibro) {
+        this.tituloLibro = tituloLibro;
+    }
+
+    public String getNombreEstudiante() {
+        return nombreEstudiante;
+    }
+
+    public void setNombreEstudiante(String nombreEstudiante) {
+        this.nombreEstudiante = nombreEstudiante;
     }
 
     public LocalDateTime getFecha() {

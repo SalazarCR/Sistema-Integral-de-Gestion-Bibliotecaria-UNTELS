@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import java.util.Map;
 import pe.edu.untels.dtos.PrestamoDTO;
 import pe.edu.untels.entities.ConfiguracionBiblioteca;
 import pe.edu.untels.entities.Libro;
@@ -52,13 +53,23 @@ public class PrestamoController {
     @Autowired
     private INotificacionService notificacionService;
 
+    private PrestamoDTO mapearDto(Prestamo prestamo) {
+        ModelMapper mapper = new ModelMapper();
+        PrestamoDTO dto = mapper.map(prestamo, PrestamoDTO.class);
+        if (prestamo.getLibro() != null) {
+            dto.setTituloLibro(prestamo.getLibro().getTitulo());
+        }
+        if (prestamo.getEstudiante() != null) {
+            dto.setNombreEstudiante(prestamo.getEstudiante().getNombre());
+        }
+        return dto;
+    }
+
     @GetMapping("/lista")
     public ResponseEntity<List<PrestamoDTO>> listar() {
-        ModelMapper mapper = new ModelMapper();
-
         List<PrestamoDTO> lista = prestamoService.list()
                 .stream()
-                .map(prestamo -> mapper.map(prestamo, PrestamoDTO.class))
+                .map(this::mapearDto)
                 .toList();
 
         return ResponseEntity.ok(lista);
@@ -66,12 +77,10 @@ public class PrestamoController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> buscarPorId(@PathVariable int id) {
-        ModelMapper mapper = new ModelMapper();
         Optional<Prestamo> prestamo = prestamoService.listId(id);
 
         if (prestamo.isPresent()) {
-            PrestamoDTO dto = mapper.map(prestamo.get(), PrestamoDTO.class);
-            return ResponseEntity.ok(dto);
+            return ResponseEntity.ok(mapearDto(prestamo.get()));
         }
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -80,11 +89,9 @@ public class PrestamoController {
 
     @GetMapping("/estado/{estado}")
     public ResponseEntity<List<PrestamoDTO>> buscarPorEstado(@PathVariable String estado) {
-        ModelMapper mapper = new ModelMapper();
-
         List<PrestamoDTO> lista = prestamoService.buscarPorEstado(estado)
                 .stream()
-                .map(prestamo -> mapper.map(prestamo, PrestamoDTO.class))
+                .map(this::mapearDto)
                 .toList();
 
         return ResponseEntity.ok(lista);
@@ -92,11 +99,9 @@ public class PrestamoController {
 
     @GetMapping("/estudiante/{idEstudiante}")
     public ResponseEntity<List<PrestamoDTO>> buscarPorEstudiante(@PathVariable int idEstudiante) {
-        ModelMapper mapper = new ModelMapper();
-
         List<PrestamoDTO> lista = prestamoService.buscarPorEstudiante(idEstudiante)
                 .stream()
-                .map(prestamo -> mapper.map(prestamo, PrestamoDTO.class))
+                .map(this::mapearDto)
                 .toList();
 
         return ResponseEntity.ok(lista);
@@ -104,8 +109,6 @@ public class PrestamoController {
 
     @PostMapping("/solicitar")
     public ResponseEntity<?> solicitar(@RequestBody PrestamoDTO dto) {
-        ModelMapper mapper = new ModelMapper();
-
         Optional<Usuario> estudianteOpt = usuarioService.listId(dto.getIdEstudiante());
         if (estudianteOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -113,6 +116,11 @@ public class PrestamoController {
         }
 
         Usuario estudiante = estudianteOpt.get();
+
+        if (!"ACTIVO".equalsIgnoreCase(estudiante.getEstado())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("El estudiante no esta activo y no puede solicitar prestamos");
+        }
 
         List<Sancion> sancionesActivas = sancionService.buscarPorEstudiante(dto.getIdEstudiante())
                 .stream()
@@ -122,6 +130,15 @@ public class PrestamoController {
         if (!sancionesActivas.isEmpty()) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body("El estudiante tiene una sancion activa y no puede solicitar prestamos");
+        }
+
+        boolean tienePrestamosVencidos = prestamoService.buscarPorEstudiante(dto.getIdEstudiante())
+                .stream()
+                .anyMatch(p -> p.getEstado().equals("vencido"));
+
+        if (tienePrestamosVencidos) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("El estudiante tiene prestamos vencidos pendientes de devolucion");
         }
 
         Optional<Libro> libroOpt = libroService.listId(dto.getIdLibro());
@@ -163,9 +180,28 @@ public class PrestamoController {
         prestamo.setObservaciones(dto.getObservaciones());
 
         Prestamo guardado = prestamoService.insert(prestamo);
-        PrestamoDTO responseDTO = mapper.map(guardado, PrestamoDTO.class);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
+        notificarNuevaSolicitudABibliotecarios(guardado);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(mapearDto(guardado));
+    }
+
+    private void notificarNuevaSolicitudABibliotecarios(Prestamo prestamo) {
+        List<Usuario> bibliotecarios = usuarioService.buscarPorRol("BIBLIOTECARIO")
+                .stream()
+                .filter(u -> "ACTIVO".equalsIgnoreCase(u.getEstado()))
+                .toList();
+
+        for (Usuario bibliotecario : bibliotecarios) {
+            Notificacion notificacion = new Notificacion();
+            notificacion.setEstudiante(bibliotecario);
+            notificacion.setTipo("nueva_solicitud");
+            notificacion.setMensaje("Nueva solicitud de prestamo: '" + prestamo.getLibro().getTitulo()
+                    + "' pedida por " + prestamo.getEstudiante().getNombre() + ". Revisala en Prestamos.");
+            notificacion.setFecha(LocalDateTime.now());
+            notificacion.setLeida(false);
+            notificacionService.insert(notificacion);
+        }
     }
 
     @PutMapping("/aprobar/{idPrestamo}")
@@ -197,10 +233,15 @@ public class PrestamoController {
         prestamo.setFechaRecojo(LocalDateTime.now());
         prestamoService.edit(prestamo);
 
+        boolean esVirtual = libro.getRecurso() != null && !libro.getRecurso().isBlank();
+        String mensajeAprobacion = esVirtual
+                ? "Tu prestamo del libro '" + libro.getTitulo() + "' fue confirmado. Ya puedes acceder al recurso virtual desde el catalogo."
+                : "Tu prestamo del libro '" + libro.getTitulo() + "' fue confirmado. Ya puedes recogerlo en biblioteca.";
+
         Notificacion notificacion = new Notificacion();
         notificacion.setEstudiante(prestamo.getEstudiante());
         notificacion.setTipo("confirmacion");
-        notificacion.setMensaje("Tu prestamo del libro '" + libro.getTitulo() + "' ha sido aprobado");
+        notificacion.setMensaje(mensajeAprobacion);
         notificacion.setFecha(LocalDateTime.now());
         notificacion.setLeida(false);
         notificacionService.insert(notificacion);
@@ -209,7 +250,7 @@ public class PrestamoController {
     }
 
     @PutMapping("/rechazar/{idPrestamo}")
-    public ResponseEntity<String> rechazar(@PathVariable int idPrestamo) {
+    public ResponseEntity<String> rechazar(@PathVariable int idPrestamo, @RequestBody(required = false) Map<String, String> body) {
         Optional<Prestamo> prestamoOpt = prestamoService.listId(idPrestamo);
 
         if (prestamoOpt.isEmpty()) {
@@ -224,13 +265,19 @@ public class PrestamoController {
                     .body("El prestamo no esta en estado solicitado");
         }
 
+        String motivo = body != null ? body.get("motivo") : null;
+
         prestamo.setEstado("rechazado");
+        prestamo.setObservaciones(motivo);
         prestamoService.edit(prestamo);
+
+        String mensajeRechazo = "Tu solicitud de prestamo del libro '" + prestamo.getLibro().getTitulo() + "' ha sido rechazada"
+                + (motivo != null && !motivo.isBlank() ? ". Motivo: " + motivo : "");
 
         Notificacion notificacion = new Notificacion();
         notificacion.setEstudiante(prestamo.getEstudiante());
         notificacion.setTipo("rechazo");
-        notificacion.setMensaje("Tu solicitud de prestamo del libro '" + prestamo.getLibro().getTitulo() + "' ha sido rechazada");
+        notificacion.setMensaje(mensajeRechazo);
         notificacion.setFecha(LocalDateTime.now());
         notificacion.setLeida(false);
         notificacionService.insert(notificacion);
